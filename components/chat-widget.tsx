@@ -182,17 +182,17 @@ export function ChatWidget() {
   return (
     <>
       {/* Chat Button */}
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
         <Button
           onClick={() => setIsOpen(!isOpen)}
-          className="h-14 w-14 rounded-full shadow-lg relative"
+          className="h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-lg relative"
           size="icon"
         >
-          <MessageCircle className="h-6 w-6" />
+          <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6" />
           {unreadNotifications > 0 && (
             <Badge
               variant="destructive"
-              className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0 flex items-center justify-center text-xs"
+              className="absolute -top-2 -right-2 h-5 w-5 sm:h-6 sm:w-6 rounded-full p-0 flex items-center justify-center text-xs"
             >
               {unreadNotifications}
             </Badge>
@@ -204,8 +204,12 @@ export function ChatWidget() {
       {isOpen && (
         <div
           className={`fixed ${
-            isMobile ? "inset-0" : "bottom-24 right-6"
-          } z-50 ${isMobile ? "w-full h-full" : "w-96 h-96"}`}
+            isMobile ? "inset-0" : "bottom-20 sm:bottom-24 right-4 sm:right-6"
+          } z-50 ${
+            isMobile
+              ? "w-full h-full"
+              : "w-[calc(100%-2rem)] sm:w-96 h-[calc(100%-5rem)] sm:h-96"
+          }`}
         >
           <Card
             className={`h-full flex flex-col shadow-xl ${
@@ -221,8 +225,8 @@ export function ChatWidget() {
             <CardContent className="flex-1 flex flex-col p-0">
               {/* User List */}
               {showUserList && (
-                <div className="border-b p-3 bg-slate-50">
-                  <h4 className="text-sm font-medium mb-2">
+                <div className="border-b p-2 sm:p-3 bg-slate-50">
+                  <h4 className="text-xs sm:text-sm font-medium mb-2">
                     Usuários ({users.length}):
                   </h4>
                   <div className="flex flex-wrap gap-1">
@@ -242,8 +246,8 @@ export function ChatWidget() {
               )}
 
               {/* Messages */}
-              <ScrollArea className="flex-1 p-3">
-                <div className="space-y-3">
+              <ScrollArea className="flex-1 p-2 sm:p-3">
+                <div className="space-y-2 sm:space-y-3">
                   {getMessagesForUser().map((msg) => (
                     <div
                       key={msg.id}
@@ -252,7 +256,7 @@ export function ChatWidget() {
                       }`}
                     >
                       <div
-                        className={`max-w-[80%] rounded-lg p-2 ${
+                        className={`max-w-[85%] sm:max-w-[80%] rounded-lg p-2 ${
                           msg.senderId === user.id
                             ? "bg-blue-500 text-white"
                             : msg.isPrivate
@@ -272,7 +276,7 @@ export function ChatWidget() {
                           )}
                         </div>
                         <div
-                          className="text-sm"
+                          className="text-xs sm:text-sm"
                           dangerouslySetInnerHTML={{
                             __html: formatMessageContent(
                               msg.content,
@@ -280,7 +284,7 @@ export function ChatWidget() {
                             ),
                           }}
                         />
-                        <div className="text-xs opacity-70 mt-1">
+                        <div className="text-[10px] sm:text-xs opacity-70 mt-1">
                           {formatDistanceToNow(msg.timestamp, {
                             addSuffix: true,
                             locale: ptBR,
@@ -294,7 +298,7 @@ export function ChatWidget() {
               </ScrollArea>
 
               {/* Message Input */}
-              <div className="p-3 border-t relative">
+              <div className="p-2 sm:p-3 border-t relative">
                 <div className="flex gap-2">
                   <Input
                     ref={inputRef}
@@ -302,30 +306,36 @@ export function ChatWidget() {
                     onChange={handleMessageChange}
                     onKeyPress={handleKeyPress}
                     placeholder="Digite sua mensagem... Use @username para mencionar"
-                    className="flex-1"
+                    className="flex-1 text-sm sm:text-base"
                   />
-                  <Button onClick={handleSendMessage} size="sm">
+                  <Button
+                    onClick={handleSendMessage}
+                    size="sm"
+                    className="h-9 sm:h-10"
+                  >
                     <Send className="w-4 h-4" />
                   </Button>
                 </div>
                 {mentionSuggestions.length > 0 && (
-                  <div className="absolute bottom-full left-3 right-3 mb-2 bg-white rounded-lg shadow-lg border border-slate-200 max-h-48 overflow-y-auto">
+                  <div className="absolute bottom-full left-2 sm:left-3 right-2 sm:right-3 mb-2 bg-white rounded-lg shadow-lg border border-slate-200 max-h-48 overflow-y-auto">
                     {mentionSuggestions.map((user, index) => (
                       <button
                         key={user.id}
-                        className={`w-full px-3 py-2 text-left hover:bg-slate-100 flex items-center gap-2 ${
+                        className={`w-full px-2 sm:px-3 py-1.5 sm:py-2 text-left hover:bg-slate-100 flex items-center gap-2 ${
                           index === mentionIndex ? "bg-slate-100" : ""
                         }`}
                         onClick={() => insertMention(user.username)}
                       >
-                        <div className="w-6 h-6 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
+                        <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
                           <span className="text-white text-xs font-medium">
                             {user.name.charAt(0).toUpperCase()}
                           </span>
                         </div>
                         <div>
-                          <p className="text-sm font-medium">{user.name}</p>
-                          <p className="text-xs text-slate-500">
+                          <p className="text-xs sm:text-sm font-medium">
+                            {user.name}
+                          </p>
+                          <p className="text-[10px] sm:text-xs text-slate-500">
                             @{user.username}
                           </p>
                         </div>
@@ -333,7 +343,7 @@ export function ChatWidget() {
                     ))}
                   </div>
                 )}
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-[10px] sm:text-xs text-slate-500 mt-1">
                   Use @username para enviar mensagem privada
                 </p>
               </div>

@@ -83,29 +83,31 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
       <Header />
-      <div className="container mx-auto px-4 py-12">
-        <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-slate-800 mb-4">
+      <div className="container mx-auto px-4 py-6 sm:py-12">
+        <div className="text-center mb-6 sm:mb-10">
+          <h1 className="text-2xl sm:text-4xl font-bold text-slate-800 mb-4">
             Bem-vindo, {user?.name}!
           </h1>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 py-12 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 py-6 sm:py-12 max-w-6xl mx-auto">
           {departamentos.map((dept) => {
             const Icon = dept.icon;
             return (
               <Card
                 key={dept.id}
-                className="hover:shadow-lg transition-all duration-300 hover:scale-105"
+                className="hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
               >
                 <CardHeader className="text-center">
                   <div
-                    className={`w-16 h-16 ${dept.color} rounded-full flex items-center justify-center mx-auto mb-4`}
+                    className={`w-12 h-12 sm:w-16 sm:h-16 ${dept.color} rounded-full flex items-center justify-center mx-auto mb-4`}
                   >
-                    <Icon className="w-8 h-8 text-white" />
+                    <Icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                   </div>
-                  <CardTitle className="text-lg">{dept.nome}</CardTitle>
-                  <CardDescription className="text-base">
+                  <CardTitle className="text-base sm:text-lg">
+                    {dept.nome}
+                  </CardTitle>
+                  <CardDescription className="text-sm sm:text-base">
                     Responsáveis:{" "}
                     <span className="font-medium">
                       {dept.responsaveis.join(", ")}
@@ -124,8 +126,8 @@ export default function HomePage() {
           })}
         </div>
 
-        <div className="text-center mt-12">
-          <p className="text-slate-500">
+        <div className="text-center mt-8 sm:mt-12">
+          <p className="text-sm sm:text-base text-slate-500">
             Use o{" "}
             <Link
               href="/chat"
