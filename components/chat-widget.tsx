@@ -12,37 +12,7 @@ import { useAuth } from "@/lib/auth-context";
 import { MessageCircle, Send, X, Users, Bell } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
-
-interface ChatHeaderProps {
-  onToggleUserList: () => void;
-  onClose: () => void;
-  showUserList: boolean;
-}
-
-function ChatHeader({
-  onToggleUserList,
-  onClose,
-  showUserList,
-}: ChatHeaderProps) {
-  return (
-    <CardHeader className="pb-3">
-      <div className="flex items-center justify-between">
-        <CardTitle className="text-lg flex items-center gap-2">
-          <MessageCircle className="w-5 h-5" />
-          Chat da Equipe
-        </CardTitle>
-        <div className="flex gap-2">
-          <Button variant="ghost" size="sm" onClick={onToggleUserList}>
-            <Users className="w-4 h-4" />
-          </Button>
-          <Button variant="ghost" size="sm" onClick={onClose}>
-            <X className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
-    </CardHeader>
-  );
-}
+import { ChatHeader } from "./chat-header";
 
 export function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -52,6 +22,7 @@ export function ChatWidget() {
     Array<{ id: string; username: string; name: string }>
   >([]);
   const [mentionIndex, setMentionIndex] = useState(-1);
+  const [isMobile, setIsMobile] = useState(false);
   const {
     user,
     users,
@@ -63,7 +34,6 @@ export function ChatWidget() {
   } = useAuth();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -112,39 +82,10 @@ export function ChatWidget() {
     }
   };
 
-  const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newMessage = e.target.value;
-    setMessage(newMessage);
-
-    // Check for @ mentions
-    const lastAtIndex = newMessage.lastIndexOf("@");
-    if (lastAtIndex !== -1) {
-      const searchTerm = newMessage
-        .slice(lastAtIndex + 1)
-        .split(" ")[0]
-        .toLowerCase();
-      const suggestions = users
-        .filter(
-          (u) =>
-            u.username.toLowerCase().includes(searchTerm) ||
-            u.name.toLowerCase().includes(searchTerm)
-        )
-        .slice(0, 5);
-      setMentionSuggestions(suggestions);
-      setMentionIndex(-1);
-    } else {
-      setMentionSuggestions([]);
-    }
-  };
-
   const insertMention = (username: string) => {
-    const lastAtIndex = message.lastIndexOf("@");
-    const newMessage =
-      message.slice(0, lastAtIndex) +
-      `@${username} ` +
-      message.slice(lastAtIndex + username.length + 1);
+    const newMessage = message + `@${username} `;
     setMessage(newMessage);
-    setMentionSuggestions([]);
+    setShowUserList(false);
     inputRef.current?.focus();
   };
 
@@ -182,17 +123,17 @@ export function ChatWidget() {
   return (
     <>
       {/* Chat Button */}
-      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50">
+      <div className="fixed bottom-6 right-6 z-50">
         <Button
           onClick={() => setIsOpen(!isOpen)}
-          className="h-12 w-12 sm:h-14 sm:w-14 rounded-full shadow-lg relative"
+          className="h-14 w-14 rounded-full shadow-lg relative"
           size="icon"
         >
-          <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6" />
+          <MessageCircle className="h-6 w-6" />
           {unreadNotifications > 0 && (
             <Badge
               variant="destructive"
-              className="absolute -top-2 -right-2 h-5 w-5 sm:h-6 sm:w-6 rounded-full p-0 flex items-center justify-center text-xs"
+              className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0 flex items-center justify-center text-xs"
             >
               {unreadNotifications}
             </Badge>
@@ -203,17 +144,13 @@ export function ChatWidget() {
       {/* Chat Window */}
       {isOpen && (
         <div
-          className={`fixed ${
-            isMobile ? "inset-0" : "bottom-20 sm:bottom-24 right-4 sm:right-6"
-          } z-50 ${
-            isMobile
-              ? "w-full h-full"
-              : "w-[calc(100%-2rem)] sm:w-96 h-[calc(100%-5rem)] sm:h-96"
+          className={`fixed ${isMobile ? "inset-0" : "bottom-0 right-0"} z-50 ${
+            isMobile ? "w-full h-full" : "w-[400px] h-[calc(100vh-4rem)]"
           }`}
         >
           <Card
             className={`h-full flex flex-col shadow-xl ${
-              isMobile ? "rounded-none" : ""
+              isMobile ? "rounded-none" : "rounded-none border-l border-t"
             }`}
           >
             <ChatHeader
@@ -222,11 +159,11 @@ export function ChatWidget() {
               showUserList={showUserList}
             />
 
-            <CardContent className="flex-1 flex flex-col p-0">
+            <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
               {/* User List */}
               {showUserList && (
-                <div className="border-b p-2 sm:p-3 bg-slate-50">
-                  <h4 className="text-xs sm:text-sm font-medium mb-2">
+                <div className="border-b p-2 bg-slate-50">
+                  <h4 className="text-sm font-medium mb-2">
                     Usuários ({users.length}):
                   </h4>
                   <div className="flex flex-wrap gap-1">
@@ -246,8 +183,8 @@ export function ChatWidget() {
               )}
 
               {/* Messages */}
-              <ScrollArea className="flex-1 p-2 sm:p-3">
-                <div className="space-y-2 sm:space-y-3">
+              <ScrollArea className="flex-1">
+                <div className="p-3 space-y-3">
                   {getMessagesForUser().map((msg) => (
                     <div
                       key={msg.id}
@@ -256,7 +193,7 @@ export function ChatWidget() {
                       }`}
                     >
                       <div
-                        className={`max-w-[85%] sm:max-w-[80%] rounded-lg p-2 ${
+                        className={`max-w-[80%] rounded-lg p-2 ${
                           msg.senderId === user.id
                             ? "bg-blue-500 text-white"
                             : msg.isPrivate
@@ -265,7 +202,7 @@ export function ChatWidget() {
                         }`}
                       >
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-xs font-medium">
+                          <span className="text-sm font-medium">
                             {msg.senderName}
                           </span>
                           {msg.isPrivate && (
@@ -276,7 +213,7 @@ export function ChatWidget() {
                           )}
                         </div>
                         <div
-                          className="text-xs sm:text-sm"
+                          className="text-sm break-words"
                           dangerouslySetInnerHTML={{
                             __html: formatMessageContent(
                               msg.content,
@@ -284,7 +221,7 @@ export function ChatWidget() {
                             ),
                           }}
                         />
-                        <div className="text-[10px] sm:text-xs opacity-70 mt-1">
+                        <div className="text-xs opacity-70 mt-1">
                           {formatDistanceToNow(msg.timestamp, {
                             addSuffix: true,
                             locale: ptBR,
@@ -298,52 +235,25 @@ export function ChatWidget() {
               </ScrollArea>
 
               {/* Message Input */}
-              <div className="p-2 sm:p-3 border-t relative">
+              <div className="p-3 border-t relative">
                 <div className="flex gap-2">
                   <Input
                     ref={inputRef}
                     value={message}
-                    onChange={handleMessageChange}
+                    onChange={(e) => setMessage(e.target.value)}
                     onKeyPress={handleKeyPress}
                     placeholder="Digite sua mensagem... Use @username para mencionar"
-                    className="flex-1 text-sm sm:text-base"
+                    className="flex-1"
                   />
                   <Button
                     onClick={handleSendMessage}
                     size="sm"
-                    className="h-9 sm:h-10"
+                    className="h-10"
                   >
                     <Send className="w-4 h-4" />
                   </Button>
                 </div>
-                {mentionSuggestions.length > 0 && (
-                  <div className="absolute bottom-full left-2 sm:left-3 right-2 sm:right-3 mb-2 bg-white rounded-lg shadow-lg border border-slate-200 max-h-48 overflow-y-auto">
-                    {mentionSuggestions.map((user, index) => (
-                      <button
-                        key={user.id}
-                        className={`w-full px-2 sm:px-3 py-1.5 sm:py-2 text-left hover:bg-slate-100 flex items-center gap-2 ${
-                          index === mentionIndex ? "bg-slate-100" : ""
-                        }`}
-                        onClick={() => insertMention(user.username)}
-                      >
-                        <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs font-medium">
-                            {user.name.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        <div>
-                          <p className="text-xs sm:text-sm font-medium">
-                            {user.name}
-                          </p>
-                          <p className="text-[10px] sm:text-xs text-slate-500">
-                            @{user.username}
-                          </p>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
-                <p className="text-[10px] sm:text-xs text-slate-500 mt-1">
+                <p className="text-xs text-slate-500 mt-1">
                   Use @username para enviar mensagem privada
                 </p>
               </div>

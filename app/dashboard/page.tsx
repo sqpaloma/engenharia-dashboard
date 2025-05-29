@@ -21,7 +21,6 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { Header } from "@/components/header";
 
 const DEPARTAMENTOS = {
   "bombas-pistoes": {
@@ -220,7 +219,6 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <Header />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-slate-800 mb-2">
