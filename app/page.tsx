@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function HomePage() {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -36,11 +36,28 @@ export default function HomePage() {
     }
   }, [isAuthenticated, user, router]);
 
-  if (!isAuthenticated) {
-    return <LoginForm />;
+  // Mostra um loader enquanto verifica a autenticação
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-slate-600">Verificando autenticação...</p>
+        </div>
+      </div>
+    );
   }
 
-  // Se for engenheiro, mostrar uma mensagem de carregamento enquanto redireciona
+  // Se não autenticado, mostra o formulário de login
+  if (!isAuthenticated) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <LoginForm />
+      </div>
+    );
+  }
+
+  // Se for engenheiro autenticado, mostra mensagem de redirecionamento
   if (user?.role === "engineer") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -54,7 +71,7 @@ export default function HomePage() {
     );
   }
 
-  // Para administradores e outros usuários, mostrar a página normal
+  // Para administradores e outros usuários autenticados, mostrar a página normal
   const departamentos = [
     {
       id: "bombas-pistoes",
@@ -80,8 +97,8 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <div className="container mx-auto px-4 py-6 sm:py-12">
+    <div className="bg-gradient-to-br from-slate-50 to-slate-100 py-6 sm:py-12 flex-1">
+      <div className="container mx-auto px-4">
         <div className="text-center mb-6 sm:mb-10">
           <h1 className="text-2xl sm:text-4xl font-bold text-slate-800 mb-4">
             Bem-vindo, {user?.name}!

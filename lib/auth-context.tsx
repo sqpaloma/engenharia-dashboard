@@ -2,7 +2,7 @@
 
 import type React from "react";
 import { createContext, useContext, useState, useEffect } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { getSupabaseClient } from "@/lib/supabaseClient";
 
 export interface User {
   id: string;
@@ -115,6 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Buscar mensagens do Supabase ao carregar
   useEffect(() => {
     const fetchMessages = async () => {
+      const supabase = getSupabaseClient();
       if (!supabase) {
         console.warn("Supabase client not available.");
         setIsLoading(false);
@@ -137,6 +138,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     fetchMessages();
 
     // Escutar mensagens em tempo real
+    const supabase = getSupabaseClient();
     if (!supabase) {
       console.warn("Supabase client not available for realtime.");
       return;
@@ -146,7 +148,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "messages" },
-        (payload) => {
+        (payload: any) => {
           if (payload.eventType === "INSERT") {
             const msg = payload.new;
             const newMsg = {
@@ -174,11 +176,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .subscribe();
 
     return () => {
+      const supabase = getSupabaseClient();
       if (channel && supabase) {
         supabase.removeChannel(channel);
       }
     };
-  }, [user, supabase]);
+  }, [user]);
 
   // Atualizar atividade do usuário a cada 30 segundos
   useEffect(() => {
@@ -309,7 +312,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const sendMessage = async (content: string, mentions: string[]) => {
-    if (!user || !supabase) return;
+    if (!user) return;
+    const supabase = getSupabaseClient();
+    if (!supabase) {
+      console.warn("Supabase client not available for sending message.");
+      return;
+    }
     const newMessage = {
       sender_id: user.id,
       sender_name: user.name,
