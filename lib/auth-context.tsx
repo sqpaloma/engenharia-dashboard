@@ -36,6 +36,7 @@ interface AuthContextType {
   unreadNotifications: number;
   markNotificationsAsRead: () => void;
   updateUserActivity: () => void;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -109,10 +110,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [users, setUsers] = useState<User[]>(defaultUsers);
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Buscar mensagens do Supabase ao carregar
   useEffect(() => {
     const fetchMessages = async () => {
+      if (!supabase) {
+        console.warn("Supabase client not available.");
+        setIsLoading(false);
+        return;
+      }
       const { data, error } = await supabase
         .from("messages")
         .select("*")
@@ -125,10 +132,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }))
         );
       }
+      setIsLoading(false);
     };
     fetchMessages();
 
     // Escutar mensagens em tempo real
+    if (!supabase) {
+      console.warn("Supabase client not available for realtime.");
+      return;
+    }
     const channel = supabase
       .channel("messages-realtime")
       .on(
@@ -162,9 +174,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      if (channel && supabase) {
+        supabase.removeChannel(channel);
+      }
     };
-  }, []);
+  }, [user, supabase]);
 
   // Atualizar atividade do usuário a cada 30 segundos
   useEffect(() => {
@@ -295,7 +309,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const sendMessage = async (content: string, mentions: string[]) => {
-    if (!user) return;
+    if (!user || !supabase) return;
     const newMessage = {
       sender_id: user.id,
       sender_name: user.name,
@@ -328,6 +342,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         unreadNotifications,
         markNotificationsAsRead,
         updateUserActivity,
+        isLoading,
       }}
     >
       {children}
