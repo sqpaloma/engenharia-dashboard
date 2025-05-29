@@ -1,39 +1,45 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { useAuth } from "@/lib/auth-context"
-import { LogIn, Users } from "lucide-react"
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/lib/auth-context";
+import { LogIn, Users } from "lucide-react";
 
 export function LoginForm() {
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const { login } = useAuth()
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
-    setIsLoading(true)
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
 
     try {
-      const success = await login(username, password)
+      const success = await login(username, password);
       if (!success) {
-        setError("Usuário ou senha incorretos")
+        setError("Usuário ou senha incorretos");
       }
     } catch (err) {
-      setError("Erro ao fazer login")
+      setError("Erro ao fazer login");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-slate-100">
@@ -45,7 +51,6 @@ export function LoginForm() {
             </div>
           </div>
           <h1 className="text-3xl font-bold text-slate-800">Consultoria</h1>
-          <p className="text-slate-600">Sistema de Gestão Operacional</p>
         </div>
 
         <Card>
@@ -54,7 +59,6 @@ export function LoginForm() {
               <LogIn className="w-5 h-5" />
               Fazer Login
             </CardTitle>
-            <CardDescription>Entre com suas credenciais para acessar o sistema</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -92,24 +96,9 @@ export function LoginForm() {
                 {isLoading ? "Entrando..." : "Entrar"}
               </Button>
             </form>
-
-            <div className="mt-6 p-4 bg-slate-50 rounded-lg">
-              <h4 className="font-medium text-sm mb-2">Usuários de demonstração:</h4>
-              <div className="text-xs text-slate-600 space-y-1">
-                <p>
-                  <strong>Admin:</strong> admin / admin123
-                </p>
-                <p>
-                  <strong>Engenheiros:</strong> paloma, giovanni, lucas, marcelo / [nome]123
-                </p>
-                <p>
-                  <strong>Consultores:</strong> consultor1, consultor2 / consultor123
-                </p>
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>
     </div>
-  )
+  );
 }

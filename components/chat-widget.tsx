@@ -13,6 +13,37 @@ import { MessageCircle, Send, X, Users, Bell } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
+interface ChatHeaderProps {
+  onToggleUserList: () => void;
+  onClose: () => void;
+  showUserList: boolean;
+}
+
+function ChatHeader({
+  onToggleUserList,
+  onClose,
+  showUserList,
+}: ChatHeaderProps) {
+  return (
+    <CardHeader className="pb-3">
+      <div className="flex items-center justify-between">
+        <CardTitle className="text-lg flex items-center gap-2">
+          <MessageCircle className="w-5 h-5" />
+          Chat da Equipe
+        </CardTitle>
+        <div className="flex gap-2">
+          <Button variant="ghost" size="sm" onClick={onToggleUserList}>
+            <Users className="w-4 h-4" />
+          </Button>
+          <Button variant="ghost" size="sm" onClick={onClose}>
+            <X className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
+    </CardHeader>
+  );
+}
+
 export function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
@@ -181,30 +212,11 @@ export function ChatWidget() {
               isMobile ? "rounded-none" : ""
             }`}
           >
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <MessageCircle className="w-5 h-5" />
-                  Chat da Equipe
-                </CardTitle>
-                <div className="flex gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setShowUserList(!showUserList)}
-                  >
-                    <Users className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
+            <ChatHeader
+              onToggleUserList={() => setShowUserList(!showUserList)}
+              onClose={() => setIsOpen(false)}
+              showUserList={showUserList}
+            />
 
             <CardContent className="flex-1 flex flex-col p-0">
               {/* User List */}
