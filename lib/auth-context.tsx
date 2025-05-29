@@ -137,18 +137,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         (payload) => {
           if (payload.eventType === "INSERT") {
             const msg = payload.new;
-            setChatMessages((prev) => [
-              ...prev,
-              {
-                id: msg.id,
-                senderId: msg.sender_id,
-                senderName: msg.sender_name,
-                content: msg.content,
-                mentions: msg.mentions,
-                timestamp: new Date(msg.timestamp),
-                isPrivate: msg.is_private,
-              },
-            ]);
+            const newMsg = {
+              id: msg.id,
+              senderId: msg.sender_id,
+              senderName: msg.sender_name,
+              content: msg.content,
+              mentions: msg.mentions,
+              timestamp: new Date(msg.timestamp),
+              isPrivate: msg.is_private,
+            };
+            setChatMessages((prev) => [...prev, newMsg]);
+
+            // Notificação: se o usuário for mencionado ou for mensagem privada para ele
+            if (
+              user &&
+              ((newMsg.isPrivate && newMsg.mentions.includes(user.username)) ||
+                (!newMsg.isPrivate && newMsg.mentions.includes(user.username)))
+            ) {
+              setUnreadNotifications((prev) => prev + 1);
+            }
           }
         }
       )
