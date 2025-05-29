@@ -253,26 +253,7 @@ export function ChatPage() {
       // Tela de conversa (chat geral ou privado)
       return (
         <div className="h-screen flex flex-col bg-white">
-          <div className="flex items-center p-4 border-b gap-2 sticky top-0 bg-white z-10">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowChatMobile(false)}
-            >
-              <svg
-                width="24"
-                height="24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-arrow-left"
-              >
-                <path d="M19 12H5" />
-                <path d="m12 19-7-7 7-7" />
-              </svg>
-            </Button>
+          <div className="flex items-center justify-center p-4 border-b sticky top-0 bg-white z-10">
             <span className="font-bold text-lg">
               {selectedUser
                 ? users.find((u) => u.id === selectedUser)?.name

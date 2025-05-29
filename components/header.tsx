@@ -70,7 +70,9 @@ export function Header() {
               <BarChart3 className="h-6 w-6 text-white" />
             </div>
             <div className="hidden sm:block">
-              <h1 className="text-xl font-bold text-slate-800">Consultoria</h1>
+              <h1 className="text-xl font-normal text-slate-800">
+                Consultoria
+              </h1>
             </div>
           </Link>
 
@@ -83,8 +85,12 @@ export function Header() {
                 <Button
                   key={item.href}
                   asChild
-                  variant={active ? "default" : "ghost"}
-                  className="relative"
+                  variant="ghost"
+                  className={`relative px-4 py-2 rounded-none bg-transparent shadow-none border-0 ${
+                    active
+                      ? "border-b-2 border-blue-600 text-blue-700 font-semibold"
+                      : "text-slate-700"
+                  }`}
                 >
                   <Link
                     href={item.href}
