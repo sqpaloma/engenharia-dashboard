@@ -3,6 +3,7 @@
 import type React from "react";
 import { createContext, useContext, useState, useEffect } from "react";
 import { getSupabaseClient } from "@/lib/supabaseClient";
+import { useRouter } from "next/navigation";
 
 export interface User {
   id: string;
@@ -111,6 +112,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+
+  const router = useRouter();
 
   // Buscar mensagens do Supabase ao carregar
   useEffect(() => {
@@ -315,6 +318,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     localStorage.removeItem("auth-user");
     localStorage.removeItem("admin-auth"); // Limpar auth admin também
+
+    // Redirect to login page
+    router.push("/login");
   };
 
   const sendMessage = async (content: string, mentions: string[]) => {

@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/lib/auth-context";
+import { useChat } from "@/hooks/useChat";
 import {
   MessageCircle,
   Send,
@@ -43,15 +44,14 @@ export function ChatPage() {
   const [isMobile, setIsMobile] = useState(false);
   const [showChatMobile, setShowChatMobile] = useState(false);
 
+  const { user, logout } = useAuth();
   const {
-    user,
-    users,
     chatMessages,
     sendMessage,
     unreadNotifications,
     markNotificationsAsRead,
-    logout,
-  } = useAuth();
+    users,
+  } = useChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 

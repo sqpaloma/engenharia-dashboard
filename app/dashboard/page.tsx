@@ -100,13 +100,19 @@ function DashboardPageInner() {
 
   // Filtrar dados para o setor atual
   const followUpsSetor = followUpData.filter((item) =>
-    departamento.responsaveis.includes(item.engenheiro)
+    departamento.responsaveis
+      .map((name) => name.toLowerCase())
+      .includes(item.engenheiro.toLowerCase())
   );
   const devolucoesSetor = devolucaoData.filter((item) =>
-    departamento.responsaveis.includes(item.engenheiro)
+    departamento.responsaveis
+      .map((name) => name.toLowerCase())
+      .includes(item.engenheiro.toLowerCase())
   );
   const movimentacoesSetor = movimentacaoData.filter((item) =>
-    departamento.responsaveis.includes(item.engenheiro)
+    departamento.responsaveis
+      .map((name) => name.toLowerCase())
+      .includes(item.engenheiro.toLowerCase())
   );
 
   // Calcular métricas
@@ -193,12 +199,14 @@ function DashboardPageInner() {
 
   // Dados para gráficos
   const dadosPorResponsavel = departamento.responsaveis.map((resp) => {
-    const followUps = followUpsSetor.filter((item) => item.engenheiro === resp);
+    const followUps = followUpsSetor.filter(
+      (item) => item.engenheiro.toLowerCase() === resp.toLowerCase()
+    );
     const devolucoes = devolucoesSetor.filter(
-      (item) => item.engenheiro === resp
+      (item) => item.engenheiro.toLowerCase() === resp.toLowerCase()
     );
     const movimentacoes = movimentacoesSetor.filter(
-      (item) => item.engenheiro === resp
+      (item) => item.engenheiro.toLowerCase() === resp.toLowerCase()
     );
 
     return {
