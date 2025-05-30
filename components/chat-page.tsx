@@ -48,6 +48,7 @@ export function ChatPage() {
     sendMessage,
     unreadNotifications,
     markNotificationsAsRead,
+    logout,
   } = useAuth();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -252,7 +253,7 @@ export function ChatPage() {
     } else {
       // Tela de conversa (chat geral ou privado)
       return (
-        <div className="h-screen flex flex-col bg-white">
+        <div className="h-screen flex flex-col bg-white relative">
           <div className="flex items-center justify-center p-4 border-b sticky top-0 bg-white z-10">
             <span className="font-bold text-lg">
               {selectedUser
@@ -316,132 +317,131 @@ export function ChatPage() {
 
   // DESKTOP: layout split view
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex bg-slate-50 w-full">
-        {/* Sidebar com usuários */}
-        {showUserList && (
-          <div className="w-80 bg-white border-r border-slate-200 flex flex-col">
-            <div className="p-4 border-b border-slate-200">
-              <h2 className="text-lg font-semibold mb-3">Chat da Equipe</h2>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
-                <Input
-                  placeholder="Buscar conversas..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
+    <div className="h-screen flex bg-slate-50">
+      {/* Sidebar com usuários */}
+      {showUserList && (
+        <div className="w-80 bg-white border-r border-slate-200 flex flex-col">
+          <div className="p-4 border-b border-slate-200">
+            <h2 className="text-lg font-semibold mb-3">Chat da Equipe</h2>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+              <Input
+                placeholder="Buscar conversas..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
             </div>
+          </div>
 
-            <div className="flex-1 overflow-hidden">
-              <div className="p-4">
-                <h3 className="text-sm font-medium text-slate-600 mb-3">
-                  USUÁRIOS ({onlineUsers.length})
-                </h3>
-                <div className="space-y-2">
+          <div className="flex-1 overflow-hidden">
+            <div className="p-4">
+              <h3 className="text-sm font-medium text-slate-600 mb-3">
+                USUÁRIOS ({onlineUsers.length})
+              </h3>
+              <div className="space-y-2">
+                <div
+                  className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors ${
+                    selectedUser === null
+                      ? "bg-blue-100 text-blue-700"
+                      : "hover:bg-slate-100"
+                  }`}
+                  onClick={() => setSelectedUser(null)}
+                >
+                  <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
+                    <Users className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-sm">Todos</p>
+                    <p className="text-xs text-slate-500">Chat geral</p>
+                  </div>
+                  {unreadNotifications > 0 && selectedUser === null && (
+                    <Badge variant="destructive" className="text-xs">
+                      {unreadNotifications}
+                    </Badge>
+                  )}
+                </div>
+
+                {onlineUsers.map((u) => (
                   <div
+                    key={u.id}
                     className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors ${
-                      selectedUser === null
+                      selectedUser === u.id
                         ? "bg-blue-100 text-blue-700"
                         : "hover:bg-slate-100"
                     }`}
-                    onClick={() => setSelectedUser(null)}
+                    onClick={() => setSelectedUser(u.id)}
                   >
-                    <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
-                      <Users className="w-4 h-4 text-white" />
+                    <div className="relative">
+                      <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
+                        <span className="text-white text-sm font-medium">
+                          {u.name.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
                     </div>
                     <div className="flex-1">
-                      <p className="font-medium text-sm">Todos</p>
-                      <p className="text-xs text-slate-500">Chat geral</p>
+                      <p className="font-medium text-sm">{u.name}</p>
+                      <p className="text-xs text-slate-500">@{u.username}</p>
                     </div>
-                    {unreadNotifications > 0 && selectedUser === null && (
-                      <Badge variant="destructive" className="text-xs">
-                        {unreadNotifications}
-                      </Badge>
-                    )}
-                  </div>
-
-                  {onlineUsers.map((u) => (
-                    <div
-                      key={u.id}
-                      className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors ${
-                        selectedUser === u.id
-                          ? "bg-blue-100 text-blue-700"
-                          : "hover:bg-slate-100"
-                      }`}
-                      onClick={() => setSelectedUser(u.id)}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        insertMention(u.username);
+                      }}
                     >
-                      <div className="relative">
-                        <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
-                          <span className="text-white text-sm font-medium">
-                            {u.name.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 border-2 border-white rounded-full"></div>
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-sm">{u.name}</p>
-                        <p className="text-xs text-slate-500">@{u.username}</p>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 w-6 p-0"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          insertMention(u.username);
-                        }}
-                      >
-                        <span className="text-xs">@</span>
-                      </Button>
-                    </div>
-                  ))}
-                </div>
+                      <span className="text-xs">@</span>
+                    </Button>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Área principal do chat */}
-        <div className="flex-1 flex flex-col">
-          {/* Header do chat */}
-          <div className="bg-white border-b border-slate-200 p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowUserList(!showUserList)}
-              >
-                <Users className="w-4 h-4" />
-              </Button>
-              <div>
-                <h1 className="text-lg font-semibold">
-                  {selectedUser
-                    ? users.find((u) => u.id === selectedUser)?.name
-                    : "Chat Geral"}
-                </h1>
-                <p className="text-sm text-slate-500">
-                  {selectedUser
-                    ? `Conversa privada com @${
-                        users.find((u) => u.id === selectedUser)?.username
-                      }`
-                    : `${onlineUsers.length + 1} membros online`}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm">
-                <Search className="w-4 h-4" />
-              </Button>
-              <Button variant="ghost" size="sm">
-                <Settings className="w-4 h-4" />
-              </Button>
+      {/* Área principal do chat */}
+      <div className="flex-1 flex flex-col">
+        {/* Header do chat */}
+        <div className="bg-white border-b border-slate-200 p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowUserList(!showUserList)}
+            >
+              <Users className="w-4 h-4" />
+            </Button>
+            <div>
+              <h1 className="text-lg font-semibold">
+                {selectedUser
+                  ? users.find((u) => u.id === selectedUser)?.name
+                  : "Chat Geral"}
+              </h1>
+              <p className="text-sm text-slate-500">
+                {selectedUser
+                  ? `Conversa privada com @${
+                      users.find((u) => u.id === selectedUser)?.username
+                    }`
+                  : `${onlineUsers.length + 1} membros online`}
+              </p>
             </div>
           </div>
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm">
+              <Search className="w-4 h-4" />
+            </Button>
+            <Button variant="ghost" size="sm">
+              <Settings className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
 
-          {/* Mensagens */}
-          <div className="flex-1 min-h-0">
+        {/* Mensagens */}
+        <div className="flex-1 overflow-hidden min-h-0">
+          <ScrollArea className="h-full">
             <div className="p-4 space-y-4 min-h-0">
               {filteredMessages.length === 0 ? (
                 <div className="text-center py-12">
@@ -566,61 +566,61 @@ export function ChatPage() {
               )}
               <div ref={messagesEndRef} />
             </div>
-          </div>
+          </ScrollArea>
+        </div>
 
-          {/* Input de mensagem */}
-          <div className="bg-white border-t border-slate-200 p-4">
-            <div className="flex gap-3">
-              <div className="flex-1">
-                <div className="relative">
-                  <Textarea
-                    ref={textareaRef}
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder={
-                      selectedUser
-                        ? `Mensagem para ${
-                            users.find((u) => u.id === selectedUser)?.name
-                          }...`
-                        : "Digite sua mensagem... Use @username para mencionar alguém"
-                    }
-                    className="min-h-[60px] max-h-[120px] resize-none pr-12"
-                    rows={1}
-                  />
-                  <div className="absolute bottom-2 right-2 flex gap-1">
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                      <Smile className="w-4 h-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                      <Paperclip className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between mt-2">
-                  <div className="flex gap-2">
-                    {onlineUsers.slice(0, 5).map((u) => (
-                      <Button
-                        key={u.id}
-                        variant="outline"
-                        size="sm"
-                        className="h-6 text-xs"
-                        onClick={() => insertMention(u.username)}
-                      >
-                        @{u.username}
-                      </Button>
-                    ))}
-                  </div>
+        {/* Input de mensagem */}
+        <div className="bg-white border-t border-slate-200 p-4">
+          <div className="flex gap-3">
+            <div className="flex-1">
+              <div className="relative">
+                <Textarea
+                  ref={textareaRef}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder={
+                    selectedUser
+                      ? `Mensagem para ${
+                          users.find((u) => u.id === selectedUser)?.name
+                        }...`
+                      : "Digite sua mensagem... Use @username para mencionar alguém"
+                  }
+                  className="min-h-[60px] max-h-[120px] resize-none pr-12"
+                  rows={1}
+                />
+                <div className="absolute bottom-2 right-2 flex gap-1">
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <Smile className="w-4 h-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                    <Paperclip className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
-              <Button
-                onClick={handleSendMessage}
-                disabled={!message.trim()}
-                className="self-end"
-              >
-                <Send className="w-4 h-4" />
-              </Button>
+              <div className="flex items-center justify-between mt-2">
+                <div className="flex gap-2">
+                  {onlineUsers.slice(0, 5).map((u) => (
+                    <Button
+                      key={u.id}
+                      variant="outline"
+                      size="sm"
+                      className="h-6 text-xs"
+                      onClick={() => insertMention(u.username)}
+                    >
+                      @{u.username}
+                    </Button>
+                  ))}
+                </div>
+              </div>
             </div>
+            <Button
+              onClick={handleSendMessage}
+              disabled={!message.trim()}
+              className="self-end"
+            >
+              <Send className="w-4 h-4" />
+            </Button>
           </div>
         </div>
       </div>
