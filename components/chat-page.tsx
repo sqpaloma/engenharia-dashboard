@@ -241,9 +241,6 @@ export function ChatPage() {
                   }}
                 >
                   <span className="font-medium">Todos</span>
-                  <span className="ml-2 text-xs text-slate-500">
-                    Chat geral
-                  </span>
                 </Button>
                 {users
                   .filter((u) => u.id !== user.id)
@@ -377,7 +374,6 @@ export function ChatPage() {
                   </div>
                   <div className="flex-1">
                     <p className="font-medium text-sm">Todos</p>
-                    <p className="text-xs text-slate-500">Chat geral</p>
                   </div>
                   {unreadNotifications > 0 && selectedUser === null && (
                     <Badge variant="destructive" className="text-xs">
@@ -444,13 +440,6 @@ export function ChatPage() {
                   ? users.find((u) => u.id === selectedUser)?.name
                   : "Chat Geral"}
               </h1>
-              <p className="text-sm text-slate-500">
-                {selectedUser
-                  ? `Conversa privada com @${
-                      users.find((u) => u.id === selectedUser)?.username
-                    }`
-                  : `${onlineUsers.length + 1} membros online`}
-              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
