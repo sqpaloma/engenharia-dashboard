@@ -30,6 +30,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import type { User } from "@/lib/auth-context";
+import type { ChatMessage } from "@/lib/auth-context";
 
 export function ChatPage() {
   const [message, setMessage] = useState("");
@@ -82,6 +84,7 @@ export function ChatPage() {
   const handleSendMessage = () => {
     if (!message.trim()) return;
 
+    console.log("Attempting to send message:", message);
     // Extrair menções (@username)
     const mentionRegex = /@(\w+)/g;
     const mentions: string[] = [];
@@ -146,16 +149,31 @@ export function ChatPage() {
     return filteredMessages;
   };
 
-  const formatMessageContent = (content: string, mentions: string[]) => {
+  const formatMessageContent = (
+    content: string,
+    mentions: string[],
+    currentUserId: string,
+    senderId: string,
+    allUsers: User[]
+  ) => {
     let formattedContent = content;
 
     mentions.forEach((username) => {
-      const mentionedUser = users.find((u) => u.username === username);
-      if (mentionedUser) {
-        formattedContent = formattedContent.replace(
-          new RegExp(`@${username}`, "g"),
-          `<span class="bg-blue-100 text-blue-800 px-1 rounded font-medium">@${username}</span>`
+      // Only format if the current user is the sender or is mentioned
+      const currentUserIsSenderOrMentioned =
+        currentUserId === senderId ||
+        mentions.includes(
+          allUsers.find((u) => u.id === currentUserId)?.username || ""
         );
+
+      if (currentUserIsSenderOrMentioned) {
+        const mentionedUser = allUsers.find((u) => u.username === username);
+        if (mentionedUser) {
+          formattedContent = formattedContent.replace(
+            new RegExp(`@${username}`, "g"),
+            `<span class="bg-blue-100 text-blue-800 px-1 rounded font-medium">@${username}</span>`
+          );
+        }
       }
     });
 
@@ -282,7 +300,13 @@ export function ChatPage() {
                   <div
                     className="text-sm"
                     dangerouslySetInnerHTML={{
-                      __html: formatMessageContent(msg.content, msg.mentions),
+                      __html: formatMessageContent(
+                        msg.content,
+                        msg.mentions,
+                        user.id,
+                        msg.senderId,
+                        users
+                      ),
                     }}
                   />
                   <div className="text-[10px] opacity-70 mt-1">
@@ -554,7 +578,10 @@ export function ChatPage() {
                             dangerouslySetInnerHTML={{
                               __html: formatMessageContent(
                                 msg.content,
-                                msg.mentions
+                                msg.mentions,
+                                user.id,
+                                msg.senderId,
+                                users
                               ),
                             }}
                           />

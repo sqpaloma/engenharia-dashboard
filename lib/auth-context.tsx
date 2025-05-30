@@ -130,6 +130,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           data.map((msg: any) => ({
             ...msg,
             timestamp: new Date(msg.timestamp),
+            senderName: msg.sender_name || "",
           }))
         );
       }
@@ -151,16 +152,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         (payload: any) => {
           if (payload.eventType === "INSERT") {
             const msg = payload.new;
+            console.log("Realtime INSERT payload:", payload);
             const newMsg = {
               id: msg.id,
               senderId: msg.sender_id,
-              senderName: msg.sender_name,
+              senderName: msg.sender_name || "",
               content: msg.content,
               mentions: msg.mentions,
               timestamp: new Date(msg.timestamp),
               isPrivate: msg.is_private,
             };
-            setChatMessages((prev) => [...prev, newMsg]);
+            setChatMessages((prev) => {
+              const newState = [...prev, newMsg];
+              console.log("chatMessages state updated:", newState);
+              return newState;
+            });
 
             // Notificação: se o usuário for mencionado ou for mensagem privada para ele
             if (
