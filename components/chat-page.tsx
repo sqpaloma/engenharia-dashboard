@@ -130,10 +130,14 @@ export function ChatPage() {
     if (selectedUser) {
       filteredMessages = filteredMessages.filter(
         (msg) =>
-          msg.senderId === selectedUser ||
-          msg.mentions.includes(
-            users.find((u) => u.id === selectedUser)?.username || ""
-          )
+          // Include private messages between the current user and the selected user
+          msg.isPrivate &&
+          ((msg.senderId === user.id &&
+            msg.mentions.includes(
+              users.find((u) => u.id === selectedUser)?.username || ""
+            )) ||
+            (msg.senderId === selectedUser &&
+              msg.mentions.includes(user.username)))
       );
     }
 
