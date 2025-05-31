@@ -64,6 +64,34 @@ function DashboardPageInner() {
   const [filtroAtivo, setFiltroAtivo] = useState<FilterType>("todos");
   const router = useRouter();
 
+  // Helper function to check if a date is more than 5 business days ago
+  const isLate = (prazo: string): boolean => {
+    try {
+      const dueDate = new Date(prazo);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      let businessDaysPassed = 0;
+      let currentDate = new Date(dueDate);
+
+      // Ensure we start counting from the day after the due date
+      currentDate.setDate(currentDate.getDate() + 1);
+
+      while (currentDate <= today) {
+        const dayOfWeek = currentDate.getDay(); // 0 for Sunday, 6 for Saturday
+        if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+          businessDaysPassed++;
+        }
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+
+      return businessDaysPassed > 5;
+    } catch (error) {
+      console.error("Error calculating late status:", error);
+      return false; // Assume not late if date is invalid
+    }
+  };
+
   const departamento = DEPARTAMENTOS[setor];
 
   // Verificar se o usuário tem acesso a este departamento
@@ -116,7 +144,10 @@ function DashboardPageInner() {
   );
 
   // Calcular métricas
-  const totalFollowUps = followUpsSetor.length;
+  const followUpsAguardandoAprovacao = followUpsSetor.filter(
+    (item) => item.status === "AGUARDANDO APROVACAO CLIENTE"
+  );
+  const totalFollowUps = followUpsAguardandoAprovacao.length;
   const totalDevolucoes = devolucoesSetor.length;
   const totalMovimentacoes = movimentacoesSetor.length;
   const totalItens = totalFollowUps + totalDevolucoes + totalMovimentacoes;
@@ -164,7 +195,7 @@ function DashboardPageInner() {
         };
       default:
         return {
-          followUps: followUpsSetor,
+          followUps: followUpsAguardandoAprovacao,
           devolucoes: devolucoesSetor,
           movimentacoes: movimentacoesSetor,
         };
@@ -199,7 +230,7 @@ function DashboardPageInner() {
 
   // Dados para gráficos
   const dadosPorResponsavel = departamento.responsaveis.map((resp) => {
-    const followUps = followUpsSetor.filter(
+    const followUps = followUpsAguardandoAprovacao.filter(
       (item) => item.engenheiro.toLowerCase() === resp.toLowerCase()
     );
     const devolucoes = devolucoesSetor.filter(
@@ -492,6 +523,12 @@ function DashboardPageInner() {
                         <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                           {item.tipo}
                         </span>
+                        {item.tipo.toLowerCase().includes("análise") &&
+                          isLate(item.prazo) && (
+                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                              Atrasado
+                            </span>
+                          )}
                         <span
                           className={`px-2 py-1 rounded-full text-xs font-medium ${
                             item.prioridade === "Alta"
@@ -516,7 +553,8 @@ function DashboardPageInner() {
                       </div>
                       <div>
                         <p>
-                          <strong>Prazo:</strong> {item.prazo}
+                          <strong>Prazo:</strong>{" "}
+                          {new Date(item.prazo).toLocaleDateString("pt-BR")}
                         </p>
                         {item.observacoes && (
                           <p>

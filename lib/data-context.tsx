@@ -22,6 +22,7 @@ export interface FollowUpItem {
   prazo: string;
   prioridade: string;
   observacoes: string;
+  status: string;
 }
 
 export interface DevolucaoItem {
