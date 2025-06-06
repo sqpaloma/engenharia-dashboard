@@ -76,6 +76,22 @@ import { useAuth } from "@/lib/auth-context";
 import Link from "next/link";
 import { Header } from "@/components/header";
 
+type EngenheiroOrcamentos = {
+  nome: string;
+  totalOrcamentos: number;
+  valor: number;
+};
+
+type EngenheiroFaturamento = {
+  nome: string;
+  totalFaturamento: number;
+  vendasServicos: number;
+  vendasNormais: number;
+  totalItens: number;
+};
+
+type Engenheiro = EngenheiroOrcamentos | EngenheiroFaturamento;
+
 const COLORS = ["#3b82f6", "#10b981", "#ef4444", "#f59e0b", "#8884d8"];
 
 export default function AdminPage() {
@@ -809,7 +825,7 @@ export default function AdminPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
-                        {topEngenheiros.map((eng, index) => (
+                        {topEngenheiros.map((eng: Engenheiro, index) => (
                           <div
                             key={eng.nome}
                             className="flex items-center justify-between p-3 bg-slate-50 rounded-lg"
@@ -833,8 +849,17 @@ export default function AdminPage() {
                                 {filtroOrcamentos === "faturamento" && (
                                   <p className="text-xs text-slate-600">
                                     Serviços:{" "}
-                                    {formatCurrency(eng.vendasServicos)} |
-                                    Normal: {formatCurrency(eng.vendasNormais)}
+                                    {formatCurrency(
+                                      "vendasServicos" in eng
+                                        ? eng.vendasServicos
+                                        : 0
+                                    )}{" "}
+                                    | Normal:{" "}
+                                    {formatCurrency(
+                                      "vendasNormais" in eng
+                                        ? eng.vendasNormais
+                                        : 0
+                                    )}
                                   </p>
                                 )}
                               </div>
@@ -843,19 +868,28 @@ export default function AdminPage() {
                               {filtroOrcamentos === "orcamentos" ? (
                                 <>
                                   <p className="font-bold">
-                                    {eng.totalOrcamentos} orçamentos
+                                    {"totalOrcamentos" in eng
+                                      ? eng.totalOrcamentos
+                                      : 0}{" "}
+                                    orçamentos
                                   </p>
                                   <p className="text-sm text-slate-600">
-                                    {formatCurrency(eng.valor)}
+                                    {formatCurrency(
+                                      "valor" in eng ? eng.valor : 0
+                                    )}
                                   </p>
                                 </>
                               ) : (
                                 <>
                                   <p className="font-bold">
-                                    {formatCurrency(eng.totalFaturamento)}
+                                    {formatCurrency(
+                                      "totalFaturamento" in eng
+                                        ? eng.totalFaturamento
+                                        : 0
+                                    )}
                                   </p>
                                   <p className="text-sm text-slate-600">
-                                    {eng.totalItens}
+                                    {"totalItens" in eng ? eng.totalItens : 0}
                                   </p>
                                 </>
                               )}

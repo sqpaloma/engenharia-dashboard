@@ -1,7 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { Calendar } from "@/components/ui/calendar";
+import { useState, useMemo, useCallback } from "react";
+import {
+  Calendar as BigCalendar,
+  momentLocalizer,
+  Views,
+} from "react-big-calendar";
+import moment from "moment";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import "moment/locale/pt-br";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,6 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,47 +28,99 @@ import { Calendar as CalendarIcon, Plus } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
+moment.locale("pt-br");
+const localizer = momentLocalizer(moment);
+
 interface Task {
   id: string;
   title: string;
   description: string;
-  date: Date;
+  start: Date;
+  end: Date;
 }
 
 export default function CalendarioPage() {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(
-    new Date()
-  );
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [myEvents, setMyEvents] = useState<Task[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newTask, setNewTask] = useState({
     title: "",
     description: "",
+    date: "",
+    startTime: "",
+    endTime: "",
   });
+  const [selectedSlot, setSelectedSlot] = useState<{
+    start: Date;
+    end: Date;
+  } | null>(null);
+
+  const handleSelectSlot = useCallback(
+    (slotInfo: { start: Date; end: Date }) => {
+      setSelectedSlot(slotInfo);
+      setNewTask({
+        title: "",
+        description: "",
+        date: format(slotInfo.start, "yyyy-MM-dd"),
+        startTime: format(slotInfo.start, "HH:mm"),
+        endTime: format(slotInfo.end, "HH:mm"),
+      });
+      setIsModalOpen(true);
+    },
+    []
+  );
+
+  const handleSelectEvent = useCallback((event: Task) => {
+    // Aqui você pode implementar a visualização ou edição de uma tarefa existente
+    // Por enquanto, apenas exibimos um alerta simples
+    alert(
+      `Detalhes da Tarefa:\nTítulo: ${event.title}\nDescrição: ${
+        event.description
+      }\nInício: ${event.start.toLocaleString()}\nFim: ${event.end.toLocaleString()}`
+    );
+  }, []);
 
   const handleAddTask = () => {
-    if (!selectedDate || !newTask.title) return;
+    if (
+      !newTask.title ||
+      !newTask.date ||
+      !newTask.startTime ||
+      !newTask.endTime ||
+      !selectedSlot
+    )
+      return;
+
+    const startDateTime = moment(
+      `${newTask.date} ${newTask.startTime}`
+    ).toDate();
+    const endDateTime = moment(`${newTask.date} ${newTask.endTime}`).toDate();
 
     const task: Task = {
       id: Date.now().toString(),
       title: newTask.title,
       description: newTask.description,
-      date: selectedDate,
+      start: startDateTime,
+      end: endDateTime,
     };
 
-    setTasks([...tasks, task]);
-    setNewTask({ title: "", description: "" });
+    setMyEvents([...myEvents, task]);
+    setNewTask({
+      title: "",
+      description: "",
+      date: "",
+      startTime: "",
+      endTime: "",
+    });
     setIsModalOpen(false);
+    setSelectedSlot(null);
   };
 
-  const getTasksForDate = (date: Date) => {
-    return tasks.filter(
-      (task) =>
-        task.date.getDate() === date.getDate() &&
-        task.date.getMonth() === date.getMonth() &&
-        task.date.getFullYear() === date.getFullYear()
-    );
-  };
+  const { defaultDate, scrollToTime } = useMemo(
+    () => ({
+      defaultDate: new Date(),
+      scrollToTime: moment().set({ h: 9, m: 0, s: 0 }).toDate(),
+    }),
+    []
+  );
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -76,108 +137,108 @@ export default function CalendarioPage() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CalendarIcon className="w-5 h-5" />
-                Calendário
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={setSelectedDate}
-                locale={ptBR}
-                className="rounded-md border"
-              />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                <span>Tarefas do Dia</span>
-                <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-                  <DialogTrigger asChild>
-                    <Button size="sm">
-                      <Plus className="w-4 h-4 mr-2" />
-                      Nova Tarefa
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Adicionar Nova Tarefa</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4 py-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="title">Título</Label>
-                        <Input
-                          id="title"
-                          value={newTask.title}
-                          onChange={(e) =>
-                            setNewTask({ ...newTask, title: e.target.value })
-                          }
-                          placeholder="Digite o título da tarefa"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="description">Descrição</Label>
-                        <Textarea
-                          id="description"
-                          value={newTask.description}
-                          onChange={(e) =>
-                            setNewTask({
-                              ...newTask,
-                              description: e.target.value,
-                            })
-                          }
-                          placeholder="Digite a descrição da tarefa"
-                        />
-                      </div>
-                      <div className="text-sm text-slate-500">
-                        Data selecionada:{" "}
-                        {selectedDate
-                          ? format(selectedDate, "dd 'de' MMMM 'de' yyyy", {
-                              locale: ptBR,
-                            })
-                          : "Nenhuma data selecionada"}
-                      </div>
-                      <Button onClick={handleAddTask} className="w-full">
-                        Adicionar Tarefa
-                      </Button>
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {selectedDate ? (
-                <div className="space-y-4">
-                  {getTasksForDate(selectedDate).length > 0 ? (
-                    getTasksForDate(selectedDate).map((task) => (
-                      <Card key={task.id} className="p-4">
-                        <h3 className="font-semibold text-lg mb-2">
-                          {task.title}
-                        </h3>
-                        <p className="text-slate-600">{task.description}</p>
-                      </Card>
-                    ))
-                  ) : (
-                    <p className="text-slate-500 text-center py-4">
-                      Nenhuma tarefa para este dia
-                    </p>
-                  )}
-                </div>
-              ) : (
-                <p className="text-slate-500 text-center py-4">
-                  Selecione uma data no calendário
-                </p>
-              )}
-            </CardContent>
-          </Card>
+        <div className="h-[600px]">
+          <BigCalendar
+            localizer={localizer}
+            events={myEvents}
+            defaultView={Views.WEEK}
+            views={[Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA]}
+            defaultDate={defaultDate}
+            scrollToTime={scrollToTime}
+            onSelectEvent={handleSelectEvent}
+            onSelectSlot={handleSelectSlot}
+            selectable
+            culture="pt-br"
+            messages={{
+              allDay: "Dia Inteiro",
+              previous: "Anterior",
+              next: "Próximo",
+              today: "Hoje",
+              month: "Mês",
+              week: "Semana",
+              day: "Dia",
+              agenda: "Agenda",
+              date: "Data",
+              time: "Hora",
+              event: "Evento",
+              noEventsInRange: "Sem eventos neste período.",
+            }}
+          />
         </div>
+
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Adicionar Nova Tarefa</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="title">Título</Label>
+                <Input
+                  id="title"
+                  value={newTask.title}
+                  onChange={(e) =>
+                    setNewTask({ ...newTask, title: e.target.value })
+                  }
+                  placeholder="Digite o título da tarefa"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="description">Descrição</Label>
+                <Textarea
+                  id="description"
+                  value={newTask.description}
+                  onChange={(e) =>
+                    setNewTask({ ...newTask, description: e.target.value })
+                  }
+                  placeholder="Digite a descrição da tarefa"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="date">Data</Label>
+                  <Input
+                    id="date"
+                    type="date"
+                    value={newTask.date}
+                    onChange={(e) =>
+                      setNewTask({ ...newTask, date: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="startTime">Início</Label>
+                    <Input
+                      id="startTime"
+                      type="time"
+                      value={newTask.startTime}
+                      onChange={(e) =>
+                        setNewTask({ ...newTask, startTime: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="endTime">Fim</Label>
+                    <Input
+                      id="endTime"
+                      type="time"
+                      value={newTask.endTime}
+                      onChange={(e) =>
+                        setNewTask({ ...newTask, endTime: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button onClick={handleAddTask} className="w-full">
+                Adicionar Tarefa
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

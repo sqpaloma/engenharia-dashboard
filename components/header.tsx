@@ -38,13 +38,6 @@ export function Header() {
       requiresAuth: true,
     },
     {
-      href: "/calendario",
-      label: "Calendário",
-      icon: Calendar,
-      description: "Gerenciar tarefas",
-      requiresAuth: true,
-    },
-    {
       href: "/admin",
       label: "Área Administrativa",
       icon: Shield,
