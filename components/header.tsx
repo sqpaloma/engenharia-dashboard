@@ -1,19 +1,27 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Badge } from "@/components/ui/badge"
-import { BarChart3, BookOpen, Shield, Menu, Home, MessageCircle } from "lucide-react"
-import { useAuth } from "@/lib/auth-context"
-import { UserMenu } from "./user-menu"
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Badge } from "@/components/ui/badge";
+import {
+  BarChart3,
+  BookOpen,
+  Shield,
+  Menu,
+  Home,
+  MessageCircle,
+  Calendar,
+} from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
+import { UserMenu } from "./user-menu";
 
 export function Header() {
-  const pathname = usePathname()
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const { user, unreadNotifications } = useAuth()
+  const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, unreadNotifications } = useAuth();
 
   const navItems = [
     {
@@ -30,6 +38,13 @@ export function Header() {
       requiresAuth: true,
     },
     {
+      href: "/calendario",
+      label: "Calendário",
+      icon: Calendar,
+      description: "Gerenciar tarefas",
+      requiresAuth: true,
+    },
+    {
       href: "/admin",
       label: "Área Administrativa",
       icon: Shield,
@@ -43,18 +58,18 @@ export function Header() {
       icon: BookOpen,
       description: "Guia de utilização",
     },
-  ]
+  ];
 
   const isActive = (href: string) => {
-    if (href === "/") return pathname === "/"
-    return pathname.startsWith(href)
-  }
+    if (href === "/") return pathname === "/";
+    return pathname.startsWith(href);
+  };
 
   const filteredNavItems = navItems.filter((item) => {
-    if (item.requiresAuth && !user) return false
-    if (item.adminOnly && user?.role !== "admin") return false
-    return true
-  })
+    if (item.requiresAuth && !user) return false;
+    if (item.adminOnly && user?.role !== "admin") return false;
+    return true;
+  });
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -66,18 +81,28 @@ export function Header() {
             </div>
             <div className="hidden sm:block">
               <h1 className="text-xl font-bold text-slate-800">Consultoria</h1>
-              <p className="text-xs text-slate-500">Sistema de Gestão Operacional</p>
+              <p className="text-xs text-slate-500">
+                Sistema de Gestão Operacional
+              </p>
             </div>
           </Link>
 
           <nav className="hidden md:flex items-center space-x-1">
             {filteredNavItems.map((item) => {
-              const Icon = item.icon
-              const active = isActive(item.href)
+              const Icon = item.icon;
+              const active = isActive(item.href);
 
               return (
-                <Button key={item.href} asChild variant={active ? "default" : "ghost"} className="relative">
-                  <Link href={item.href} className="flex items-center space-x-2">
+                <Button
+                  key={item.href}
+                  asChild
+                  variant={active ? "default" : "ghost"}
+                  className="relative"
+                >
+                  <Link
+                    href={item.href}
+                    className="flex items-center space-x-2"
+                  >
                     <Icon className="h-4 w-4" />
                     <span>{item.label}</span>
                     {item.href === "/chat" && unreadNotifications > 0 && (
@@ -90,7 +115,7 @@ export function Header() {
                     )}
                   </Link>
                 </Button>
-              )
+              );
             })}
           </nav>
 
@@ -114,14 +139,18 @@ export function Header() {
                         <BarChart3 className="h-6 w-6 text-white" />
                       </div>
                       <div>
-                        <h2 className="font-semibold text-slate-800">Consultoria</h2>
-                        <p className="text-sm text-slate-500">Sistema de Gestão</p>
+                        <h2 className="font-semibold text-slate-800">
+                          Consultoria
+                        </h2>
+                        <p className="text-sm text-slate-500">
+                          Sistema de Gestão
+                        </p>
                       </div>
                     </div>
 
                     {filteredNavItems.map((item) => {
-                      const Icon = item.icon
-                      const active = isActive(item.href)
+                      const Icon = item.icon;
+                      const active = isActive(item.href);
 
                       return (
                         <Link
@@ -129,23 +158,31 @@ export function Header() {
                           href={item.href}
                           onClick={() => setIsMobileMenuOpen(false)}
                           className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${
-                            active ? "bg-blue-100 text-blue-700" : "hover:bg-slate-100 text-slate-700"
+                            active
+                              ? "bg-blue-100 text-blue-700"
+                              : "hover:bg-slate-100 text-slate-700"
                           }`}
                         >
                           <Icon className="h-5 w-5" />
                           <div className="flex-1">
                             <div className="flex items-center space-x-2">
                               <span className="font-medium">{item.label}</span>
-                              {item.href === "/chat" && unreadNotifications > 0 && (
-                                <Badge variant="destructive" className="text-xs">
-                                  {unreadNotifications}
-                                </Badge>
-                              )}
+                              {item.href === "/chat" &&
+                                unreadNotifications > 0 && (
+                                  <Badge
+                                    variant="destructive"
+                                    className="text-xs"
+                                  >
+                                    {unreadNotifications}
+                                  </Badge>
+                                )}
                             </div>
-                            <p className="text-sm text-slate-500">{item.description}</p>
+                            <p className="text-sm text-slate-500">
+                              {item.description}
+                            </p>
                           </div>
                         </Link>
-                      )
+                      );
                     })}
                   </div>
                 </SheetContent>
@@ -155,5 +192,5 @@ export function Header() {
         </div>
       </div>
     </header>
-  )
+  );
 }

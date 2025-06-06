@@ -1,25 +1,66 @@
-"use client"
+"use client";
 
-import type React from "react"
-import * as XLSX from "xlsx"
+import type React from "react";
+import * as XLSX from "xlsx";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
-import { useToast } from "@/hooks/use-toast"
-import { useData } from "@/lib/data-context"
-import { Upload, LogOut, Filter, AlertTriangle, FileSpreadsheet, Users, BarChart, Home } from "lucide-react"
-import { processExcelFile, processFollowUpFile, processDevolucaoFile, processMovimentacaoFile } from "@/lib/excel-utils"
-import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
-import { DollarSign, Wrench, Package } from "lucide-react"
-import { isServico, formatCurrency } from "@/lib/utils"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { useData } from "@/lib/data-context";
+import {
+  Upload,
+  LogOut,
+  Filter,
+  AlertTriangle,
+  FileSpreadsheet,
+  Users,
+  BarChart,
+  Home,
+} from "lucide-react";
+import {
+  processExcelFile,
+  processFollowUpFile,
+  processDevolucaoFile,
+  processMovimentacaoFile,
+} from "@/lib/excel-utils";
+import {
+  BarChart as RechartsBarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import { DollarSign, Wrench, Package } from "lucide-react";
+import { isServico, formatCurrency } from "@/lib/utils";
 
 // Adicionar os imports necessários para o Dialog no topo do arquivo
 import {
@@ -29,20 +70,23 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog"
-import { InfoIcon } from "lucide-react"
-import { useAuth } from "@/lib/auth-context"
-import Link from "next/link"
+} from "@/components/ui/dialog";
+import { InfoIcon } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
+import Link from "next/link";
+import { Header } from "@/components/header";
 
-const COLORS = ["#3b82f6", "#10b981", "#ef4444", "#f59e0b", "#8884d8"]
+const COLORS = ["#3b82f6", "#10b981", "#ef4444", "#f59e0b", "#8884d8"];
 
 export default function AdminPage() {
-  const { user, logout } = useAuth()
-  const [isUploading, setIsUploading] = useState(false)
-  const [uploadError, setUploadError] = useState<string | null>(null)
-  const [filtroEngenheiro, setFiltroEngenheiro] = useState("todos")
-  const [filtroOrcamentos, setFiltroOrcamentos] = useState<"orcamentos" | "faturamento">("orcamentos")
-  const [filtroStatus, setFiltroStatus] = useState("todos")
+  const { user, logout } = useAuth();
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [filtroEngenheiro, setFiltroEngenheiro] = useState("todos");
+  const [filtroOrcamentos, setFiltroOrcamentos] = useState<
+    "orcamentos" | "faturamento"
+  >("orcamentos");
+  const [filtroStatus, setFiltroStatus] = useState("todos");
   const {
     data,
     setData,
@@ -52,20 +96,26 @@ export default function AdminPage() {
     setDevolucaoData,
     movimentacaoData,
     setMovimentacaoData,
-  } = useData()
-  const { toast } = useToast()
-  const router = useRouter()
+  } = useData();
+  const { toast } = useToast();
+  const router = useRouter();
 
   // Adicionar estados para controlar os dialogs logo após os outros estados
-  const [isAdminInfoOpen, setIsAdminInfoOpen] = useState(false)
-  const [isEngineerInfoOpen, setIsEngineerInfoOpen] = useState(false)
+  const [isAdminInfoOpen, setIsAdminInfoOpen] = useState(false);
+  const [isEngineerInfoOpen, setIsEngineerInfoOpen] = useState(false);
 
-  const [isUploadingFollowUp, setIsUploadingFollowUp] = useState(false)
-  const [isUploadingDevolucao, setIsUploadingDevolucao] = useState(false)
-  const [isUploadingMovimentacao, setIsUploadingMovimentacao] = useState(false)
-  const [followUpUploadError, setFollowUpUploadError] = useState<string | null>(null)
-  const [devolucaoUploadError, setDevolucaoUploadError] = useState<string | null>(null)
-  const [movimentacaoUploadError, setMovimentacaoUploadError] = useState<string | null>(null)
+  const [isUploadingFollowUp, setIsUploadingFollowUp] = useState(false);
+  const [isUploadingDevolucao, setIsUploadingDevolucao] = useState(false);
+  const [isUploadingMovimentacao, setIsUploadingMovimentacao] = useState(false);
+  const [followUpUploadError, setFollowUpUploadError] = useState<string | null>(
+    null
+  );
+  const [devolucaoUploadError, setDevolucaoUploadError] = useState<
+    string | null
+  >(null);
+  const [movimentacaoUploadError, setMovimentacaoUploadError] = useState<
+    string | null
+  >(null);
 
   if (!user || user.role !== "admin") {
     return (
@@ -73,7 +123,9 @@ export default function AdminPage() {
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle>Acesso Negado</CardTitle>
-            <CardDescription>Você precisa ser um administrador para acessar esta área</CardDescription>
+            <CardDescription>
+              Você precisa ser um administrador para acessar esta área
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <Button asChild className="w-full">
@@ -82,45 +134,55 @@ export default function AdminPage() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-    setUploadError(null)
-    setIsUploading(true)
+    setUploadError(null);
+    setIsUploading(true);
 
     toast({
       title: "Processando...",
       description: `Lendo arquivo: ${file.name}`,
-    })
+    });
 
     try {
-      console.log("Iniciando processamento do arquivo:", file.name, "Tamanho:", file.size)
-      const newData = await processExcelFile(file)
+      console.log(
+        "Iniciando processamento do arquivo:",
+        file.name,
+        "Tamanho:",
+        file.size
+      );
+      const newData = await processExcelFile(file);
 
-      setData(newData)
+      setData(newData);
       toast({
         title: "Sucesso!",
         description: `${newData.length} registros administrativos carregados com sucesso.`,
-      })
+      });
 
-      event.target.value = ""
+      event.target.value = "";
     } catch (error) {
-      console.error("Erro detalhado:", error)
-      const errorMessage = error instanceof Error ? error.message : "Erro desconhecido ao processar arquivo"
-      setUploadError(errorMessage)
+      console.error("Erro detalhado:", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Erro desconhecido ao processar arquivo";
+      setUploadError(errorMessage);
       toast({
         title: "Erro ao processar arquivo",
         description: errorMessage,
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsUploading(false)
+      setIsUploading(false);
     }
-  }
+  };
 
   const handleExampleDownload = () => {
     const ws = XLSX.utils.aoa_to_sheet([
@@ -130,217 +192,267 @@ export default function AdminPage() {
       ["ORÇ-002", "OS-124", "Cliente B", "Giovanni", 2200, "Venda de Serviços"],
       ["ORÇ-003", "OS-125", "Cliente C", "Lucas", 1800, "Venda de Serviços"],
       ["ORÇ-004", "OS-126", "Cliente D", "Marcelo", 500, "Venda Normal"],
-    ])
+    ]);
 
-    const wb = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(wb, ws, "Dados")
-    XLSX.writeFile(wb, "exemplo-planilha-administrativa.xlsx")
-  }
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Dados");
+    XLSX.writeFile(wb, "exemplo-planilha-administrativa.xlsx");
+  };
 
   const handleClearAdminData = () => {
-    if (confirm("Tem certeza que deseja limpar todos os dados administrativos? Esta ação não pode ser desfeita.")) {
-      setData([])
+    if (
+      confirm(
+        "Tem certeza que deseja limpar todos os dados administrativos? Esta ação não pode ser desfeita."
+      )
+    ) {
+      setData([]);
       toast({
         title: "Dados administrativos limpos!",
         description: "Todos os dados administrativos foram removidos.",
-      })
+      });
     }
-  }
+  };
 
   const handleClearAllData = () => {
     if (
       confirm(
-        "Tem certeza que deseja limpar TODOS os dados (administrativos, follow-ups, devoluções e movimentações)? Esta ação não pode ser desfeita.",
+        "Tem certeza que deseja limpar TODOS os dados (administrativos, follow-ups, devoluções e movimentações)? Esta ação não pode ser desfeita."
       )
     ) {
-      setData([])
-      setFollowUpData([])
-      setDevolucaoData([])
-      setMovimentacaoData([])
+      setData([]);
+      setFollowUpData([]);
+      setDevolucaoData([]);
+      setMovimentacaoData([]);
       toast({
         title: "Todos os dados limpos!",
         description: "Todos os dados foram removidos do sistema.",
         variant: "destructive",
-      })
+      });
     }
-  }
+  };
 
-  const handleFollowUpFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
+  const handleFollowUpFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-    setFollowUpUploadError(null)
-    setIsUploadingFollowUp(true)
+    setFollowUpUploadError(null);
+    setIsUploadingFollowUp(true);
 
     toast({
       title: "Processando follow-ups...",
       description: `Lendo arquivo: ${file.name}`,
-    })
+    });
 
     try {
-      const newData = await processFollowUpFile(file)
-      setFollowUpData(newData)
+      const newData = await processFollowUpFile(file);
+      setFollowUpData(newData);
       toast({
         title: "Sucesso!",
         description: `${newData.length} follow-ups carregados com sucesso.`,
-      })
-      event.target.value = ""
+      });
+      event.target.value = "";
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Erro desconhecido ao processar arquivo"
-      setFollowUpUploadError(errorMessage)
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Erro desconhecido ao processar arquivo";
+      setFollowUpUploadError(errorMessage);
       toast({
         title: "Erro ao processar arquivo de follow-up",
         description: errorMessage,
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsUploadingFollowUp(false)
+      setIsUploadingFollowUp(false);
     }
-  }
+  };
 
-  const handleDevolucaoFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
+  const handleDevolucaoFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-    setDevolucaoUploadError(null)
-    setIsUploadingDevolucao(true)
+    setDevolucaoUploadError(null);
+    setIsUploadingDevolucao(true);
 
     toast({
       title: "Processando devoluções...",
       description: `Lendo arquivo: ${file.name}`,
-    })
+    });
 
     try {
-      const newData = await processDevolucaoFile(file)
-      setDevolucaoData(newData)
+      const newData = await processDevolucaoFile(file);
+      setDevolucaoData(newData);
       toast({
         title: "Sucesso!",
         description: `${newData.length} devoluções carregadas com sucesso.`,
-      })
-      event.target.value = ""
+      });
+      event.target.value = "";
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Erro desconhecido ao processar arquivo"
-      setDevolucaoUploadError(errorMessage)
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Erro desconhecido ao processar arquivo";
+      setDevolucaoUploadError(errorMessage);
       toast({
         title: "Erro ao processar arquivo de devoluções",
         description: errorMessage,
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsUploadingDevolucao(false)
+      setIsUploadingDevolucao(false);
     }
-  }
+  };
 
-  const handleMovimentacaoFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
+  const handleMovimentacaoFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-    setMovimentacaoUploadError(null)
-    setIsUploadingMovimentacao(true)
+    setMovimentacaoUploadError(null);
+    setIsUploadingMovimentacao(true);
 
     toast({
       title: "Processando movimentações...",
       description: `Lendo arquivo: ${file.name}`,
-    })
+    });
 
     try {
-      const newData = await processMovimentacaoFile(file)
-      setMovimentacaoData(newData)
+      const newData = await processMovimentacaoFile(file);
+      setMovimentacaoData(newData);
       toast({
         title: "Sucesso!",
         description: `${newData.length} movimentações carregadas com sucesso.`,
-      })
-      event.target.value = ""
+      });
+      event.target.value = "";
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Erro desconhecido ao processar arquivo"
-      setMovimentacaoUploadError(errorMessage)
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Erro desconhecido ao processar arquivo";
+      setMovimentacaoUploadError(errorMessage);
       toast({
         title: "Erro ao processar arquivo de movimentações",
         description: errorMessage,
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsUploadingMovimentacao(false)
+      setIsUploadingMovimentacao(false);
     }
-  }
+  };
 
   const handleClearFollowUpData = () => {
-    if (confirm("Tem certeza que deseja limpar todos os dados de follow-up? Esta ação não pode ser desfeita.")) {
-      setFollowUpData([])
+    if (
+      confirm(
+        "Tem certeza que deseja limpar todos os dados de follow-up? Esta ação não pode ser desfeita."
+      )
+    ) {
+      setFollowUpData([]);
       toast({
         title: "Dados de follow-up limpos!",
         description: "Todos os dados de follow-up foram removidos.",
-      })
+      });
     }
-  }
+  };
 
   const handleClearDevolucaoData = () => {
-    if (confirm("Tem certeza que deseja limpar todos os dados de devoluções? Esta ação não pode ser desfeita.")) {
-      setDevolucaoData([])
+    if (
+      confirm(
+        "Tem certeza que deseja limpar todos os dados de devoluções? Esta ação não pode ser desfeita."
+      )
+    ) {
+      setDevolucaoData([]);
       toast({
         title: "Dados de devoluções limpos!",
         description: "Todos os dados de devoluções foram removidos.",
-      })
+      });
     }
-  }
+  };
 
   const handleClearMovimentacaoData = () => {
-    if (confirm("Tem certeza que deseja limpar todos os dados de movimentações? Esta ação não pode ser desfeita.")) {
-      setMovimentacaoData([])
+    if (
+      confirm(
+        "Tem certeza que deseja limpar todos os dados de movimentações? Esta ação não pode ser desfeita."
+      )
+    ) {
+      setMovimentacaoData([]);
       toast({
         title: "Dados de movimentações limpos!",
         description: "Todos os dados de movimentações foram removidos.",
-      })
+      });
     }
-  }
+  };
 
   // Dados administrativos filtrados
   const dadosFiltrados =
-    filtroEngenheiro === "todos" ? data : data.filter((item) => item.responsavel === filtroEngenheiro)
+    filtroEngenheiro === "todos"
+      ? data
+      : data.filter((item) => item.responsavel === filtroEngenheiro);
 
-  const engenheiros = [...new Set(data.map((item) => item.responsavel))].filter(Boolean)
+  const engenheiros = [...new Set(data.map((item) => item.responsavel))].filter(
+    Boolean
+  );
 
   // Dados dos engenheiros filtrados
-  const dadosEngenheirosFiltrados = []
-  const engenheirosProj = []
-  const statusList = []
+  const dadosEngenheirosFiltrados = [];
+  const engenheirosProj = [];
+  const statusList = [];
 
   // Usar dados filtrados para os gráficos administrativos
   const dadosPorEngenheiro = engenheiros
     .filter((eng) => filtroEngenheiro === "todos" || eng === filtroEngenheiro)
     .map((eng) => {
-      const itens = dadosFiltrados.filter((item) => item.responsavel === eng)
-      const orcamentosUnicos = new Set(itens.map((item) => item.orcamento))
-      const faturamentoTotal = itens.reduce((sum, item) => sum + (item.valor || 0), 0)
+      const itens = dadosFiltrados.filter((item) => item.responsavel === eng);
+      const orcamentosUnicos = new Set(itens.map((item) => item.orcamento));
+      const faturamentoTotal = itens.reduce(
+        (sum, item) => sum + (item.valor || 0),
+        0
+      );
 
       return {
         nome: eng,
         orcamentos: orcamentosUnicos.size,
         faturamento: faturamentoTotal,
         totalItens: itens.length,
-      }
-    })
+      };
+    });
 
   // Dados para o ranking de engenheiros por orçamentos
   const engenheirosPorOrcamentos = engenheiros.map((eng) => {
-    const itensEngenheiro = data.filter((item) => item.responsavel === eng)
-    const orcamentosUnicos = new Set(itensEngenheiro.map((item) => item.orcamento))
+    const itensEngenheiro = data.filter((item) => item.responsavel === eng);
+    const orcamentosUnicos = new Set(
+      itensEngenheiro.map((item) => item.orcamento)
+    );
 
     return {
       nome: eng,
       totalOrcamentos: orcamentosUnicos.size,
       valor: itensEngenheiro.reduce((sum, item) => sum + (item.valor || 0), 0),
-    }
-  })
+    };
+  });
 
   // Dados para o ranking de engenheiros por faturamento
   const engenheirosPorFaturamento = engenheiros.map((eng) => {
-    const itensEngenheiro = data.filter((item) => item.responsavel === eng)
-    const vendasServicos = itensEngenheiro.filter((item) => isServico(item.descricao))
-    const vendasNormais = itensEngenheiro.filter((item) => item.descricao?.toLowerCase().includes("venda normal"))
+    const itensEngenheiro = data.filter((item) => item.responsavel === eng);
+    const vendasServicos = itensEngenheiro.filter((item) =>
+      isServico(item.descricao)
+    );
+    const vendasNormais = itensEngenheiro.filter((item) =>
+      item.descricao?.toLowerCase().includes("venda normal")
+    );
 
-    const totalVendasServicos = vendasServicos.reduce((sum, item) => sum + (item.valor || 0), 0)
-    const totalVendasNormais = vendasNormais.reduce((sum, item) => sum + (item.valor || 0), 0)
+    const totalVendasServicos = vendasServicos.reduce(
+      (sum, item) => sum + (item.valor || 0),
+      0
+    );
+    const totalVendasNormais = vendasNormais.reduce(
+      (sum, item) => sum + (item.valor || 0),
+      0
+    );
 
     return {
       nome: eng,
@@ -348,13 +460,17 @@ export default function AdminPage() {
       vendasServicos: totalVendasServicos,
       vendasNormais: totalVendasNormais,
       totalItens: vendasServicos.length + vendasNormais.length,
-    }
-  })
+    };
+  });
 
   const topEngenheiros =
     filtroOrcamentos === "orcamentos"
-      ? [...engenheirosPorOrcamentos].sort((a, b) => b.totalOrcamentos - a.totalOrcamentos).slice(0, 5)
-      : [...engenheirosPorFaturamento].sort((a, b) => b.totalFaturamento - a.totalFaturamento).slice(0, 5)
+      ? [...engenheirosPorOrcamentos]
+          .sort((a, b) => b.totalOrcamentos - a.totalOrcamentos)
+          .slice(0, 5)
+      : [...engenheirosPorFaturamento]
+          .sort((a, b) => b.totalFaturamento - a.totalFaturamento)
+          .slice(0, 5);
 
   const dadosDistribuicaoTipo = [
     {
@@ -365,20 +481,25 @@ export default function AdminPage() {
       name: "Peças",
       value: dadosFiltrados.filter((item) => !isServico(item.descricao)).length,
     },
-  ]
+  ];
 
   // Estatísticas dos projetos dos engenheiros (dados independentes)
-  const projetosPorStatus = []
+  const projetosPorStatus = [];
 
-  const projetosPorEngenheiro = []
+  const projetosPorEngenheiro = [];
 
   return (
     <div className="min-h-screen bg-slate-50">
+      <Header />
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-slate-800 mb-2">Área Administrativa</h1>
-            <p className="text-slate-600">Gestão completa dos dados operacionais</p>
+            <h1 className="text-3xl font-bold text-slate-800 mb-2">
+              Área Administrativa
+            </h1>
+            <p className="text-slate-600">
+              Gestão completa dos dados operacionais
+            </p>
           </div>
           <div className="flex gap-2">
             <Button asChild variant="outline">
@@ -391,7 +512,11 @@ export default function AdminPage() {
               followUpData.length > 0 ||
               devolucaoData.length > 0 ||
               movimentacaoData.length > 0) && (
-              <Button onClick={handleClearAllData} variant="destructive" size="sm">
+              <Button
+                onClick={handleClearAllData}
+                variant="destructive"
+                size="sm"
+              >
                 <AlertTriangle className="w-4 h-4 mr-2" />
                 Limpar Todos os Dados
               </Button>
@@ -405,11 +530,17 @@ export default function AdminPage() {
 
         <Tabs defaultValue="dados-administrativos" className="space-y-6">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="dados-administrativos" className="flex items-center gap-2">
+            <TabsTrigger
+              value="dados-administrativos"
+              className="flex items-center gap-2"
+            >
               <BarChart className="w-4 h-4" />
               Dados Administrativos
             </TabsTrigger>
-            <TabsTrigger value="dados-engenheiros" className="flex items-center gap-2">
+            <TabsTrigger
+              value="dados-engenheiros"
+              className="flex items-center gap-2"
+            >
               <Users className="w-4 h-4" />
               Dados dos Engenheiros
             </TabsTrigger>
@@ -435,7 +566,8 @@ export default function AdminPage() {
                   </Button>
                 </div>
                 <CardDescription>
-                  Dados para análise administrativa e dashboards gerenciais (orçamentos, faturamento, etc.)
+                  Dados para análise administrativa e dashboards gerenciais
+                  (orçamentos, faturamento, etc.)
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -450,7 +582,9 @@ export default function AdminPage() {
                       disabled={isUploading}
                       className="cursor-pointer"
                     />
-                    <p className="text-xs text-slate-500">Formatos aceitos: .xlsx, .xls</p>
+                    <p className="text-xs text-slate-500">
+                      Formatos aceitos: .xlsx, .xls
+                    </p>
                   </div>
 
                   {isUploading && (
@@ -465,7 +599,9 @@ export default function AdminPage() {
                       <div className="flex items-start gap-2">
                         <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
                         <div>
-                          <p className="font-medium">Erro ao processar arquivo:</p>
+                          <p className="font-medium">
+                            Erro ao processar arquivo:
+                          </p>
                           <p>{uploadError}</p>
                         </div>
                       </div>
@@ -503,12 +639,17 @@ export default function AdminPage() {
                     <div className="flex gap-4">
                       <div className="space-y-2">
                         <Label>Filtrar por Engenheiro</Label>
-                        <Select value={filtroEngenheiro} onValueChange={setFiltroEngenheiro}>
+                        <Select
+                          value={filtroEngenheiro}
+                          onValueChange={setFiltroEngenheiro}
+                        >
                           <SelectTrigger className="w-48">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="todos">Todos os engenheiros</SelectItem>
+                            <SelectItem value="todos">
+                              Todos os engenheiros
+                            </SelectItem>
                             {engenheiros.map((eng) => (
                               <SelectItem key={eng} value={eng}>
                                 {eng}
@@ -524,44 +665,64 @@ export default function AdminPage() {
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                   <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Total de Registros</CardTitle>
+                      <CardTitle className="text-sm font-medium">
+                        Total de Registros
+                      </CardTitle>
                       <BarChart className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold">{dadosFiltrados.length}</div>
+                      <div className="text-2xl font-bold">
+                        {dadosFiltrados.length}
+                      </div>
                       <p className="text-xs text-muted-foreground">
-                        {filtroEngenheiro === "todos" ? "Todos os itens processados" : `Itens de ${filtroEngenheiro}`}
+                        {filtroEngenheiro === "todos"
+                          ? "Todos os itens processados"
+                          : `Itens de ${filtroEngenheiro}`}
                       </p>
                     </CardContent>
                   </Card>
 
                   <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Total Serviços</CardTitle>
+                      <CardTitle className="text-sm font-medium">
+                        Total Serviços
+                      </CardTitle>
                       <Wrench className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">
-                        {dadosFiltrados.filter((item) => isServico(item.descricao)).length}
+                        {
+                          dadosFiltrados.filter((item) =>
+                            isServico(item.descricao)
+                          ).length
+                        }
                       </div>
                     </CardContent>
                   </Card>
 
                   <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Total Peças</CardTitle>
+                      <CardTitle className="text-sm font-medium">
+                        Total Peças
+                      </CardTitle>
                       <Package className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">
-                        {dadosFiltrados.filter((item) => !isServico(item.descricao)).length}
+                        {
+                          dadosFiltrados.filter(
+                            (item) => !isServico(item.descricao)
+                          ).length
+                        }
                       </div>
                     </CardContent>
                   </Card>
 
                   <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Valor Total Faturado</CardTitle>
+                      <CardTitle className="text-sm font-medium">
+                        Valor Total Faturado
+                      </CardTitle>
                       <DollarSign className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
@@ -570,13 +731,21 @@ export default function AdminPage() {
                           dadosFiltrados
                             .filter(
                               (item) =>
-                                isServico(item.descricao) || item.descricao?.toLowerCase().includes("venda normal"),
+                                isServico(item.descricao) ||
+                                item.descricao
+                                  ?.toLowerCase()
+                                  .includes("venda normal")
                             )
-                            .reduce((sum, item) => sum + (item.valor || 0), 0),
+                            .reduce((sum, item) => sum + (item.valor || 0), 0)
                         )}
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        {`De ${formatCurrency(dadosFiltrados.reduce((sum, item) => sum + (item.valor || 0), 0))} em orçamentos`}
+                        {`De ${formatCurrency(
+                          dadosFiltrados.reduce(
+                            (sum, item) => sum + (item.valor || 0),
+                            0
+                          )
+                        )} em orçamentos`}
                       </p>
                     </CardContent>
                   </Card>
@@ -594,8 +763,16 @@ export default function AdminPage() {
                           <XAxis dataKey="nome" />
                           <YAxis />
                           <Tooltip />
-                          <Bar dataKey="orcamentos" fill="#3b82f6" name="Orçamentos" />
-                          <Bar dataKey="faturamento" fill="#10b981" name="Faturamento (R$)" />
+                          <Bar
+                            dataKey="orcamentos"
+                            fill="#3b82f6"
+                            name="Orçamentos"
+                          />
+                          <Bar
+                            dataKey="faturamento"
+                            fill="#10b981"
+                            name="Faturamento (R$)"
+                          />
                         </RechartsBarChart>
                       </ResponsiveContainer>
                     </CardContent>
@@ -613,31 +790,40 @@ export default function AdminPage() {
                       </div>
                       <Select
                         value={filtroOrcamentos}
-                        onValueChange={(value) => setFiltroOrcamentos(value as "orcamentos" | "faturamento")}
+                        onValueChange={(value) =>
+                          setFiltroOrcamentos(
+                            value as "orcamentos" | "faturamento"
+                          )
+                        }
                       >
                         <SelectTrigger className="w-40">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="orcamentos">Orçamentos</SelectItem>
-                          <SelectItem value="faturamento">Faturamento</SelectItem>
+                          <SelectItem value="faturamento">
+                            Faturamento
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
                         {topEngenheiros.map((eng, index) => (
-                          <div key={eng.nome} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                          <div
+                            key={eng.nome}
+                            className="flex items-center justify-between p-3 bg-slate-50 rounded-lg"
+                          >
                             <div className="flex items-center gap-3">
                               <div
                                 className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold ${
                                   index === 0
                                     ? "bg-yellow-500"
                                     : index === 1
-                                      ? "bg-gray-400"
-                                      : index === 2
-                                        ? "bg-amber-600"
-                                        : "bg-slate-400"
+                                    ? "bg-gray-400"
+                                    : index === 2
+                                    ? "bg-amber-600"
+                                    : "bg-slate-400"
                                 }`}
                               >
                                 {index + 1}
@@ -646,8 +832,9 @@ export default function AdminPage() {
                                 <p className="font-medium">{eng.nome}</p>
                                 {filtroOrcamentos === "faturamento" && (
                                   <p className="text-xs text-slate-600">
-                                    Serviços: {formatCurrency(eng.vendasServicos)} | Normal:{" "}
-                                    {formatCurrency(eng.vendasNormais)}
+                                    Serviços:{" "}
+                                    {formatCurrency(eng.vendasServicos)} |
+                                    Normal: {formatCurrency(eng.vendasNormais)}
                                   </p>
                                 )}
                               </div>
@@ -655,13 +842,21 @@ export default function AdminPage() {
                             <div className="text-right">
                               {filtroOrcamentos === "orcamentos" ? (
                                 <>
-                                  <p className="font-bold">{eng.totalOrcamentos} orçamentos</p>
-                                  <p className="text-sm text-slate-600">{formatCurrency(eng.valor)}</p>
+                                  <p className="font-bold">
+                                    {eng.totalOrcamentos} orçamentos
+                                  </p>
+                                  <p className="text-sm text-slate-600">
+                                    {formatCurrency(eng.valor)}
+                                  </p>
                                 </>
                               ) : (
                                 <>
-                                  <p className="font-bold">{formatCurrency(eng.totalFaturamento)}</p>
-                                  <p className="text-sm text-slate-600">{eng.totalItens}</p>
+                                  <p className="font-bold">
+                                    {formatCurrency(eng.totalFaturamento)}
+                                  </p>
+                                  <p className="text-sm text-slate-600">
+                                    {eng.totalItens}
+                                  </p>
                                 </>
                               )}
                             </div>
@@ -675,7 +870,9 @@ export default function AdminPage() {
                 <Card>
                   <CardHeader>
                     <CardTitle>Dados Operacionais</CardTitle>
-                    <CardDescription>{dadosFiltrados.length} registros encontrados</CardDescription>
+                    <CardDescription>
+                      {dadosFiltrados.length} registros encontrados
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="overflow-x-auto">
@@ -697,7 +894,9 @@ export default function AdminPage() {
                               <TableCell>{item.os}</TableCell>
                               <TableCell>{item.nomeParceiro}</TableCell>
                               <TableCell>{item.responsavel}</TableCell>
-                              <TableCell>{formatCurrency(item.valor)}</TableCell>
+                              <TableCell>
+                                {formatCurrency(item.valor)}
+                              </TableCell>
                               <TableCell>{item.descricao}</TableCell>
                             </TableRow>
                           ))}
@@ -721,7 +920,8 @@ export default function AdminPage() {
                         Nenhum dado administrativo carregado
                       </h3>
                       <p className="text-slate-500 mb-4">
-                        Faça upload de uma planilha com os dados administrativos para começar.
+                        Faça upload de uma planilha com os dados administrativos
+                        para começar.
                       </p>
                     </div>
                   </div>
@@ -740,7 +940,10 @@ export default function AdminPage() {
                     <CardTitle>Upload de Follow-ups</CardTitle>
                   </div>
                 </div>
-                <CardDescription>Dados de análises, orçamentos, aguardando aprovação e em execução</CardDescription>
+                <CardDescription>
+                  Dados de análises, orçamentos, aguardando aprovação e em
+                  execução
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -754,13 +957,17 @@ export default function AdminPage() {
                       disabled={isUploadingFollowUp}
                       className="cursor-pointer"
                     />
-                    <p className="text-xs text-slate-500">Formatos aceitos: .xlsx, .xls</p>
+                    <p className="text-xs text-slate-500">
+                      Formatos aceitos: .xlsx, .xls
+                    </p>
                   </div>
 
                   {isUploadingFollowUp && (
                     <div className="flex items-center gap-2 text-blue-600">
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                      <span className="text-sm">Processando arquivo de follow-up...</span>
+                      <span className="text-sm">
+                        Processando arquivo de follow-up...
+                      </span>
                     </div>
                   )}
 
@@ -769,7 +976,9 @@ export default function AdminPage() {
                       <div className="flex items-start gap-2">
                         <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
                         <div>
-                          <p className="font-medium">Erro ao processar arquivo:</p>
+                          <p className="font-medium">
+                            Erro ao processar arquivo:
+                          </p>
                           <p>{followUpUploadError}</p>
                         </div>
                       </div>
@@ -802,7 +1011,9 @@ export default function AdminPage() {
                     <CardTitle>Upload de Devoluções Pendentes</CardTitle>
                   </div>
                 </div>
-                <CardDescription>Dados de equipamentos em processo de devolução</CardDescription>
+                <CardDescription>
+                  Dados de equipamentos em processo de devolução
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -816,13 +1027,17 @@ export default function AdminPage() {
                       disabled={isUploadingDevolucao}
                       className="cursor-pointer"
                     />
-                    <p className="text-xs text-slate-500">Formatos aceitos: .xlsx, .xls</p>
+                    <p className="text-xs text-slate-500">
+                      Formatos aceitos: .xlsx, .xls
+                    </p>
                   </div>
 
                   {isUploadingDevolucao && (
                     <div className="flex items-center gap-2 text-blue-600">
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                      <span className="text-sm">Processando arquivo de devoluções...</span>
+                      <span className="text-sm">
+                        Processando arquivo de devoluções...
+                      </span>
                     </div>
                   )}
 
@@ -831,7 +1046,9 @@ export default function AdminPage() {
                       <div className="flex items-start gap-2">
                         <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
                         <div>
-                          <p className="font-medium">Erro ao processar arquivo:</p>
+                          <p className="font-medium">
+                            Erro ao processar arquivo:
+                          </p>
                           <p>{devolucaoUploadError}</p>
                         </div>
                       </div>
@@ -864,12 +1081,16 @@ export default function AdminPage() {
                     <CardTitle>Upload de Movimentações Internas</CardTitle>
                   </div>
                 </div>
-                <CardDescription>Movimentações internas pendentes de orçamentos</CardDescription>
+                <CardDescription>
+                  Movimentações internas pendentes de orçamentos
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="movimentacao-file">Selecionar arquivo</Label>
+                    <Label htmlFor="movimentacao-file">
+                      Selecionar arquivo
+                    </Label>
                     <Input
                       id="movimentacao-file"
                       type="file"
@@ -878,13 +1099,17 @@ export default function AdminPage() {
                       disabled={isUploadingMovimentacao}
                       className="cursor-pointer"
                     />
-                    <p className="text-xs text-slate-500">Formatos aceitos: .xlsx, .xls</p>
+                    <p className="text-xs text-slate-500">
+                      Formatos aceitos: .xlsx, .xls
+                    </p>
                   </div>
 
                   {isUploadingMovimentacao && (
                     <div className="flex items-center gap-2 text-blue-600">
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                      <span className="text-sm">Processando arquivo de movimentações...</span>
+                      <span className="text-sm">
+                        Processando arquivo de movimentações...
+                      </span>
                     </div>
                   )}
 
@@ -893,7 +1118,9 @@ export default function AdminPage() {
                       <div className="flex items-start gap-2">
                         <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
                         <div>
-                          <p className="font-medium">Erro ao processar arquivo:</p>
+                          <p className="font-medium">
+                            Erro ao processar arquivo:
+                          </p>
                           <p>{movimentacaoUploadError}</p>
                         </div>
                       </div>
@@ -918,35 +1145,49 @@ export default function AdminPage() {
             </Card>
 
             {/* Visualizações dos dados */}
-            {(followUpData.length > 0 || devolucaoData.length > 0 || movimentacaoData.length > 0) && (
+            {(followUpData.length > 0 ||
+              devolucaoData.length > 0 ||
+              movimentacaoData.length > 0) && (
               <div className="grid md:grid-cols-3 gap-6">
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Follow-ups</CardTitle>
+                    <CardTitle className="text-sm font-medium">
+                      Follow-ups
+                    </CardTitle>
                     <Users className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{followUpData.length}</div>
+                    <div className="text-2xl font-bold">
+                      {followUpData.length}
+                    </div>
                   </CardContent>
                 </Card>
 
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Devoluções</CardTitle>
+                    <CardTitle className="text-sm font-medium">
+                      Devoluções
+                    </CardTitle>
                     <Package className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{devolucaoData.length}</div>
+                    <div className="text-2xl font-bold">
+                      {devolucaoData.length}
+                    </div>
                   </CardContent>
                 </Card>
 
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Movimentações</CardTitle>
+                    <CardTitle className="text-sm font-medium">
+                      Movimentações
+                    </CardTitle>
                     <Wrench className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{movimentacaoData.length}</div>
+                    <div className="text-2xl font-bold">
+                      {movimentacaoData.length}
+                    </div>
                   </CardContent>
                 </Card>
               </div>
@@ -957,7 +1198,9 @@ export default function AdminPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Follow-ups</CardTitle>
-                  <CardDescription>{followUpData.length} itens encontrados</CardDescription>
+                  <CardDescription>
+                    {followUpData.length} itens encontrados
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="overflow-x-auto">
@@ -977,13 +1220,17 @@ export default function AdminPage() {
                       <TableBody>
                         {followUpData.map((item, index) => (
                           <TableRow key={index}>
-                            <TableCell className="font-mono text-sm">{item.id}</TableCell>
+                            <TableCell className="font-mono text-sm">
+                              {item.id}
+                            </TableCell>
                             <TableCell>{item.cliente}</TableCell>
                             <TableCell>{item.engenheiro}</TableCell>
                             <TableCell>
                               <Badge variant="outline">{item.tipo}</Badge>
                             </TableCell>
-                            <TableCell className="max-w-xs truncate">{item.descricao}</TableCell>
+                            <TableCell className="max-w-xs truncate">
+                              {item.descricao}
+                            </TableCell>
                             <TableCell>{item.prazo}</TableCell>
                             <TableCell>
                               <Badge
@@ -991,14 +1238,16 @@ export default function AdminPage() {
                                   item.prioridade === "Alta"
                                     ? "destructive"
                                     : item.prioridade === "Média"
-                                      ? "secondary"
-                                      : "outline"
+                                    ? "secondary"
+                                    : "outline"
                                 }
                               >
                                 {item.prioridade}
                               </Badge>
                             </TableCell>
-                            <TableCell className="max-w-xs truncate">{item.observacoes}</TableCell>
+                            <TableCell className="max-w-xs truncate">
+                              {item.observacoes}
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -1012,7 +1261,9 @@ export default function AdminPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Devoluções Pendentes</CardTitle>
-                  <CardDescription>{devolucaoData.length} itens encontrados</CardDescription>
+                  <CardDescription>
+                    {devolucaoData.length} itens encontrados
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="overflow-x-auto">
@@ -1032,16 +1283,22 @@ export default function AdminPage() {
                       <TableBody>
                         {devolucaoData.map((item, index) => (
                           <TableRow key={index}>
-                            <TableCell className="font-mono text-sm">{item.id}</TableCell>
+                            <TableCell className="font-mono text-sm">
+                              {item.id}
+                            </TableCell>
                             <TableCell>{item.cliente}</TableCell>
                             <TableCell>{item.equipamento}</TableCell>
                             <TableCell>{item.engenheiro}</TableCell>
                             <TableCell>{item.dataEntrada}</TableCell>
-                            <TableCell className="max-w-xs truncate">{item.motivoDevolucao}</TableCell>
+                            <TableCell className="max-w-xs truncate">
+                              {item.motivoDevolucao}
+                            </TableCell>
                             <TableCell>
                               <Badge variant="secondary">{item.status}</Badge>
                             </TableCell>
-                            <TableCell className="max-w-xs truncate">{item.observacoes}</TableCell>
+                            <TableCell className="max-w-xs truncate">
+                              {item.observacoes}
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -1055,7 +1312,9 @@ export default function AdminPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Movimentações Internas</CardTitle>
-                  <CardDescription>{movimentacaoData.length} itens encontrados</CardDescription>
+                  <CardDescription>
+                    {movimentacaoData.length} itens encontrados
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="overflow-x-auto">
@@ -1075,7 +1334,9 @@ export default function AdminPage() {
                       <TableBody>
                         {movimentacaoData.map((item, index) => (
                           <TableRow key={index}>
-                            <TableCell className="font-mono text-sm">{item.id}</TableCell>
+                            <TableCell className="font-mono text-sm">
+                              {item.id}
+                            </TableCell>
                             <TableCell>{item.orcamento}</TableCell>
                             <TableCell>{item.cliente}</TableCell>
                             <TableCell>{item.engenheiro}</TableCell>
@@ -1084,7 +1345,9 @@ export default function AdminPage() {
                             <TableCell>
                               <Badge variant="secondary">{item.status}</Badge>
                             </TableCell>
-                            <TableCell className="max-w-xs truncate">{item.observacoes}</TableCell>
+                            <TableCell className="max-w-xs truncate">
+                              {item.observacoes}
+                            </TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -1094,23 +1357,28 @@ export default function AdminPage() {
               </Card>
             )}
 
-            {followUpData.length === 0 && devolucaoData.length === 0 && movimentacaoData.length === 0 && (
-              <Card>
-                <CardContent className="text-center py-12">
-                  <div className="space-y-4">
-                    <div className="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mx-auto">
-                      <Users className="w-8 h-8 text-slate-400" />
+            {followUpData.length === 0 &&
+              devolucaoData.length === 0 &&
+              movimentacaoData.length === 0 && (
+                <Card>
+                  <CardContent className="text-center py-12">
+                    <div className="space-y-4">
+                      <div className="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mx-auto">
+                        <Users className="w-8 h-8 text-slate-400" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-700 mb-2">
+                          Nenhum dado carregado
+                        </h3>
+                        <p className="text-slate-500 mb-4">
+                          Faça upload das planilhas de follow-up, devoluções e
+                          movimentações para começar.
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-slate-700 mb-2">Nenhum dado carregado</h3>
-                      <p className="text-slate-500 mb-4">
-                        Faça upload das planilhas de follow-up, devoluções e movimentações para começar.
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+                  </CardContent>
+                </Card>
+              )}
           </TabsContent>
         </Tabs>
 
@@ -1123,16 +1391,20 @@ export default function AdminPage() {
                 Formato de Dados Administrativos
               </DialogTitle>
               <DialogDescription>
-                Informações detalhadas sobre o formato esperado para upload de dados administrativos
+                Informações detalhadas sobre o formato esperado para upload de
+                dados administrativos
               </DialogDescription>
             </DialogHeader>
 
             <div className="space-y-4">
               <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                <h3 className="font-medium text-blue-800 mb-2">Estrutura da Planilha</h3>
+                <h3 className="font-medium text-blue-800 mb-2">
+                  Estrutura da Planilha
+                </h3>
                 <p className="text-blue-700 mb-2">
-                  A planilha deve conter uma linha de cabeçalho seguida pelas linhas de dados. O sistema tentará
-                  identificar automaticamente as colunas com base nos nomes dos cabeçalhos.
+                  A planilha deve conter uma linha de cabeçalho seguida pelas
+                  linhas de dados. O sistema tentará identificar automaticamente
+                  as colunas com base nos nomes dos cabeçalhos.
                 </p>
               </div>
 
@@ -1142,65 +1414,100 @@ export default function AdminPage() {
                   <div className="space-y-3">
                     <div className="bg-slate-50 p-3 rounded-lg">
                       <p className="font-semibold">Orçamento</p>
-                      <p className="text-sm text-slate-600">Número ou código do orçamento</p>
-                      <p className="text-xs text-slate-500 mt-1">Exemplos: ORÇ-001, 2023-0123</p>
+                      <p className="text-sm text-slate-600">
+                        Número ou código do orçamento
+                      </p>
+                      <p className="text-xs text-slate-500 mt-1">
+                        Exemplos: ORÇ-001, 2023-0123
+                      </p>
                     </div>
 
                     <div className="bg-slate-50 p-3 rounded-lg">
                       <p className="font-semibold">OS</p>
-                      <p className="text-sm text-slate-600">Número da ordem de serviço</p>
-                      <p className="text-xs text-slate-500 mt-1">Exemplos: OS-123, 456789</p>
+                      <p className="text-sm text-slate-600">
+                        Número da ordem de serviço
+                      </p>
+                      <p className="text-xs text-slate-500 mt-1">
+                        Exemplos: OS-123, 456789
+                      </p>
                     </div>
 
                     <div className="bg-slate-50 p-3 rounded-lg">
                       <p className="font-semibold">Nome Parceiro</p>
-                      <p className="text-sm text-slate-600">Nome do cliente ou parceiro</p>
-                      <p className="text-xs text-slate-500 mt-1">Exemplos: Cliente A, Empresa XYZ</p>
+                      <p className="text-sm text-slate-600">
+                        Nome do cliente ou parceiro
+                      </p>
+                      <p className="text-xs text-slate-500 mt-1">
+                        Exemplos: Cliente A, Empresa XYZ
+                      </p>
                     </div>
                   </div>
 
                   <div className="space-y-3">
                     <div className="bg-slate-50 p-3 rounded-lg">
                       <p className="font-semibold">Responsável</p>
-                      <p className="text-sm text-slate-600">Nome do engenheiro responsável</p>
-                      <p className="text-xs text-slate-500 mt-1">Exemplos: Paloma, Giovanni, Lucas, Marcelo</p>
+                      <p className="text-sm text-slate-600">
+                        Nome do engenheiro responsável
+                      </p>
+                      <p className="text-xs text-slate-500 mt-1">
+                        Exemplos: Paloma, Giovanni, Lucas, Marcelo
+                      </p>
                     </div>
 
                     <div className="bg-slate-50 p-3 rounded-lg">
                       <p className="font-semibold">Valor</p>
-                      <p className="text-sm text-slate-600">Valor monetário (em reais)</p>
-                      <p className="text-xs text-slate-500 mt-1">Exemplos: 1500, 2200.50, R$ 3.500,00</p>
+                      <p className="text-sm text-slate-600">
+                        Valor monetário (em reais)
+                      </p>
+                      <p className="text-xs text-slate-500 mt-1">
+                        Exemplos: 1500, 2200.50, R$ 3.500,00
+                      </p>
                     </div>
 
                     <div className="bg-slate-50 p-3 rounded-lg">
                       <p className="font-semibold">Descrição</p>
-                      <p className="text-sm text-slate-600">Tipo de operação ou descrição</p>
-                      <p className="text-xs text-slate-500 mt-1">Exemplos: Venda de Serviços, Venda Normal</p>
+                      <p className="text-sm text-slate-600">
+                        Tipo de operação ou descrição
+                      </p>
+                      <p className="text-xs text-slate-500 mt-1">
+                        Exemplos: Venda de Serviços, Venda Normal
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                <h3 className="font-medium text-yellow-800 mb-2">Observações Importantes</h3>
+                <h3 className="font-medium text-yellow-800 mb-2">
+                  Observações Importantes
+                </h3>
                 <ul className="list-disc pl-5 space-y-1 text-yellow-700">
-                  <li>O sistema tentará identificar as colunas mesmo que os nomes não sejam exatamente iguais</li>
                   <li>
-                    Valores monetários podem estar em diferentes formatos (com ou sem símbolo R$, com ponto ou vírgula)
+                    O sistema tentará identificar as colunas mesmo que os nomes
+                    não sejam exatamente iguais
                   </li>
                   <li>
-                    Para identificar serviços, o sistema busca palavras como "serviço" ou "venda de serviços" na
-                    descrição
+                    Valores monetários podem estar em diferentes formatos (com
+                    ou sem símbolo R$, com ponto ou vírgula)
                   </li>
                   <li>
-                    Cada linha representa um item individual, podendo haver múltiplos itens para o mesmo orçamento
+                    Para identificar serviços, o sistema busca palavras como
+                    "serviço" ou "venda de serviços" na descrição
+                  </li>
+                  <li>
+                    Cada linha representa um item individual, podendo haver
+                    múltiplos itens para o mesmo orçamento
                   </li>
                 </ul>
               </div>
             </div>
 
             <DialogFooter>
-              <Button variant="outline" onClick={handleExampleDownload} className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                onClick={handleExampleDownload}
+                className="flex items-center gap-2"
+              >
                 <FileSpreadsheet className="w-4 h-4" />
                 Baixar Exemplo
               </Button>
@@ -1210,5 +1517,5 @@ export default function AdminPage() {
         </Dialog>
       </div>
     </div>
-  )
+  );
 }

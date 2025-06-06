@@ -1,10 +1,11 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Header } from "@/components/header";
 import {
   BookOpen,
   CheckCircle,
@@ -15,26 +16,26 @@ import {
   Target,
   Printer,
   ChevronRight,
-} from "lucide-react"
+} from "lucide-react";
 
 interface Section {
-  id: string
-  title: string
-  icon: any
-  content: React.ReactNode
+  id: string;
+  title: string;
+  icon: any;
+  content: React.ReactNode;
 }
 
 export default function ManualPage() {
-  const [activeSection, setActiveSection] = useState("objetivo")
-  const [isPrinting, setIsPrinting] = useState(false)
+  const [activeSection, setActiveSection] = useState("objetivo");
+  const [isPrinting, setIsPrinting] = useState(false);
 
   const handlePrint = () => {
-    setIsPrinting(true)
+    setIsPrinting(true);
     setTimeout(() => {
-      window.print()
-      setIsPrinting(false)
-    }, 100)
-  }
+      window.print();
+      setIsPrinting(false);
+    }, 100);
+  };
 
   const sections: Section[] = [
     {
@@ -44,8 +45,9 @@ export default function ManualPage() {
       content: (
         <div className="space-y-4">
           <p className="text-lg font-medium text-gray-800">
-            Este manual tem como objetivo padronizar e orientar os procedimentos do Departamento de Consultoria de
-            Serviços – Engenharia da Novak Gouveia.
+            Este manual tem como objetivo padronizar e orientar os procedimentos
+            do Departamento de Consultoria de Serviços – Engenharia da Novak
+            Gouveia.
           </p>
           <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
             <h4 className="font-semibold text-gray-800 mb-2">Finalidades:</h4>
@@ -78,11 +80,15 @@ export default function ManualPage() {
       content: (
         <div className="space-y-6">
           <div>
-            <h4 className="text-lg font-semibold mb-4">Estrutura Organizacional</h4>
+            <h4 className="text-lg font-semibold mb-4">
+              Estrutura Organizacional
+            </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-base">Bombas e Motores de Pistões</CardTitle>
+                  <CardTitle className="text-base">
+                    Bombas e Motores de Pistões
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-gray-600 mb-2">Responsáveis:</p>
@@ -94,7 +100,9 @@ export default function ManualPage() {
               </Card>
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-base">Bombas e Comandos de Escavadeira</CardTitle>
+                  <CardTitle className="text-base">
+                    Bombas e Comandos de Escavadeira
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-gray-600 mb-2">Responsável:</p>
@@ -105,7 +113,9 @@ export default function ManualPage() {
               </Card>
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-base">Blocos, Válvulas e Orbitrol</CardTitle>
+                  <CardTitle className="text-base">
+                    Blocos, Válvulas e Orbitrol
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-gray-600 mb-2">Responsável:</p>
@@ -117,9 +127,14 @@ export default function ManualPage() {
             </div>
           </div>
           <div className="bg-gray-50 p-4 rounded-lg">
-            <h5 className="font-semibold mb-2">Hierarquia e Responsabilidades</h5>
+            <h5 className="font-semibold mb-2">
+              Hierarquia e Responsabilidades
+            </h5>
             <ul className="space-y-2 text-sm">
-              <li>• Cada engenheiro é responsável por sua área específica de atuação</li>
+              <li>
+                • Cada engenheiro é responsável por sua área específica de
+                atuação
+              </li>
               <li>• Coordenação geral do departamento</li>
               <li>• Interface com outros departamentos da empresa</li>
               <li>• Supervisão de processos e qualidade</li>
@@ -135,15 +150,21 @@ export default function ManualPage() {
       content: (
         <div className="space-y-6">
           <div>
-            <h4 className="text-lg font-semibold mb-4">Fluxo de Atendimento ao Cliente</h4>
+            <h4 className="text-lg font-semibold mb-4">
+              Fluxo de Atendimento ao Cliente
+            </h4>
             <div className="space-y-4">
               <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
                 <div className="w-6 h-6 bg-gray-500 text-white rounded-full flex items-center justify-center text-sm font-bold">
                   1
                 </div>
                 <div>
-                  <h5 className="font-semibold text-gray-800">Recepção da Solicitação</h5>
-                  <p className="text-gray-700 text-sm">Registro inicial da demanda do cliente no sistema</p>
+                  <h5 className="font-semibold text-gray-800">
+                    Recepção da Solicitação
+                  </h5>
+                  <p className="text-gray-700 text-sm">
+                    Registro inicial da demanda do cliente no sistema
+                  </p>
                 </div>
               </div>
               <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
@@ -151,8 +172,12 @@ export default function ManualPage() {
                   2
                 </div>
                 <div>
-                  <h5 className="font-semibold text-gray-800">Análise Técnica</h5>
-                  <p className="text-gray-700 text-sm">Avaliação técnica da solicitação pelo engenheiro responsável</p>
+                  <h5 className="font-semibold text-gray-800">
+                    Análise Técnica
+                  </h5>
+                  <p className="text-gray-700 text-sm">
+                    Avaliação técnica da solicitação pelo engenheiro responsável
+                  </p>
                 </div>
               </div>
               <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
@@ -160,8 +185,12 @@ export default function ManualPage() {
                   3
                 </div>
                 <div>
-                  <h5 className="font-semibold text-gray-800">Elaboração de Proposta</h5>
-                  <p className="text-gray-700 text-sm">Desenvolvimento da proposta técnica e comercial</p>
+                  <h5 className="font-semibold text-gray-800">
+                    Elaboração de Proposta
+                  </h5>
+                  <p className="text-gray-700 text-sm">
+                    Desenvolvimento da proposta técnica e comercial
+                  </p>
                 </div>
               </div>
               <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
@@ -170,7 +199,9 @@ export default function ManualPage() {
                 </div>
                 <div>
                   <h5 className="font-semibold text-gray-800">Follow-up</h5>
-                  <p className="text-gray-700 text-sm">Acompanhamento da proposta e negociação</p>
+                  <p className="text-gray-700 text-sm">
+                    Acompanhamento da proposta e negociação
+                  </p>
                 </div>
               </div>
             </div>
@@ -338,7 +369,9 @@ export default function ManualPage() {
       content: (
         <div className="space-y-6">
           <div>
-            <h4 className="text-lg font-semibold mb-4">Consultas e TOPs no Sistema</h4>
+            <h4 className="text-lg font-semibold mb-4">
+              Consultas e TOPs no Sistema
+            </h4>
             <div className="bg-gray-50 p-4 rounded-lg mb-4">
               <h5 className="font-semibold mb-3">Principais Consultas:</h5>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
@@ -357,25 +390,33 @@ export default function ManualPage() {
               </div>
             </div>
             <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-              <h5 className="font-semibold text-gray-800 mb-3">Tipos de TOPs (Tela de Operação):</h5>
+              <h5 className="font-semibold text-gray-800 mb-3">
+                Tipos de TOPs (Tela de Operação):
+              </h5>
               <div className="space-y-2 text-gray-700 text-sm">
                 <p>
-                  • <strong>TOP Orçamento:</strong> Elaboração e gestão de propostas comerciais
+                  • <strong>TOP Orçamento:</strong> Elaboração e gestão de
+                  propostas comerciais
                 </p>
                 <p>
-                  • <strong>TOP Pedido:</strong> Processamento de pedidos de venda
+                  • <strong>TOP Pedido:</strong> Processamento de pedidos de
+                  venda
                 </p>
                 <p>
-                  • <strong>TOP Produção:</strong> Controle de ordens de produção
+                  • <strong>TOP Produção:</strong> Controle de ordens de
+                  produção
                 </p>
                 <p>
-                  • <strong>TOP Estoque:</strong> Movimentação e controle de materiais
+                  • <strong>TOP Estoque:</strong> Movimentação e controle de
+                  materiais
                 </p>
                 <p>
-                  • <strong>TOP Financeiro:</strong> Gestão de contas a receber e pagar
+                  • <strong>TOP Financeiro:</strong> Gestão de contas a receber
+                  e pagar
                 </p>
                 <p>
-                  • <strong>TOP Qualidade:</strong> Controle de inspeções e certificações
+                  • <strong>TOP Qualidade:</strong> Controle de inspeções e
+                  certificações
                 </p>
               </div>
             </div>
@@ -394,7 +435,9 @@ export default function ManualPage() {
             <div className="space-y-4">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Padrões de Qualidade</CardTitle>
+                  <CardTitle className="text-base">
+                    Padrões de Qualidade
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm">
                   <p>• Conformidade com normas ISO</p>
@@ -405,7 +448,9 @@ export default function ManualPage() {
               </Card>
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Segurança e Meio Ambiente</CardTitle>
+                  <CardTitle className="text-base">
+                    Segurança e Meio Ambiente
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm">
                   <p>• Normas de segurança do trabalho</p>
@@ -422,8 +467,8 @@ export default function ManualPage() {
               <div>
                 <p className="font-semibold text-gray-800">Importante:</p>
                 <p className="text-gray-700 text-sm">
-                  Todos os procedimentos devem estar em conformidade com as normas técnicas vigentes e regulamentações
-                  do setor.
+                  Todos os procedimentos devem estar em conformidade com as
+                  normas técnicas vigentes e regulamentações do setor.
                 </p>
               </div>
             </div>
@@ -438,7 +483,9 @@ export default function ManualPage() {
       content: (
         <div className="space-y-6">
           <div>
-            <h4 className="text-lg font-semibold mb-4">Indicadores de Performance</h4>
+            <h4 className="text-lg font-semibold mb-4">
+              Indicadores de Performance
+            </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Card>
                 <CardHeader>
@@ -453,7 +500,9 @@ export default function ManualPage() {
               </Card>
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-base">Metas de Qualidade</CardTitle>
+                  <CardTitle className="text-base">
+                    Metas de Qualidade
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2 text-sm">
                   <p>• Redução de retrabalho</p>
@@ -465,7 +514,9 @@ export default function ManualPage() {
             </div>
           </div>
           <div>
-            <h4 className="text-lg font-semibold mb-4">Programa de Capacitação</h4>
+            <h4 className="text-lg font-semibold mb-4">
+              Programa de Capacitação
+            </h4>
             <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
               <ul className="space-y-2 text-gray-700 text-sm">
                 <li className="flex items-start gap-2">
@@ -490,29 +541,41 @@ export default function ManualPage() {
         </div>
       ),
     },
-  ]
+  ];
 
-  const activeContent = sections.find((section) => section.id === activeSection)
+  const activeContent = sections.find(
+    (section) => section.id === activeSection
+  );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className={`container mx-auto px-4 py-8 ${isPrinting ? "print:p-0" : ""}`}>
+    <div className="min-h-screen bg-slate-50">
+      <Header />
+      <div
+        className={`container mx-auto px-4 py-8 ${
+          isPrinting ? "print:p-0" : ""
+        }`}
+      >
         {/* Header */}
         <div className={`mb-8 ${isPrinting ? "print:mb-4" : ""}`}>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="flex items-center gap-3">
               <BookOpen className="w-8 h-8 text-gray-600" />
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Manual dos Consultores</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">
+                  Manual dos Consultores
+                </h1>
                 <p className="text-gray-600 text-sm sm:text-base">
-                  Departamento de Consultoria de Serviços – Engenharia Novak Gouveia
+                  Departamento de Consultoria de Serviços – Engenharia Novak
+                  Gouveia
                 </p>
               </div>
             </div>
             <Button
               onClick={handlePrint}
               variant="outline"
-              className={`flex items-center gap-2 ${isPrinting ? "print:hidden" : ""}`}
+              className={`flex items-center gap-2 ${
+                isPrinting ? "print:hidden" : ""
+              }`}
             >
               <Printer className="w-4 h-4" />
               Imprimir
@@ -520,7 +583,11 @@ export default function ManualPage() {
           </div>
         </div>
 
-        <div className={`grid lg:grid-cols-4 gap-4 sm:gap-8 ${isPrinting ? "print:grid-cols-1" : ""}`}>
+        <div
+          className={`grid lg:grid-cols-4 gap-4 sm:gap-8 ${
+            isPrinting ? "print:grid-cols-1" : ""
+          }`}
+        >
           {/* Sidebar Navigation */}
           <div className={`lg:col-span-1 ${isPrinting ? "print:hidden" : ""}`}>
             <Card className="sticky top-24">
@@ -529,19 +596,23 @@ export default function ManualPage() {
               </CardHeader>
               <CardContent className="space-y-2">
                 {sections.map((section) => {
-                  const Icon = section.icon
+                  const Icon = section.icon;
                   return (
                     <Button
                       key={section.id}
-                      variant={activeSection === section.id ? "default" : "ghost"}
+                      variant={
+                        activeSection === section.id ? "default" : "ghost"
+                      }
                       className="w-full justify-start text-left h-auto p-3"
                       onClick={() => setActiveSection(section.id)}
                     >
                       <Icon className="w-4 h-4 mr-2 flex-shrink-0" />
                       <span className="text-sm">{section.title}</span>
-                      {activeSection === section.id && <ChevronRight className="w-4 h-4 ml-auto" />}
+                      {activeSection === section.id && (
+                        <ChevronRight className="w-4 h-4 ml-auto" />
+                      )}
                     </Button>
-                  )
+                  );
                 })}
               </CardContent>
             </Card>
@@ -552,11 +623,17 @@ export default function ManualPage() {
             <Card>
               <CardHeader>
                 <div className="flex items-center gap-3">
-                  {activeContent && <activeContent.icon className="w-6 h-6 text-gray-600" />}
-                  <CardTitle className="text-xl sm:text-2xl">{activeContent?.title}</CardTitle>
+                  {activeContent && (
+                    <activeContent.icon className="w-6 h-6 text-gray-600" />
+                  )}
+                  <CardTitle className="text-xl sm:text-2xl">
+                    {activeContent?.title}
+                  </CardTitle>
                 </div>
               </CardHeader>
-              <CardContent className="prose max-w-none">{activeContent?.content}</CardContent>
+              <CardContent className="prose max-w-none">
+                {activeContent?.content}
+              </CardContent>
             </Card>
           </div>
         </div>
@@ -564,21 +641,26 @@ export default function ManualPage() {
         {/* Print Content */}
         <div className="hidden print:block">
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold mb-2">Manual do Departamento de Consultoria de Serviços</h1>
+            <h1 className="text-2xl font-bold mb-2">
+              Manual do Departamento de Consultoria de Serviços
+            </h1>
             <h2 className="text-xl mb-4">Engenharia Novak Gouveia</h2>
             <div className="border-t border-b py-4 my-6">
               <p className="text-lg font-semibold">Objetivo</p>
               <p className="mt-2">
-                Este manual tem como objetivo padronizar e orientar os procedimentos do Departamento de Consultoria de
-                Serviços – Engenharia da Novak Gouveia, garantindo a qualidade e consistência no atendimento aos
-                clientes.
+                Este manual tem como objetivo padronizar e orientar os
+                procedimentos do Departamento de Consultoria de Serviços –
+                Engenharia da Novak Gouveia, garantindo a qualidade e
+                consistência no atendimento aos clientes.
               </p>
             </div>
           </div>
           <div className="space-y-8">
             {sections.map((section) => (
               <div key={section.id} className="break-inside-avoid">
-                <h3 className="text-lg font-bold mb-4 border-b pb-2">{section.title}</h3>
+                <h3 className="text-lg font-bold mb-4 border-b pb-2">
+                  {section.title}
+                </h3>
                 <div className="ml-4">{section.content}</div>
               </div>
             ))}
@@ -588,14 +670,26 @@ export default function ManualPage() {
 
       <style jsx global>{`
         @media print {
-          body { font-size: 12px; }
-          .print\\:hidden { display: none !important; }
-          .print\\:block { display: block !important; }
-          .print\\:grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)) !important; }
-          .print\\:p-0 { padding: 0 !important; }
-          .print\\:mb-4 { margin-bottom: 1rem !important; }
+          body {
+            font-size: 12px;
+          }
+          .print\\:hidden {
+            display: none !important;
+          }
+          .print\\:block {
+            display: block !important;
+          }
+          .print\\:grid-cols-1 {
+            grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+          }
+          .print\\:p-0 {
+            padding: 0 !important;
+          }
+          .print\\:mb-4 {
+            margin-bottom: 1rem !important;
+          }
         }
       `}</style>
     </div>
-  )
+  );
 }
