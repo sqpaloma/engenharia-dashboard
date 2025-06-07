@@ -317,7 +317,7 @@ export default function DashboardPage() {
 
   const dadosPorTipo = [
     {
-      name: "Follow-ups",
+      name: "Aguardando Aprovação",
       value: totalAguardandoAprovacao,
     },
     {
@@ -664,7 +664,6 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {/* Follow-ups */}
                 {dadosFiltrados?.aguardandoAprovacao?.map((item, index) => (
                   <div
                     key={`fu-${index}`}

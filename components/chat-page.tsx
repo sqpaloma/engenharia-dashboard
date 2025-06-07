@@ -191,7 +191,7 @@ export function ChatPage() {
   const filteredMessages = getMessagesForUser();
 
   return (
-    <div className="h-screen flex bg-slate-50">
+    <div className="h-[calc(100vh-64px)] flex bg-slate-50">
       {/* Sidebar com usuários - responsivo */}
       {showUserList && (
         <div className="w-full md:w-80 bg-white border-r border-slate-200 flex flex-col md:relative absolute inset-0 z-10 md:z-auto">
@@ -292,187 +292,134 @@ export function ChatPage() {
         </div>
       )}
 
-      {/* Área principal do chat */}
-      <div className="flex-1 flex flex-col">
-        {/* Header do chat */}
-        <div className="bg-white border-b border-slate-200 p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowUserList(!showUserList)}
-              className="md:hidden"
-            >
-              <Menu className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowUserList(!showUserList)}
-              className="hidden md:flex"
-            >
-              <Users className="w-4 h-4" />
-            </Button>
-            <div>
-              <h1 className="text-lg font-semibold">
-                {selectedUser
-                  ? users.find((u) => u.id === selectedUser)?.name
-                  : "Chat Geral"}
-              </h1>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" className="hidden sm:flex">
-              <Search className="w-4 h-4" />
-            </Button>
-            <Button variant="ghost" size="sm" className="hidden sm:flex">
-              <Settings className="w-4 h-4" />
-            </Button>
-            <Button asChild variant="outline" size="sm">
-              <Link href="/" className="flex items-center gap-2">
-                <Home className="w-4 h-4" />
-                <span className="hidden sm:inline">Início</span>
-              </Link>
-            </Button>
-            <Button asChild variant="destructive" size="sm">
-              <Link href="/" className="flex items-center gap-2">
-                <X className="w-4 h-4" />
-                <span className="hidden sm:inline">Sair</span>
-              </Link>
-            </Button>
-          </div>
-        </div>
-
-        {/* Mensagens */}
-        <div className="flex-1 overflow-hidden">
-          <ScrollArea className="h-full">
-            <div className="p-4 space-y-4">
-              {filteredMessages.length === 0 ? (
-                <div className="text-center py-12">
-                  <MessageCircle className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-slate-600 mb-2">
-                    {selectedUser
-                      ? "Nenhuma conversa ainda"
-                      : "Seja o primeiro a enviar uma mensagem!"}
-                  </h3>
-                  <p className="text-slate-500">
-                    {selectedUser
-                      ? "Inicie uma conversa enviando uma mensagem"
-                      : "Comece uma conversa com sua equipe"}
-                  </p>
-                </div>
-              ) : (
-                filteredMessages.map((msg) => (
+      {/* Mensagens */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <ScrollArea className="flex-1 h-0">
+          <div className="p-4 space-y-4">
+            {filteredMessages.length === 0 ? (
+              <div className="text-center py-12">
+                <MessageCircle className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+                <h3 className="text-lg font-medium text-slate-600 mb-2">
+                  {selectedUser
+                    ? "Nenhuma conversa ainda"
+                    : "Seja o primeiro a enviar uma mensagem!"}
+                </h3>
+                <p className="text-slate-500">
+                  {selectedUser
+                    ? "Inicie uma conversa enviando uma mensagem"
+                    : "Comece uma conversa com sua equipe"}
+                </p>
+              </div>
+            ) : (
+              filteredMessages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`flex gap-3 ${
+                    msg.senderId === user.id ? "flex-row-reverse" : ""
+                  }`}
+                >
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-white text-sm font-medium">
+                      {msg.senderName.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
                   <div
-                    key={msg.id}
-                    className={`flex gap-3 ${
-                      msg.senderId === user.id ? "flex-row-reverse" : ""
+                    className={`flex-1 max-w-[70%] ${
+                      msg.senderId === user.id ? "text-right" : ""
                     }`}
                   >
-                    <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-white text-sm font-medium">
-                        {msg.senderName.charAt(0).toUpperCase()}
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-sm font-medium">
+                        {msg.senderName}
                       </span>
+                      <span className="text-xs text-slate-500">
+                        {formatDistanceToNow(msg.timestamp, {
+                          addSuffix: true,
+                          locale: ptBR,
+                        })}
+                      </span>
+                      {msg.isPrivate && (
+                        <Badge variant="secondary" className="text-xs">
+                          <Bell className="w-3 h-3 mr-1" />
+                          Privada
+                        </Badge>
+                      )}
+                      {msg.senderId === user.id && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-6 w-6 p-0"
+                            >
+                              <MoreVertical className="w-3 h-3" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent>
+                            <DropdownMenuItem
+                              onClick={() =>
+                                startEditMessage(msg.id, msg.content)
+                              }
+                            >
+                              <Edit3 className="w-4 h-4 mr-2" />
+                              Editar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="text-red-600">
+                              <Trash2 className="w-4 h-4 mr-2" />
+                              Excluir
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
                     </div>
                     <div
-                      className={`flex-1 max-w-[70%] ${
-                        msg.senderId === user.id ? "text-right" : ""
+                      className={`rounded-lg p-3 ${
+                        msg.senderId === user.id
+                          ? "bg-blue-500 text-white"
+                          : msg.isPrivate
+                          ? "bg-yellow-50 border border-yellow-200"
+                          : "bg-slate-100"
                       }`}
                     >
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-sm font-medium">
-                          {msg.senderName}
-                        </span>
-                        <span className="text-xs text-slate-500">
-                          {formatDistanceToNow(msg.timestamp, {
-                            addSuffix: true,
-                            locale: ptBR,
-                          })}
-                        </span>
-                        {msg.isPrivate && (
-                          <Badge variant="secondary" className="text-xs">
-                            <Bell className="w-3 h-3 mr-1" />
-                            Privada
-                          </Badge>
-                        )}
-                        {msg.senderId === user.id && (
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-6 w-6 p-0"
-                              >
-                                <MoreVertical className="w-3 h-3" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  startEditMessage(msg.id, msg.content)
-                                }
-                              >
-                                <Edit3 className="w-4 h-4 mr-2" />
-                                Editar
-                              </DropdownMenuItem>
-                              <DropdownMenuItem className="text-red-600">
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Excluir
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        )}
-                      </div>
-                      <div
-                        className={`rounded-lg p-3 ${
-                          msg.senderId === user.id
-                            ? "bg-blue-500 text-white"
-                            : msg.isPrivate
-                            ? "bg-yellow-50 border border-yellow-200"
-                            : "bg-slate-100"
-                        }`}
-                      >
-                        {editingMessage === msg.id ? (
-                          <div className="space-y-2">
-                            <Textarea
-                              value={editContent}
-                              onChange={(e) => setEditContent(e.target.value)}
-                              className="min-h-[60px]"
-                            />
-                            <div className="flex gap-2">
-                              <Button size="sm" onClick={saveEdit}>
-                                Salvar
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={cancelEdit}
-                              >
-                                Cancelar
-                              </Button>
-                            </div>
-                          </div>
-                        ) : (
-                          <div
-                            className="text-sm whitespace-pre-wrap"
-                            dangerouslySetInnerHTML={{
-                              __html: formatMessageContent(
-                                msg.content,
-                                msg.mentions
-                              ),
-                            }}
+                      {editingMessage === msg.id ? (
+                        <div className="space-y-2">
+                          <Textarea
+                            value={editContent}
+                            onChange={(e) => setEditContent(e.target.value)}
+                            className="min-h-[60px]"
                           />
-                        )}
-                      </div>
+                          <div className="flex gap-2">
+                            <Button size="sm" onClick={saveEdit}>
+                              Salvar
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={cancelEdit}
+                            >
+                              Cancelar
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div
+                          className="text-sm whitespace-pre-wrap"
+                          dangerouslySetInnerHTML={{
+                            __html: formatMessageContent(
+                              msg.content,
+                              msg.mentions
+                            ),
+                          }}
+                        />
+                      )}
                     </div>
                   </div>
-                ))
-              )}
-              <div ref={messagesEndRef} />
-            </div>
-          </ScrollArea>
-        </div>
-
+                </div>
+              ))
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        </ScrollArea>
         {/* Input de mensagem */}
         <div className="bg-white border-t border-slate-200 p-4">
           <div className="flex gap-3">
