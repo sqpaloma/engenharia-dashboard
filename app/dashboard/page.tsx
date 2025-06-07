@@ -110,8 +110,28 @@ export default function DashboardPage() {
   const totalAguardandoAprovacao = aguardandoAprovacaoSetor.length;
   const totalDevolucoes = devolucoesSetor.length;
   const totalMovimentacoes = movimentacoesSetor.length;
+  const totalAnalises = aguardandoAprovacaoSetor.filter(
+    (item) =>
+      item.status.toLowerCase().includes("análise") ||
+      item.status.toLowerCase().includes("analise")
+  ).length;
+  const totalOrcamentos = aguardandoAprovacaoSetor.filter(
+    (item) =>
+      item.status.toLowerCase().includes("orçamento") ||
+      item.status.toLowerCase().includes("orcamento")
+  ).length;
+  const totalExecucao = aguardandoAprovacaoSetor.filter(
+    (item) =>
+      item.status.toLowerCase().includes("execução") ||
+      item.status.toLowerCase().includes("execucao") ||
+      item.status.toLowerCase().includes("em execução")
+  ).length;
   const totalItens =
-    totalAguardandoAprovacao + totalDevolucoes + totalMovimentacoes;
+    totalAnalises +
+    totalOrcamentos +
+    totalExecucao +
+    totalDevolucoes +
+    totalMovimentacoes;
 
   // Filtros específicos
   const analises = aguardandoAprovacaoSetor.filter(
