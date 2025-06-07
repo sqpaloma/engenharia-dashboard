@@ -333,6 +333,10 @@ export async function processAguardandoAprovacaoFile(
         console.log("Cabeçalhos lidos aguardando aprovação:", headers);
 
         const rows = jsonData.slice(1);
+        console.log(
+          "Primeiras linhas de dados aguardando aprovação:",
+          rows.slice(0, 5)
+        );
 
         const getColumnIndex = (possibleNames: string[]) => {
           for (const name of possibleNames) {
@@ -426,7 +430,16 @@ export async function processAguardandoAprovacaoFile(
               engenheiroIndex >= 0 ? String(row[engenheiroIndex] || "") : "",
             valor: valor,
             status: statusIndex >= 0 ? String(row[statusIndex] || "") : "",
-            data: dataIndex >= 0 ? String(row[dataIndex] || "") : "",
+            data:
+              dataIndex >= 0
+                ? row[dataIndex] instanceof Date
+                  ? `${row[dataIndex].getDate().toString().padStart(2, "0")}/${(
+                      row[dataIndex].getMonth() + 1
+                    )
+                      .toString()
+                      .padStart(2, "0")}/${row[dataIndex].getFullYear()}`
+                  : String(row[dataIndex] || "")
+                : "",
           };
 
           if (item.orcamento || item.parceiro || item.engenheiro) {
