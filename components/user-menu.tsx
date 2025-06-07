@@ -32,7 +32,7 @@ export function UserMenu() {
         return <Badge variant="destructive">Admin</Badge>;
       case "engineer":
         return <Badge variant="default">Engenheiro</Badge>;
-      case "user":
+      case "consultant":
         return <Badge variant="secondary">Consultor</Badge>;
       default:
         return <Badge variant="outline">Usuário</Badge>;
@@ -98,6 +98,11 @@ export function UserMenu() {
               <p className="text-xs text-muted-foreground">@{user.username}</p>
               <div className="flex items-center gap-2">
                 {getRoleBadge(user.role)}
+                {user.department && (
+                  <Badge variant="outline" className="text-xs">
+                    {user.department}
+                  </Badge>
+                )}
               </div>
             </div>
           </DropdownMenuLabel>

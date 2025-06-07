@@ -46,7 +46,7 @@ import {
 } from "lucide-react";
 import {
   processExcelFile,
-  processFollowUpFile,
+  processAguardandoAprovacaoFile,
   processDevolucaoFile,
   processMovimentacaoFile,
 } from "@/lib/excel-utils";
@@ -106,8 +106,8 @@ export default function AdminPage() {
   const {
     data,
     setData,
-    followUpData,
-    setFollowUpData,
+    aguardandoAprovacaoData,
+    setAguardandoAprovacaoData,
     devolucaoData,
     setDevolucaoData,
     movimentacaoData,
@@ -120,12 +120,12 @@ export default function AdminPage() {
   const [isAdminInfoOpen, setIsAdminInfoOpen] = useState(false);
   const [isEngineerInfoOpen, setIsEngineerInfoOpen] = useState(false);
 
-  const [isUploadingFollowUp, setIsUploadingFollowUp] = useState(false);
+  const [isUploadingAguardandoAprovacao, setIsUploadingAguardandoAprovacao] =
+    useState(false);
+  const [aguardandoAprovacaoUploadError, setAguardandoAprovacaoUploadError] =
+    useState<string | null>(null);
   const [isUploadingDevolucao, setIsUploadingDevolucao] = useState(false);
   const [isUploadingMovimentacao, setIsUploadingMovimentacao] = useState(false);
-  const [followUpUploadError, setFollowUpUploadError] = useState<string | null>(
-    null
-  );
   const [devolucaoUploadError, setDevolucaoUploadError] = useState<
     string | null
   >(null);
@@ -203,11 +203,18 @@ export default function AdminPage() {
   const handleExampleDownload = () => {
     const ws = XLSX.utils.aoa_to_sheet([
       ["Orçamento", "OS", "Nome Parceiro", "Responsável", "Valor", "Descrição"],
-      ["ORÇ-001", "OS-123", "Cliente A", "Paloma", 1500, "Venda de Serviços"],
-      ["ORÇ-001", "OS-123", "Cliente A", "Paloma", 350, "Venda Normal"],
-      ["ORÇ-002", "OS-124", "Cliente B", "Giovanni", 2200, "Venda de Serviços"],
-      ["ORÇ-003", "OS-125", "Cliente C", "Lucas", 1800, "Venda de Serviços"],
-      ["ORÇ-004", "OS-126", "Cliente D", "Marcelo", 500, "Venda Normal"],
+      ["ORÇ-001", "OS-123", "Parceiro A", "Paloma", 1500, "Venda de Serviços"],
+      ["ORÇ-001", "OS-123", "Parceiro A", "Paloma", 350, "Venda Normal"],
+      [
+        "ORÇ-002",
+        "OS-124",
+        "Parceiro B",
+        "Giovanni",
+        2200,
+        "Venda de Serviços",
+      ],
+      ["ORÇ-003", "OS-125", "Parceiro C", "Lucas", 1800, "Venda de Serviços"],
+      ["ORÇ-004", "OS-126", "Parceiro D", "Marcelo", 500, "Venda Normal"],
     ]);
 
     const wb = XLSX.utils.book_new();
@@ -232,11 +239,11 @@ export default function AdminPage() {
   const handleClearAllData = () => {
     if (
       confirm(
-        "Tem certeza que deseja limpar TODOS os dados (administrativos, follow-ups, devoluções e movimentações)? Esta ação não pode ser desfeita."
+        "Tem certeza que deseja limpar TODOS os dados (administrativos, aguardando aprovação, devoluções e movimentações)? Esta ação não pode ser desfeita."
       )
     ) {
       setData([]);
-      setFollowUpData([]);
+      setAguardandoAprovacaoData([]);
       setDevolucaoData([]);
       setMovimentacaoData([]);
       toast({
@@ -247,26 +254,26 @@ export default function AdminPage() {
     }
   };
 
-  const handleFollowUpFileUpload = async (
+  const handleAguardandoAprovacaoFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    setFollowUpUploadError(null);
-    setIsUploadingFollowUp(true);
+    setAguardandoAprovacaoUploadError(null);
+    setIsUploadingAguardandoAprovacao(true);
 
     toast({
-      title: "Processando follow-ups...",
+      title: "Processando aguardando aprovação...",
       description: `Lendo arquivo: ${file.name}`,
     });
 
     try {
-      const newData = await processFollowUpFile(file);
-      setFollowUpData(newData);
+      const newData = await processAguardandoAprovacaoFile(file);
+      setAguardandoAprovacaoData(newData);
       toast({
         title: "Sucesso!",
-        description: `${newData.length} follow-ups carregados com sucesso.`,
+        description: `${newData.length} itens aguardando aprovação carregados com sucesso.`,
       });
       event.target.value = "";
     } catch (error) {
@@ -274,14 +281,14 @@ export default function AdminPage() {
         error instanceof Error
           ? error.message
           : "Erro desconhecido ao processar arquivo";
-      setFollowUpUploadError(errorMessage);
+      setAguardandoAprovacaoUploadError(errorMessage);
       toast({
-        title: "Erro ao processar arquivo de follow-up",
+        title: "Erro ao processar arquivo de aguardando aprovação",
         description: errorMessage,
         variant: "destructive",
       });
     } finally {
-      setIsUploadingFollowUp(false);
+      setIsUploadingAguardandoAprovacao(false);
     }
   };
 
@@ -361,16 +368,16 @@ export default function AdminPage() {
     }
   };
 
-  const handleClearFollowUpData = () => {
+  const handleClearAguardandoAprovacaoData = () => {
     if (
       confirm(
-        "Tem certeza que deseja limpar todos os dados de follow-up? Esta ação não pode ser desfeita."
+        "Tem certeza que deseja limpar todos os dados de aguardando aprovação? Esta ação não pode ser desfeita."
       )
     ) {
-      setFollowUpData([]);
+      setAguardandoAprovacaoData([]);
       toast({
-        title: "Dados de follow-up limpos!",
-        description: "Todos os dados de follow-up foram removidos.",
+        title: "Dados de aguardando aprovação limpos!",
+        description: "Todos os dados de aguardando aprovação foram removidos.",
       });
     }
   };
@@ -525,7 +532,7 @@ export default function AdminPage() {
               </Link>
             </Button>
             {(data.length > 0 ||
-              followUpData.length > 0 ||
+              aguardandoAprovacaoData.length > 0 ||
               devolucaoData.length > 0 ||
               movimentacaoData.length > 0) && (
               <Button
@@ -581,10 +588,6 @@ export default function AdminPage() {
                     <span>+ Informações</span>
                   </Button>
                 </div>
-                <CardDescription>
-                  Dados para análise administrativa e dashboards gerenciais
-                  (orçamentos, faturamento, etc.)
-                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -598,9 +601,6 @@ export default function AdminPage() {
                       disabled={isUploading}
                       className="cursor-pointer"
                     />
-                    <p className="text-xs text-slate-500">
-                      Formatos aceitos: .xlsx, .xls
-                    </p>
                   </div>
 
                   {isUploading && (
@@ -941,27 +941,6 @@ export default function AdminPage() {
                 </Card>
               </>
             )}
-
-            {data.length === 0 && (
-              <Card>
-                <CardContent className="text-center py-12">
-                  <div className="space-y-4">
-                    <div className="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mx-auto">
-                      <BarChart className="w-8 h-8 text-slate-400" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-slate-700 mb-2">
-                        Nenhum dado administrativo carregado
-                      </h3>
-                      <p className="text-slate-500 mb-4">
-                        Faça upload de uma planilha com os dados administrativos
-                        para começar.
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </TabsContent>
 
           <TabsContent value="dados-engenheiros" className="space-y-6">
@@ -971,13 +950,9 @@ export default function AdminPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Upload className="w-5 h-5" />
-                    <CardTitle>Upload de Follow-ups</CardTitle>
+                    <CardTitle>Upload de Gerenciamento</CardTitle>
                   </div>
                 </div>
-                <CardDescription>
-                  Dados de análises, orçamentos, aguardando aprovação e em
-                  execução
-                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -987,25 +962,22 @@ export default function AdminPage() {
                       id="followup-file"
                       type="file"
                       accept=".xlsx,.xls"
-                      onChange={handleFollowUpFileUpload}
-                      disabled={isUploadingFollowUp}
+                      onChange={handleAguardandoAprovacaoFileUpload}
+                      disabled={isUploadingAguardandoAprovacao}
                       className="cursor-pointer"
                     />
-                    <p className="text-xs text-slate-500">
-                      Formatos aceitos: .xlsx, .xls
-                    </p>
                   </div>
 
-                  {isUploadingFollowUp && (
+                  {isUploadingAguardandoAprovacao && (
                     <div className="flex items-center gap-2 text-blue-600">
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
                       <span className="text-sm">
-                        Processando arquivo de follow-up...
+                        Processando arquivo de aguardando aprovação...
                       </span>
                     </div>
                   )}
 
-                  {followUpUploadError && (
+                  {aguardandoAprovacaoUploadError && (
                     <div className="bg-red-50 border border-red-200 rounded-md p-3 text-sm text-red-800">
                       <div className="flex items-start gap-2">
                         <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
@@ -1013,22 +985,22 @@ export default function AdminPage() {
                           <p className="font-medium">
                             Erro ao processar arquivo:
                           </p>
-                          <p>{followUpUploadError}</p>
+                          <p>{aguardandoAprovacaoUploadError}</p>
                         </div>
                       </div>
                     </div>
                   )}
 
-                  {followUpData.length > 0 && (
+                  {aguardandoAprovacaoData.length > 0 && (
                     <div className="flex justify-end">
                       <Button
                         variant="destructive"
                         size="sm"
-                        onClick={handleClearFollowUpData}
+                        onClick={handleClearAguardandoAprovacaoData}
                         className="flex items-center gap-2"
                       >
                         <AlertTriangle className="w-4 h-4" />
-                        Limpar Follow-ups
+                        Limpar Aguardando Aprovação
                       </Button>
                     </div>
                   )}
@@ -1045,9 +1017,6 @@ export default function AdminPage() {
                     <CardTitle>Upload de Devoluções Pendentes</CardTitle>
                   </div>
                 </div>
-                <CardDescription>
-                  Dados de equipamentos em processo de devolução
-                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -1061,9 +1030,6 @@ export default function AdminPage() {
                       disabled={isUploadingDevolucao}
                       className="cursor-pointer"
                     />
-                    <p className="text-xs text-slate-500">
-                      Formatos aceitos: .xlsx, .xls
-                    </p>
                   </div>
 
                   {isUploadingDevolucao && (
@@ -1115,9 +1081,6 @@ export default function AdminPage() {
                     <CardTitle>Upload de Movimentações Internas</CardTitle>
                   </div>
                 </div>
-                <CardDescription>
-                  Movimentações internas pendentes de orçamentos
-                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -1133,9 +1096,6 @@ export default function AdminPage() {
                       disabled={isUploadingMovimentacao}
                       className="cursor-pointer"
                     />
-                    <p className="text-xs text-slate-500">
-                      Formatos aceitos: .xlsx, .xls
-                    </p>
                   </div>
 
                   {isUploadingMovimentacao && (
@@ -1179,20 +1139,20 @@ export default function AdminPage() {
             </Card>
 
             {/* Visualizações dos dados */}
-            {(followUpData.length > 0 ||
+            {(aguardandoAprovacaoData.length > 0 ||
               devolucaoData.length > 0 ||
               movimentacaoData.length > 0) && (
               <div className="grid md:grid-cols-3 gap-6">
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">
-                      Follow-ups
+                      Aguardando Aprovação
                     </CardTitle>
                     <Users className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {followUpData.length}
+                      {aguardandoAprovacaoData.length}
                     </div>
                   </CardContent>
                 </Card>
@@ -1228,12 +1188,12 @@ export default function AdminPage() {
             )}
 
             {/* Tabelas de dados */}
-            {followUpData.length > 0 && (
+            {aguardandoAprovacaoData.length > 0 && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Follow-ups</CardTitle>
+                  <CardTitle>Aguardando Aprovação</CardTitle>
                   <CardDescription>
-                    {followUpData.length} itens encontrados
+                    {aguardandoAprovacaoData.length} itens encontrados
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -1241,46 +1201,26 @@ export default function AdminPage() {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>ID</TableHead>
-                          <TableHead>Cliente</TableHead>
-                          <TableHead>Engenheiro</TableHead>
-                          <TableHead>Tipo</TableHead>
-                          <TableHead>Descrição</TableHead>
-                          <TableHead>Prazo</TableHead>
-                          <TableHead>Prioridade</TableHead>
-                          <TableHead>Observações</TableHead>
+                          <TableHead>Orçamento</TableHead>
+                          <TableHead>Valor</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Data</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {followUpData.map((item, index) => (
+                        {aguardandoAprovacaoData.map((item, index) => (
                           <TableRow key={index}>
                             <TableCell className="font-mono text-sm">
-                              {item.id}
+                              {item.orcamento}
                             </TableCell>
-                            <TableCell>{item.cliente}</TableCell>
-                            <TableCell>{item.engenheiro}</TableCell>
-                            <TableCell>
-                              <Badge variant="outline">{item.tipo}</Badge>
+                            <TableCell className="font-mono text-sm">
+                              {item.valor}
                             </TableCell>
-                            <TableCell className="max-w-xs truncate">
-                              {item.descricao}
+                            <TableCell className="font-mono text-sm">
+                              {item.status}
                             </TableCell>
-                            <TableCell>{item.prazo}</TableCell>
-                            <TableCell>
-                              <Badge
-                                variant={
-                                  item.prioridade === "Alta"
-                                    ? "destructive"
-                                    : item.prioridade === "Média"
-                                    ? "secondary"
-                                    : "outline"
-                                }
-                              >
-                                {item.prioridade}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="max-w-xs truncate">
-                              {item.observacoes}
+                            <TableCell className="font-mono text-sm">
+                              {item.data}
                             </TableCell>
                           </TableRow>
                         ))}
@@ -1305,7 +1245,7 @@ export default function AdminPage() {
                       <TableHeader>
                         <TableRow>
                           <TableHead>ID</TableHead>
-                          <TableHead>Cliente</TableHead>
+                          <TableHead>Parceiro</TableHead>
                           <TableHead>Equipamento</TableHead>
                           <TableHead>Engenheiro</TableHead>
                           <TableHead>Data Entrada</TableHead>
@@ -1320,7 +1260,7 @@ export default function AdminPage() {
                             <TableCell className="font-mono text-sm">
                               {item.id}
                             </TableCell>
-                            <TableCell>{item.cliente}</TableCell>
+                            <TableCell>{item.parceiro}</TableCell>
                             <TableCell>{item.equipamento}</TableCell>
                             <TableCell>{item.engenheiro}</TableCell>
                             <TableCell>{item.dataEntrada}</TableCell>
@@ -1357,7 +1297,7 @@ export default function AdminPage() {
                         <TableRow>
                           <TableHead>ID</TableHead>
                           <TableHead>Orçamento</TableHead>
-                          <TableHead>Cliente</TableHead>
+                          <TableHead>Parceiro</TableHead>
                           <TableHead>Engenheiro</TableHead>
                           <TableHead>Tipo Movimentação</TableHead>
                           <TableHead>Data</TableHead>
@@ -1372,7 +1312,7 @@ export default function AdminPage() {
                               {item.id}
                             </TableCell>
                             <TableCell>{item.orcamento}</TableCell>
-                            <TableCell>{item.cliente}</TableCell>
+                            <TableCell>{item.parceiro}</TableCell>
                             <TableCell>{item.engenheiro}</TableCell>
                             <TableCell>{item.tipoMovimentacao}</TableCell>
                             <TableCell>{item.dataMovimentacao}</TableCell>
@@ -1391,7 +1331,7 @@ export default function AdminPage() {
               </Card>
             )}
 
-            {followUpData.length === 0 &&
+            {aguardandoAprovacaoData.length === 0 &&
               devolucaoData.length === 0 &&
               movimentacaoData.length === 0 && (
                 <Card>
@@ -1405,8 +1345,8 @@ export default function AdminPage() {
                           Nenhum dado carregado
                         </h3>
                         <p className="text-slate-500 mb-4">
-                          Faça upload das planilhas de follow-up, devoluções e
-                          movimentações para começar.
+                          Faça upload das planilhas de aguardando aprovação,
+                          devoluções e movimentações para começar.
                         </p>
                       </div>
                     </div>
@@ -1468,11 +1408,9 @@ export default function AdminPage() {
 
                     <div className="bg-slate-50 p-3 rounded-lg">
                       <p className="font-semibold">Nome Parceiro</p>
-                      <p className="text-sm text-slate-600">
-                        Nome do cliente ou parceiro
-                      </p>
+                      <p className="text-sm text-slate-600">Nome do parceiro</p>
                       <p className="text-xs text-slate-500 mt-1">
-                        Exemplos: Cliente A, Empresa XYZ
+                        Exemplos: Parceiro A, Empresa XYZ
                       </p>
                     </div>
                   </div>

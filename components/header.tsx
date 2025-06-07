@@ -61,8 +61,29 @@ export function Header() {
   const filteredNavItems = navItems.filter((item) => {
     if (item.requiresAuth && !user) return false;
     if (item.adminOnly && user?.role !== "admin") return false;
+    if (
+      user?.role === "consultant" &&
+      (item.href === "/admin" || item.href === "/manual")
+    )
+      return false;
     return true;
   });
+
+  const getDepartmentNav = () => {
+    if (!user || user.role !== "consultant") return null;
+
+    return {
+      href: `/dashboard?setor=${user.department}`,
+      label: "Meu Departamento",
+      icon: BarChart3,
+      description: "Dashboard do departamento",
+    };
+  };
+
+  const departmentNav = getDepartmentNav();
+  if (departmentNav) {
+    filteredNavItems.push(departmentNav);
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
@@ -74,9 +95,6 @@ export function Header() {
             </div>
             <div className="hidden sm:block">
               <h1 className="text-xl font-bold text-slate-800">Consultoria</h1>
-              <p className="text-xs text-slate-500">
-                Sistema de Gestão Operacional
-              </p>
             </div>
           </Link>
 

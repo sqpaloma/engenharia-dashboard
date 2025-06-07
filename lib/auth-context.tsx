@@ -8,7 +8,8 @@ export interface User {
   id: string;
   username: string;
   name: string;
-  role: "admin" | "engineer" | "user";
+  role: "admin" | "engineer" | "consultant";
+  department?: string;
   avatar?: string;
   isOnline?: boolean;
   lastSeen?: Date;
@@ -54,6 +55,7 @@ const defaultUsers: User[] = [
     username: "paloma",
     name: "Paloma",
     role: "engineer",
+    department: "bombas-pistoes",
     isOnline: false,
   },
   {
@@ -61,6 +63,7 @@ const defaultUsers: User[] = [
     username: "giovanni",
     name: "Giovanni",
     role: "engineer",
+    department: "bombas-pistoes",
     isOnline: false,
   },
   {
@@ -68,6 +71,7 @@ const defaultUsers: User[] = [
     username: "lucas",
     name: "Lucas",
     role: "engineer",
+    department: "bombas-escavadeira",
     isOnline: false,
   },
   {
@@ -75,20 +79,23 @@ const defaultUsers: User[] = [
     username: "marcelo",
     name: "Marcelo",
     role: "engineer",
+    department: "blocos-valvulas",
     isOnline: false,
   },
   {
     id: "6",
     username: "consultor1",
     name: "Consultor 1",
-    role: "user",
+    role: "consultant",
+    department: "bombas-pistoes",
     isOnline: false,
   },
   {
     id: "7",
     username: "consultor2",
     name: "Consultor 2",
-    role: "user",
+    role: "consultant",
+    department: "bombas-escavadeira",
     isOnline: false,
   },
 ];

@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useRef, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Textarea } from "@/components/ui/textarea"
-import { useAuth } from "@/lib/auth-context"
+import { useState, useRef, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/lib/auth-context";
 import {
   MessageCircle,
   Send,
@@ -24,19 +24,24 @@ import {
   X,
   Home,
   Menu,
-} from "lucide-react"
-import { formatDistanceToNow } from "date-fns"
-import { ptBR } from "date-fns/locale"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import Link from "next/link"
+} from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import Link from "next/link";
 
 export function ChatPage() {
-  const [message, setMessage] = useState("")
-  const [searchTerm, setSearchTerm] = useState("")
-  const [showUserList, setShowUserList] = useState(true)
-  const [selectedUser, setSelectedUser] = useState<string | null>(null)
-  const [editingMessage, setEditingMessage] = useState<string | null>(null)
-  const [editContent, setEditContent] = useState("")
+  const [message, setMessage] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showUserList, setShowUserList] = useState(true);
+  const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [editingMessage, setEditingMessage] = useState<string | null>(null);
+  const [editContent, setEditContent] = useState("");
 
   const {
     user,
@@ -47,81 +52,88 @@ export function ChatPage() {
     unreadNotifications,
     markNotificationsAsRead,
     updateUserActivity,
-  } = useAuth()
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  } = useAuth();
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [chatMessages])
+  }, [chatMessages]);
 
   useEffect(() => {
-    markNotificationsAsRead()
+    markNotificationsAsRead();
     // Atualizar atividade quando estiver no chat
     const interval = setInterval(() => {
-      updateUserActivity()
-    }, 30000)
+      updateUserActivity();
+    }, 30000);
 
-    return () => clearInterval(interval)
-  }, [markNotificationsAsRead, updateUserActivity])
+    return () => clearInterval(interval);
+  }, [markNotificationsAsRead, updateUserActivity]);
 
   useEffect(() => {
     // Auto-resize textarea
     if (textareaRef.current) {
-      textareaRef.current.style.height = "auto"
-      textareaRef.current.style.height = textareaRef.current.scrollHeight + "px"
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height =
+        textareaRef.current.scrollHeight + "px";
     }
-  }, [message])
+  }, [message]);
 
   const handleSendMessage = () => {
-    if (!message.trim()) return
+    if (!message.trim()) return;
 
     // Extrair menções (@username)
-    const mentionRegex = /@(\w+)/g
-    const mentions: string[] = []
-    let match
+    const mentionRegex = /@(\w+)/g;
+    const mentions: string[] = [];
+    let match;
 
     while ((match = mentionRegex.exec(message)) !== null) {
-      const username = match[1]
+      const username = match[1];
       if (users.find((u) => u.username === username)) {
-        mentions.push(username)
+        mentions.push(username);
       }
     }
 
-    sendMessage(message, mentions)
-    setMessage("")
-  }
+    sendMessage(message, mentions);
+    setMessage("");
+  };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      handleSendMessage()
+      e.preventDefault();
+      handleSendMessage();
     }
-  }
+  };
 
   const insertMention = (username: string) => {
-    const newMessage = message + `@${username} `
-    setMessage(newMessage)
-    textareaRef.current?.focus()
-  }
+    const newMessage = message + `@${username} `;
+    setMessage(newMessage);
+    textareaRef.current?.focus();
+  };
 
   const getMessagesForUser = () => {
-    if (!user) return []
+    if (!user) return [];
 
     let filteredMessages = chatMessages.filter((msg) => {
       // Mostrar mensagens públicas ou mensagens privadas direcionadas ao usuário atual
-      return !msg.isPrivate || msg.senderId === user.id || msg.mentions.includes(user.username)
-    })
+      return (
+        !msg.isPrivate ||
+        msg.senderId === user.id ||
+        msg.mentions.includes(user.username)
+      );
+    });
 
     // Filtrar por usuário selecionado
     if (selectedUser) {
       filteredMessages = filteredMessages.filter(
         (msg) =>
           msg.senderId === selectedUser ||
-          msg.mentions.includes(users.find((u) => u.id === selectedUser)?.username || ""),
-      )
+          msg.mentions.includes(
+            users.find((u) => u.id === selectedUser)?.username || ""
+          )
+      );
     }
 
     // Filtrar por termo de busca
@@ -129,49 +141,54 @@ export function ChatPage() {
       filteredMessages = filteredMessages.filter(
         (msg) =>
           msg.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          msg.senderName.toLowerCase().includes(searchTerm.toLowerCase()),
-      )
+          msg.senderName.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
 
-    return filteredMessages
-  }
+    return filteredMessages;
+  };
 
   const formatMessageContent = (content: string, mentions: string[]) => {
-    let formattedContent = content
+    let formattedContent = content;
 
     mentions.forEach((username) => {
-      const mentionedUser = users.find((u) => u.username === username)
+      const mentionedUser = users.find((u) => u.username === username);
       if (mentionedUser) {
         formattedContent = formattedContent.replace(
           new RegExp(`@${username}`, "g"),
-          `<span class="bg-blue-100 text-blue-800 px-1 rounded font-medium">@${username}</span>`,
-        )
+          `<span class="bg-blue-100 text-blue-800 px-1 rounded font-medium">@${username}</span>`
+        );
       }
-    })
+    });
 
-    return formattedContent
-  }
+    return formattedContent;
+  };
 
   const startEditMessage = (messageId: string, content: string) => {
-    setEditingMessage(messageId)
-    setEditContent(content)
-  }
+    setEditingMessage(messageId);
+    setEditContent(content);
+  };
 
   const cancelEdit = () => {
-    setEditingMessage(null)
-    setEditContent("")
-  }
+    setEditingMessage(null);
+    setEditContent("");
+  };
 
   const saveEdit = () => {
     // Em uma implementação real, você salvaria a edição
-    console.log("Editando mensagem:", editingMessage, "Novo conteúdo:", editContent)
-    setEditingMessage(null)
-    setEditContent("")
-  }
+    console.log(
+      "Editando mensagem:",
+      editingMessage,
+      "Novo conteúdo:",
+      editContent
+    );
+    setEditingMessage(null);
+    setEditContent("");
+  };
 
-  if (!user) return null
+  if (!user) return null;
 
-  const filteredMessages = getMessagesForUser()
+  const filteredMessages = getMessagesForUser();
 
   return (
     <div className="h-screen flex bg-slate-50">
@@ -182,7 +199,12 @@ export function ChatPage() {
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-lg font-semibold">Chat da Equipe</h2>
               <div className="flex items-center gap-2">
-                <Button variant="ghost" size="sm" className="md:hidden" onClick={() => setShowUserList(false)}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="md:hidden"
+                  onClick={() => setShowUserList(false)}
+                >
                   <X className="w-4 h-4" />
                 </Button>
               </div>
@@ -200,15 +222,16 @@ export function ChatPage() {
 
           <div className="flex-1 overflow-hidden">
             <div className="p-4">
-              <h3 className="text-sm font-medium text-slate-600 mb-3">USUÁRIOS ONLINE ({onlineUsers.length})</h3>
               <div className="space-y-2">
                 <div
                   className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors ${
-                    selectedUser === null ? "bg-blue-100 text-blue-700" : "hover:bg-slate-100"
+                    selectedUser === null
+                      ? "bg-blue-100 text-blue-700"
+                      : "hover:bg-slate-100"
                   }`}
                   onClick={() => {
-                    setSelectedUser(null)
-                    if (window.innerWidth < 768) setShowUserList(false)
+                    setSelectedUser(null);
+                    if (window.innerWidth < 768) setShowUserList(false);
                   }}
                 >
                   <div className="w-8 h-8 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center">
@@ -229,16 +252,20 @@ export function ChatPage() {
                   <div
                     key={u.id}
                     className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors ${
-                      selectedUser === u.id ? "bg-blue-100 text-blue-700" : "hover:bg-slate-100"
+                      selectedUser === u.id
+                        ? "bg-blue-100 text-blue-700"
+                        : "hover:bg-slate-100"
                     }`}
                     onClick={() => {
-                      setSelectedUser(u.id)
-                      if (window.innerWidth < 768) setShowUserList(false)
+                      setSelectedUser(u.id);
+                      if (window.innerWidth < 768) setShowUserList(false);
                     }}
                   >
                     <div className="relative">
                       <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center">
-                        <span className="text-white text-sm font-medium">{u.name.charAt(0).toUpperCase()}</span>
+                        <span className="text-white text-sm font-medium">
+                          {u.name.charAt(0).toUpperCase()}
+                        </span>
                       </div>
                       <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 border-2 border-white rounded-full"></div>
                     </div>
@@ -251,21 +278,14 @@ export function ChatPage() {
                       size="sm"
                       className="h-6 w-6 p-0"
                       onClick={(e) => {
-                        e.stopPropagation()
-                        insertMention(u.username)
+                        e.stopPropagation();
+                        insertMention(u.username);
                       }}
                     >
                       <span className="text-xs">@</span>
                     </Button>
                   </div>
                 ))}
-
-                {onlineUsers.length === 0 && (
-                  <div className="text-center py-4 text-slate-500">
-                    <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">Nenhum usuário online</p>
-                  </div>
-                )}
               </div>
             </div>
           </div>
@@ -277,21 +297,28 @@ export function ChatPage() {
         {/* Header do chat */}
         <div className="bg-white border-b border-slate-200 p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={() => setShowUserList(!showUserList)} className="md:hidden">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowUserList(!showUserList)}
+              className="md:hidden"
+            >
               <Menu className="w-4 h-4" />
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setShowUserList(!showUserList)} className="hidden md:flex">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowUserList(!showUserList)}
+              className="hidden md:flex"
+            >
               <Users className="w-4 h-4" />
             </Button>
             <div>
               <h1 className="text-lg font-semibold">
-                {selectedUser ? users.find((u) => u.id === selectedUser)?.name : "Chat Geral"}
-              </h1>
-              <p className="text-sm text-slate-500">
                 {selectedUser
-                  ? `Conversa privada com @${users.find((u) => u.id === selectedUser)?.username}`
-                  : `${onlineUsers.length + 1} membros online`}
-              </p>
+                  ? users.find((u) => u.id === selectedUser)?.name
+                  : "Chat Geral"}
+              </h1>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -324,21 +351,38 @@ export function ChatPage() {
                 <div className="text-center py-12">
                   <MessageCircle className="w-12 h-12 text-slate-300 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-slate-600 mb-2">
-                    {selectedUser ? "Nenhuma conversa ainda" : "Seja o primeiro a enviar uma mensagem!"}
+                    {selectedUser
+                      ? "Nenhuma conversa ainda"
+                      : "Seja o primeiro a enviar uma mensagem!"}
                   </h3>
                   <p className="text-slate-500">
-                    {selectedUser ? "Inicie uma conversa enviando uma mensagem" : "Comece uma conversa com sua equipe"}
+                    {selectedUser
+                      ? "Inicie uma conversa enviando uma mensagem"
+                      : "Comece uma conversa com sua equipe"}
                   </p>
                 </div>
               ) : (
                 filteredMessages.map((msg) => (
-                  <div key={msg.id} className={`flex gap-3 ${msg.senderId === user.id ? "flex-row-reverse" : ""}`}>
+                  <div
+                    key={msg.id}
+                    className={`flex gap-3 ${
+                      msg.senderId === user.id ? "flex-row-reverse" : ""
+                    }`}
+                  >
                     <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-white text-sm font-medium">{msg.senderName.charAt(0).toUpperCase()}</span>
+                      <span className="text-white text-sm font-medium">
+                        {msg.senderName.charAt(0).toUpperCase()}
+                      </span>
                     </div>
-                    <div className={`flex-1 max-w-[70%] ${msg.senderId === user.id ? "text-right" : ""}`}>
+                    <div
+                      className={`flex-1 max-w-[70%] ${
+                        msg.senderId === user.id ? "text-right" : ""
+                      }`}
+                    >
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-sm font-medium">{msg.senderName}</span>
+                        <span className="text-sm font-medium">
+                          {msg.senderName}
+                        </span>
                         <span className="text-xs text-slate-500">
                           {formatDistanceToNow(msg.timestamp, {
                             addSuffix: true,
@@ -354,12 +398,20 @@ export function ChatPage() {
                         {msg.senderId === user.id && (
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 w-6 p-0"
+                              >
                                 <MoreVertical className="w-3 h-3" />
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
-                              <DropdownMenuItem onClick={() => startEditMessage(msg.id, msg.content)}>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  startEditMessage(msg.id, msg.content)
+                                }
+                              >
                                 <Edit3 className="w-4 h-4 mr-2" />
                                 Editar
                               </DropdownMenuItem>
@@ -376,8 +428,8 @@ export function ChatPage() {
                           msg.senderId === user.id
                             ? "bg-blue-500 text-white"
                             : msg.isPrivate
-                              ? "bg-yellow-50 border border-yellow-200"
-                              : "bg-slate-100"
+                            ? "bg-yellow-50 border border-yellow-200"
+                            : "bg-slate-100"
                         }`}
                       >
                         {editingMessage === msg.id ? (
@@ -391,7 +443,11 @@ export function ChatPage() {
                               <Button size="sm" onClick={saveEdit}>
                                 Salvar
                               </Button>
-                              <Button size="sm" variant="outline" onClick={cancelEdit}>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={cancelEdit}
+                              >
                                 Cancelar
                               </Button>
                             </div>
@@ -400,7 +456,10 @@ export function ChatPage() {
                           <div
                             className="text-sm whitespace-pre-wrap"
                             dangerouslySetInnerHTML={{
-                              __html: formatMessageContent(msg.content, msg.mentions),
+                              __html: formatMessageContent(
+                                msg.content,
+                                msg.mentions
+                              ),
                             }}
                           />
                         )}
@@ -426,17 +485,27 @@ export function ChatPage() {
                   onKeyPress={handleKeyPress}
                   placeholder={
                     selectedUser
-                      ? `Mensagem para ${users.find((u) => u.id === selectedUser)?.name}...`
+                      ? `Mensagem para ${
+                          users.find((u) => u.id === selectedUser)?.name
+                        }...`
                       : "Digite sua mensagem... Use @username para mencionar alguém"
                   }
                   className="min-h-[60px] max-h-[120px] resize-none pr-12"
                   rows={1}
                 />
                 <div className="absolute bottom-2 right-2 flex gap-1">
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hidden sm:flex">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hidden sm:flex"
+                  >
                     <Smile className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hidden sm:flex">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 hidden sm:flex"
+                  >
                     <Paperclip className="w-4 h-4" />
                   </Button>
                 </div>
@@ -455,15 +524,21 @@ export function ChatPage() {
                     </Button>
                   ))}
                 </div>
-                <div className="text-xs text-slate-500 hidden sm:block">Shift + Enter para nova linha</div>
+                <div className="text-xs text-slate-500 hidden sm:block">
+                  Shift + Enter para nova linha
+                </div>
               </div>
             </div>
-            <Button onClick={handleSendMessage} disabled={!message.trim()} className="self-end">
+            <Button
+              onClick={handleSendMessage}
+              disabled={!message.trim()}
+              className="self-end"
+            >
               <Send className="w-4 h-4" />
             </Button>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
