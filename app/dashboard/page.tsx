@@ -52,7 +52,8 @@ type FilterType =
 export default function DashboardPage() {
   const searchParams = useSearchParams();
   const setor = searchParams.get("setor") as keyof typeof DEPARTAMENTOS;
-  const { followUpData, devolucaoData, movimentacaoData } = useData();
+  const { aguardandoAprovacaoData, devolucaoData, movimentacaoData } =
+    useData();
   const { user } = useAuth();
   const [filtroAtivo, setFiltroAtivo] = useState<FilterType>("todos");
   const router = useRouter();
@@ -95,7 +96,7 @@ export default function DashboardPage() {
   }
 
   // Filtrar dados para o setor atual
-  const followUpsSetor = followUpData.filter((item) =>
+  const aguardandoAprovacaoSetor = aguardandoAprovacaoData.filter((item) =>
     departamento.responsaveis.includes(item.engenheiro)
   );
   const devolucoesSetor = devolucaoData.filter((item) =>
@@ -106,55 +107,68 @@ export default function DashboardPage() {
   );
 
   // Calcular métricas
-  const totalFollowUps = followUpsSetor.length;
+  const totalAguardandoAprovacao = aguardandoAprovacaoSetor.length;
   const totalDevolucoes = devolucoesSetor.length;
   const totalMovimentacoes = movimentacoesSetor.length;
-  const totalItens = totalFollowUps + totalDevolucoes + totalMovimentacoes;
+  const totalItens =
+    totalAguardandoAprovacao + totalDevolucoes + totalMovimentacoes;
 
   // Filtros específicos
-  const analises = followUpsSetor.filter(
+  const analises = aguardandoAprovacaoSetor.filter(
     (item) =>
-      item.tipo.toLowerCase().includes("análise") ||
-      item.tipo.toLowerCase().includes("analise")
+      item.status.toLowerCase().includes("análise") ||
+      item.status.toLowerCase().includes("analise")
   );
-  const orcamentos = followUpsSetor.filter(
+  const orcamentos = aguardandoAprovacaoSetor.filter(
     (item) =>
-      item.tipo.toLowerCase().includes("orçamento") ||
-      item.tipo.toLowerCase().includes("orcamento")
+      item.status.toLowerCase().includes("orçamento") ||
+      item.status.toLowerCase().includes("orcamento")
   );
-  const execucao = followUpsSetor.filter(
+  const execucao = aguardandoAprovacaoSetor.filter(
     (item) =>
-      item.tipo.toLowerCase().includes("execução") ||
-      item.tipo.toLowerCase().includes("execucao") ||
-      item.tipo.toLowerCase().includes("em execução")
+      item.status.toLowerCase().includes("execução") ||
+      item.status.toLowerCase().includes("execucao") ||
+      item.status.toLowerCase().includes("em execução")
   );
 
   // Função para obter dados filtrados
   const getDadosFiltrados = () => {
     switch (filtroAtivo) {
       case "followups":
-        return { followUps: followUpsSetor, devolucoes: [], movimentacoes: [] };
+        return {
+          aguardandoAprovacao: aguardandoAprovacaoSetor,
+          devolucoes: [],
+          movimentacoes: [],
+        };
       case "analises":
         return { followUps: analises, devolucoes: [], movimentacoes: [] };
       case "orcamentos":
-        return { followUps: orcamentos, devolucoes: [], movimentacoes: [] };
+        return {
+          aguardandoAprovacao: orcamentos,
+          devolucoes: [],
+          movimentacoes: [],
+        };
       case "execucao":
-        return { followUps: execucao, devolucoes: [], movimentacoes: [] };
+        return {
+          aguardandoAprovacao: execucao,
+          devolucoes: [],
+          movimentacoes: [],
+        };
       case "devolucoes":
         return {
-          followUps: [],
+          aguardandoAprovacao: [],
           devolucoes: devolucoesSetor,
           movimentacoes: [],
         };
       case "movimentacoes":
         return {
-          followUps: [],
+          aguardandoAprovacao: [],
           devolucoes: [],
           movimentacoes: movimentacoesSetor,
         };
       default:
         return {
-          followUps: followUpsSetor,
+          aguardandoAprovacao: aguardandoAprovacaoSetor,
           devolucoes: devolucoesSetor,
           movimentacoes: movimentacoesSetor,
         };
@@ -163,15 +177,15 @@ export default function DashboardPage() {
 
   const dadosFiltrados = getDadosFiltrados();
   const totalFiltrado =
-    dadosFiltrados.followUps.length +
-    dadosFiltrados.devolucoes.length +
-    dadosFiltrados.movimentacoes.length;
+    (dadosFiltrados?.aguardandoAprovacao?.length ?? 0) +
+    (dadosFiltrados?.devolucoes?.length ?? 0) +
+    (dadosFiltrados?.movimentacoes?.length ?? 0);
 
   // Função para obter o título do filtro
   const getTituloFiltro = () => {
     switch (filtroAtivo) {
       case "followups":
-        return "Follow-ups";
+        return "Aguardando Aprovação";
       case "analises":
         return "Análises";
       case "orcamentos":
@@ -189,7 +203,9 @@ export default function DashboardPage() {
 
   // Dados para gráficos
   const dadosPorResponsavel = departamento.responsaveis.map((resp) => {
-    const followUps = followUpsSetor.filter((item) => item.engenheiro === resp);
+    const aguardandoAprovacao = aguardandoAprovacaoSetor.filter(
+      (item) => item.engenheiro === resp
+    );
     const devolucoes = devolucoesSetor.filter(
       (item) => item.engenheiro === resp
     );
@@ -199,17 +215,18 @@ export default function DashboardPage() {
 
     return {
       nome: resp,
-      followUps: followUps.length,
+      aguardandoAprovacao: aguardandoAprovacao.length,
       devolucoes: devolucoes.length,
       movimentacoes: movimentacoes.length,
-      total: followUps.length + devolucoes.length + movimentacoes.length,
+      total:
+        aguardandoAprovacao.length + devolucoes.length + movimentacoes.length,
     };
   });
 
   const dadosPorTipo = [
     {
       name: "Follow-ups",
-      value: totalFollowUps,
+      value: totalAguardandoAprovacao,
     },
     {
       name: "Devoluções",
@@ -260,11 +277,15 @@ export default function DashboardPage() {
             onClick={() => setFiltroAtivo("followups")}
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Follow-ups</CardTitle>
+              <CardTitle className="text-sm font-medium">
+                Aguardando Aprovação
+              </CardTitle>
               <Wrench className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{totalFollowUps}</div>
+              <div className="text-2xl font-bold">
+                {totalAguardandoAprovacao}
+              </div>
             </CardContent>
           </Card>
 
@@ -400,7 +421,11 @@ export default function DashboardPage() {
                     <XAxis dataKey="nome" />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="followUps" fill="#f59e0b" name="Follow-ups" />
+                    <Bar
+                      dataKey="aguardandoAprovacao"
+                      fill="#f59e0b"
+                      name="Aguardando Aprovação"
+                    />
                     <Bar
                       dataKey="devolucoes"
                       fill="#10b981"
@@ -463,7 +488,7 @@ export default function DashboardPage() {
             <CardContent>
               <div className="space-y-4">
                 {/* Follow-ups */}
-                {dadosFiltrados.followUps.map((item, index) => (
+                {dadosFiltrados?.aguardandoAprovacao?.map((item, index) => (
                   <div
                     key={`fu-${index}`}
                     className="border rounded-lg p-4 bg-white"
@@ -471,47 +496,21 @@ export default function DashboardPage() {
                     <div className="flex justify-between items-start mb-2">
                       <div>
                         <h4 className="font-semibold text-lg">
-                          {item.descricao}
+                          {item.orcamento}
                         </h4>
                         <p className="text-sm text-slate-600">
-                          ID: {item.id} | Tipo: Follow-up
+                          Valor: {item.valor}
                         </p>
                       </div>
-                      <div className="flex gap-2">
-                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          {item.tipo}
-                        </span>
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            item.prioridade === "Alta"
-                              ? "bg-red-100 text-red-800"
-                              : item.prioridade === "Média"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-green-100 text-green-800"
-                          }`}
-                        >
-                          {item.prioridade}
-                        </span>
-                      </div>
+                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        {item.status}
+                      </span>
                     </div>
                     <div className="grid md:grid-cols-2 gap-4 text-sm">
                       <div>
                         <p>
-                          <strong>Parceiro:</strong> {item.parceiro}
+                          <strong>Data:</strong> {item.data}
                         </p>
-                        <p>
-                          <strong>Responsável:</strong> {item.engenheiro}
-                        </p>
-                      </div>
-                      <div>
-                        <p>
-                          <strong>Prazo:</strong> {item.prazo}
-                        </p>
-                        {item.observacoes && (
-                          <p>
-                            <strong>Observações:</strong> {item.observacoes}
-                          </p>
-                        )}
                       </div>
                     </div>
                   </div>
