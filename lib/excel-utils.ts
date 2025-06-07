@@ -330,6 +330,7 @@ export async function processAguardandoAprovacaoFile(
         const headers = (jsonData[0] as any[]).map((h) =>
           h !== null && h !== undefined ? String(h).toLowerCase().trim() : ""
         );
+        console.log("Cabeçalhos lidos aguardando aprovação:", headers);
 
         const rows = jsonData.slice(1);
 
@@ -373,7 +374,7 @@ export async function processAguardandoAprovacaoFile(
           "situacao",
           "estado",
         ]);
-        const dataIndex = getColumnIndex(["data", "date"]);
+        const dataIndex = getColumnIndex(["data", "date", "prazo"]);
 
         const processedData: AguardandoAprovacaoItem[] = [];
 

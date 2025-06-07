@@ -21,16 +21,22 @@ export default function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (isAuthenticated && user?.role === "engineer") {
-      // Mapear engenheiros para seus departamentos
+    if (
+      isAuthenticated &&
+      (user?.role === "engineer" || user?.role === "consultant")
+    ) {
+      // Mapear engenheiros e consultores para seus departamentos
       const engenheiroDepartamento: Record<string, string> = {
         paloma: "bombas-pistoes",
         giovanni: "bombas-pistoes",
         lucas: "bombas-escavadeira",
         marcelo: "blocos-valvulas",
+        consultor1: "bombas-pistoes",
+        consultor2: "bombas-escavadeira",
       };
 
-      const departamento = engenheiroDepartamento[user.username];
+      const departamento =
+        user.department || engenheiroDepartamento[user.username];
       if (departamento) {
         router.push(`/dashboard?setor=${departamento}`);
       }
@@ -41,8 +47,8 @@ export default function HomePage() {
     return <LoginForm />;
   }
 
-  // Se for engenheiro, mostrar uma mensagem de carregamento enquanto redireciona
-  if (user?.role === "engineer") {
+  // Se for engenheiro ou consultor, mostrar uma mensagem de carregamento enquanto redireciona
+  if (user?.role === "engineer" || user?.role === "consultant") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <div className="text-center">

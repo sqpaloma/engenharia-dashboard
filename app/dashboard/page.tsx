@@ -49,6 +49,59 @@ type FilterType =
   | "devolucoes"
   | "movimentacoes";
 
+// Função utilitária para converter datas em vários formatos para Date
+function parsePrazo(prazoStr: string | undefined): Date | null {
+  if (!prazoStr) return null;
+  // Aceita separador '-' ou '/'
+  const parts = prazoStr.includes("/")
+    ? prazoStr.split("/")
+    : prazoStr.split("-");
+  if (parts.length !== 3) return null;
+  let [dia, mes, ano] = parts;
+  // Corrige ano de dois dígitos
+  if (ano.length === 2) {
+    const anoNum = parseInt(ano, 10);
+    ano = anoNum < 50 ? `20${ano}` : `19${ano}`;
+  }
+  return new Date(
+    `${ano}-${mes.padStart(2, "0")}-${dia.padStart(2, "0")}T23:59:59`
+  ); // fim do dia
+}
+
+function getPrazoStats<T>(
+  lista: T[],
+  campoData: keyof T
+): {
+  atrasados: number;
+  noPrazo: number;
+  total: number;
+  percAtrasados: number;
+  percNoPrazo: number;
+} {
+  const hoje = new Date();
+  let atrasados = 0;
+  let noPrazo = 0;
+  let total = 0;
+  lista.forEach((item) => {
+    const prazo = parsePrazo(item[campoData] as string);
+    if (prazo) {
+      total++;
+      if (prazo < hoje) {
+        atrasados++;
+      } else {
+        noPrazo++;
+      }
+    }
+  });
+  return {
+    atrasados,
+    noPrazo,
+    total,
+    percAtrasados: total ? Math.round((atrasados / total) * 100) : 0,
+    percNoPrazo: total ? Math.round((noPrazo / total) * 100) : 0,
+  };
+}
+
 export default function DashboardPage() {
   const searchParams = useSearchParams();
   const setor = searchParams.get("setor") as keyof typeof DEPARTAMENTOS;
@@ -97,19 +150,35 @@ export default function DashboardPage() {
 
   // Filtrar dados para o setor atual
   const aguardandoAprovacaoSetor = aguardandoAprovacaoData.filter((item) =>
-    departamento.responsaveis.includes(item.engenheiro)
+    departamento.responsaveis
+      .map((r) => r.toLowerCase())
+      .includes(item.engenheiro.toLowerCase())
   );
   const devolucoesSetor = devolucaoData.filter((item) =>
-    departamento.responsaveis.includes(item.engenheiro)
+    departamento.responsaveis
+      .map((r) => r.toLowerCase())
+      .includes(item.engenheiro.toLowerCase())
   );
   const movimentacoesSetor = movimentacaoData.filter((item) =>
-    departamento.responsaveis.includes(item.engenheiro)
+    departamento.responsaveis
+      .map((r) => r.toLowerCase())
+      .includes(item.engenheiro.toLowerCase())
   );
 
-  // Calcular métricas
-  const totalAguardandoAprovacao = aguardandoAprovacaoSetor.length;
-  const totalDevolucoes = devolucoesSetor.length;
-  const totalMovimentacoes = movimentacoesSetor.length;
+  // Itens de aguardando aprovação que NÃO são análise, orçamento ou execução
+  const aguardandoAprovacaoSimples = aguardandoAprovacaoSetor.filter(
+    (item) =>
+      !(
+        item.status.toLowerCase().includes("análise") ||
+        item.status.toLowerCase().includes("analise") ||
+        item.status.toLowerCase().includes("orçamento") ||
+        item.status.toLowerCase().includes("orcamento") ||
+        item.status.toLowerCase().includes("execução") ||
+        item.status.toLowerCase().includes("execucao") ||
+        item.status.toLowerCase().includes("em execução")
+      )
+  );
+  const totalAguardandoAprovacao = aguardandoAprovacaoSimples.length;
   const totalAnalises = aguardandoAprovacaoSetor.filter(
     (item) =>
       item.status.toLowerCase().includes("análise") ||
@@ -126,7 +195,10 @@ export default function DashboardPage() {
       item.status.toLowerCase().includes("execucao") ||
       item.status.toLowerCase().includes("em execução")
   ).length;
+  const totalDevolucoes = devolucoesSetor.length;
+  const totalMovimentacoes = movimentacoesSetor.length;
   const totalItens =
+    totalAguardandoAprovacao +
     totalAnalises +
     totalOrcamentos +
     totalExecucao +
@@ -224,13 +296,13 @@ export default function DashboardPage() {
   // Dados para gráficos
   const dadosPorResponsavel = departamento.responsaveis.map((resp) => {
     const aguardandoAprovacao = aguardandoAprovacaoSetor.filter(
-      (item) => item.engenheiro === resp
+      (item) => item.engenheiro.toLowerCase() === resp.toLowerCase()
     );
     const devolucoes = devolucoesSetor.filter(
-      (item) => item.engenheiro === resp
+      (item) => item.engenheiro.toLowerCase() === resp.toLowerCase()
     );
     const movimentacoes = movimentacoesSetor.filter(
-      (item) => item.engenheiro === resp
+      (item) => item.engenheiro.toLowerCase() === resp.toLowerCase()
     );
 
     return {
@@ -257,6 +329,43 @@ export default function DashboardPage() {
       value: totalMovimentacoes,
     },
   ];
+
+  // Cálculo dos stats de prazo para cada categoria, passando o campo correto:
+  const statsAguardando = getPrazoStats(aguardandoAprovacaoSimples, "data");
+  const statsAnalises = getPrazoStats(analises, "data");
+  const statsOrcamentos = getPrazoStats(orcamentos, "data");
+  const statsExecucao = getPrazoStats(execucao, "data");
+  const statsDevolucoes = getPrazoStats(devolucoesSetor, "dataEntrada");
+  const statsMovimentacoes = getPrazoStats(
+    movimentacoesSetor,
+    "dataMovimentacao"
+  );
+
+  // LOGS DE DEPURAÇÃO PARA VERIFICAR OS DADOS E OS CAMPOS DE DATA
+  console.log(
+    "aguardandoAprovacaoSimples:",
+    aguardandoAprovacaoSimples.map((i) => i.data)
+  );
+  console.log(
+    "analises:",
+    analises.map((i) => i.data)
+  );
+  console.log(
+    "orcamentos:",
+    orcamentos.map((i) => i.data)
+  );
+  console.log(
+    "execucao:",
+    execucao.map((i) => i.data)
+  );
+  console.log(
+    "devolucoesSetor:",
+    devolucoesSetor.map((i) => i.dataEntrada)
+  );
+  console.log(
+    "movimentacoesSetor:",
+    movimentacoesSetor.map((i) => i.dataMovimentacao)
+  );
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -302,9 +411,17 @@ export default function DashboardPage() {
               </CardTitle>
               <Wrench className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative">
               <div className="text-2xl font-bold">
                 {totalAguardandoAprovacao}
+              </div>
+              <div className="absolute bottom-2 right-3 flex gap-1 items-end">
+                <span className="text-xs text-red-400 font-semibold">
+                  {statsAguardando.percAtrasados}%
+                </span>
+                <span className="text-xs text-green-400 font-semibold">
+                  {statsAguardando.percNoPrazo}%
+                </span>
               </div>
             </CardContent>
           </Card>
@@ -321,8 +438,16 @@ export default function DashboardPage() {
               <CardTitle className="text-sm font-medium">Análises</CardTitle>
               <Package className="h-4 w-4 text-blue-600" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative">
               <div className="text-2xl font-bold">{analises.length}</div>
+              <div className="absolute bottom-2 right-3 flex gap-1 items-end">
+                <span className="text-xs text-red-400 font-semibold">
+                  {statsAnalises.percAtrasados}%
+                </span>
+                <span className="text-xs text-green-400 font-semibold">
+                  {statsAnalises.percNoPrazo}%
+                </span>
+              </div>
             </CardContent>
           </Card>
 
@@ -338,8 +463,16 @@ export default function DashboardPage() {
               <CardTitle className="text-sm font-medium">Orçamentos</CardTitle>
               <Package className="h-4 w-4 text-green-600" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative">
               <div className="text-2xl font-bold">{orcamentos.length}</div>
+              <div className="absolute bottom-2 right-3 flex gap-1 items-end">
+                <span className="text-xs text-red-400 font-semibold">
+                  {statsOrcamentos.percAtrasados}%
+                </span>
+                <span className="text-xs text-green-400 font-semibold">
+                  {statsOrcamentos.percNoPrazo}%
+                </span>
+              </div>
             </CardContent>
           </Card>
 
@@ -355,8 +488,16 @@ export default function DashboardPage() {
               <CardTitle className="text-sm font-medium">Em Execução</CardTitle>
               <Package className="h-4 w-4 text-orange-600" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative">
               <div className="text-2xl font-bold">{execucao.length}</div>
+              <div className="absolute bottom-2 right-3 flex gap-1 items-end">
+                <span className="text-xs text-red-400 font-semibold">
+                  {statsExecucao.percAtrasados}%
+                </span>
+                <span className="text-xs text-green-400 font-semibold">
+                  {statsExecucao.percNoPrazo}%
+                </span>
+              </div>
             </CardContent>
           </Card>
 
@@ -372,8 +513,16 @@ export default function DashboardPage() {
               <CardTitle className="text-sm font-medium">Devoluções</CardTitle>
               <Package className="h-4 w-4 text-red-600" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative">
               <div className="text-2xl font-bold">{totalDevolucoes}</div>
+              <div className="absolute bottom-2 right-3 flex gap-1 items-end">
+                <span className="text-xs text-red-400 font-semibold">
+                  {statsDevolucoes.percAtrasados}%
+                </span>
+                <span className="text-xs text-green-400 font-semibold">
+                  {statsDevolucoes.percNoPrazo}%
+                </span>
+              </div>
             </CardContent>
           </Card>
 
@@ -391,8 +540,16 @@ export default function DashboardPage() {
               </CardTitle>
               <Package className="h-4 w-4 text-purple-600" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative">
               <div className="text-2xl font-bold">{totalMovimentacoes}</div>
+              <div className="absolute bottom-2 right-3 flex gap-1 items-end">
+                <span className="text-xs text-red-400 font-semibold">
+                  {statsMovimentacoes.percAtrasados}%
+                </span>
+                <span className="text-xs text-green-400 font-semibold">
+                  {statsMovimentacoes.percNoPrazo}%
+                </span>
+              </div>
             </CardContent>
           </Card>
         </div>
