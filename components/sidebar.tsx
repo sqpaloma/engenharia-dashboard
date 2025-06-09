@@ -73,16 +73,6 @@ export function Sidebar() {
             Dashboard
           </Link>
           <Link
-            href="/equipamentos"
-            className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900",
-              pathname === "/equipamentos" && "bg-gray-100 text-gray-900"
-            )}
-          >
-            <Wrench className="h-4 w-4" />
-            Equipamentos
-          </Link>
-          <Link
             href="/chat"
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900",
@@ -101,6 +91,16 @@ export function Sidebar() {
           >
             <Calendar className="h-4 w-4" />
             Calendário
+          </Link>
+          <Link
+            href="/admin"
+            className={cn(
+              "flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900",
+              pathname === "/admin" && "bg-gray-100 text-gray-900"
+            )}
+          >
+            <Settings className="h-4 w-4" />
+            Área Administrativa
           </Link>
         </nav>
         <div className="mt-4 px-3">

@@ -1248,7 +1248,6 @@ export default function AdminPage() {
                           <TableRow>
                             <TableHead>ID</TableHead>
                             <TableHead>Parceiro</TableHead>
-                            <TableHead>Equipamento</TableHead>
                             <TableHead>Engenheiro</TableHead>
                             <TableHead>Data Entrada</TableHead>
                             <TableHead>Motivo</TableHead>
@@ -1263,7 +1262,6 @@ export default function AdminPage() {
                                 {item.id}
                               </TableCell>
                               <TableCell>{item.parceiro}</TableCell>
-                              <TableCell>{item.equipamento}</TableCell>
                               <TableCell>{item.engenheiro}</TableCell>
                               <TableCell>{item.dataEntrada}</TableCell>
                               <TableCell className="max-w-xs truncate">

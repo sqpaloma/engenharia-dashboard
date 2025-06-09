@@ -49,37 +49,6 @@ function ManualContent() {
               <Card>
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-green-600" />
-                    <CardTitle>Funcionalidades Principais</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="font-semibold mb-2">Dashboard</h3>
-                      <p className="text-slate-600">
-                        O dashboard fornece uma visão geral das métricas e
-                        status dos equipamentos. Você pode filtrar por
-                        departamento e visualizar diferentes tipos de dados.
-                      </p>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold mb-2">
-                        Gestão de Equipamentos
-                      </h3>
-                      <p className="text-slate-600">
-                        Gerencie seus equipamentos, incluindo análises,
-                        movimentações e devoluções. Mantenha um registro
-                        completo de todas as operações.
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="pb-3">
-                  <div className="flex items-center gap-2">
                     <HelpCircle className="h-5 w-5 text-orange-600" />
                     <CardTitle>Suporte</CardTitle>
                   </div>

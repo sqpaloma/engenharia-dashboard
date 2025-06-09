@@ -22,16 +22,15 @@ export interface AguardandoAprovacaoItem {
   data: string;
 }
 
-export interface DevolucaoItem {
+export type DevolucaoData = {
   id: string;
   parceiro: string;
-  equipamento: string;
   engenheiro: string;
   dataEntrada: string;
   motivoDevolucao: string;
   status: string;
   observacoes: string;
-}
+};
 
 export interface MovimentacaoInternaItem {
   id: string;
@@ -49,8 +48,8 @@ interface DataContextType {
   setData: (data: DataItem[]) => void;
   aguardandoAprovacaoData: AguardandoAprovacaoItem[];
   setAguardandoAprovacaoData: (data: AguardandoAprovacaoItem[]) => void;
-  devolucaoData: DevolucaoItem[];
-  setDevolucaoData: (data: DevolucaoItem[]) => void;
+  devolucaoData: DevolucaoData[];
+  setDevolucaoData: (data: DevolucaoData[]) => void;
   movimentacaoData: MovimentacaoInternaItem[];
   setMovimentacaoData: (data: MovimentacaoInternaItem[]) => void;
 }
@@ -62,7 +61,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [aguardandoAprovacaoData, setAguardandoAprovacaoDataState] = useState<
     AguardandoAprovacaoItem[]
   >([]);
-  const [devolucaoData, setDevolucaoDataState] = useState<DevolucaoItem[]>([]);
+  const [devolucaoData, setDevolucaoDataState] = useState<DevolucaoData[]>([]);
   const [movimentacaoData, setMovimentacaoDataState] = useState<
     MovimentacaoInternaItem[]
   >([]);
@@ -123,7 +122,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("aguardando-aprovacao-data", JSON.stringify(newData));
   };
 
-  const setDevolucaoData = (newData: DevolucaoItem[]) => {
+  const setDevolucaoData = (newData: DevolucaoData[]) => {
     setDevolucaoDataState(newData);
     localStorage.setItem("devolucao-data", JSON.stringify(newData));
   };

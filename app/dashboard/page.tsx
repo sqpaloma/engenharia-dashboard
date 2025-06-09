@@ -684,9 +684,6 @@ export default function DashboardPage() {
                     >
                       <div className="flex justify-between items-start mb-2">
                         <div>
-                          <h4 className="font-semibold text-lg">
-                            {item.equipamento}
-                          </h4>
                           <p className="text-sm text-slate-600">
                             ID: {item.id} | Tipo: Devolução
                           </p>

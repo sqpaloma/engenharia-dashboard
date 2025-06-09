@@ -2,7 +2,7 @@ import * as XLSX from "xlsx";
 import type {
   DataItem,
   AguardandoAprovacaoItem,
-  DevolucaoItem,
+  DevolucaoData,
   MovimentacaoInternaItem,
 } from "./data-context";
 
@@ -483,7 +483,7 @@ export async function processAguardandoAprovacaoFile(
 
 export async function processDevolucaoFile(
   file: File
-): Promise<DevolucaoItem[]> {
+): Promise<DevolucaoData[]> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
 
@@ -552,12 +552,6 @@ export async function processDevolucaoFile(
           "client",
           "customer",
         ]);
-        const equipamentoIndex = getColumnIndex([
-          "equipamento",
-          "equipment",
-          "produto",
-          "product",
-        ]);
         const engenheiroIndex = getColumnIndex([
           "engenheiro",
           "engineer",
@@ -590,7 +584,7 @@ export async function processDevolucaoFile(
           "comentarios",
         ]);
 
-        const processedData: DevolucaoItem[] = [];
+        const processedData: DevolucaoData[] = [];
 
         for (let i = 0; i < rows.length; i++) {
           const row = rows[i];
@@ -602,15 +596,13 @@ export async function processDevolucaoFile(
           );
           if (!hasContent) continue;
 
-          const item: DevolucaoItem = {
+          const item: DevolucaoData = {
             id:
               idIndex >= 0
                 ? String(row[idIndex] || `DEV-${i + 1}`)
                 : `DEV-${i + 1}`,
             parceiro:
               parceiroIndex >= 0 ? String(row[parceiroIndex] || "") : "",
-            equipamento:
-              equipamentoIndex >= 0 ? String(row[equipamentoIndex] || "") : "",
             engenheiro:
               engenheiroIndex >= 0 ? String(row[engenheiroIndex] || "") : "",
             dataEntrada:
@@ -625,7 +617,7 @@ export async function processDevolucaoFile(
               observacoesIndex >= 0 ? String(row[observacoesIndex] || "") : "",
           };
 
-          if (item.parceiro || item.equipamento || item.engenheiro) {
+          if (item.parceiro || item.engenheiro) {
             processedData.push(item);
           }
         }

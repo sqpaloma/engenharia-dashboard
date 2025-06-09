@@ -91,46 +91,6 @@ export default function HomePage() {
                 Bem-vindo ao Sistema de Engenharia
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="grid gap-6">
-                <div className="text-center">
-                  <Package className="h-16 w-16 mx-auto mb-4 text-blue-600" />
-                  <h2 className="text-xl font-semibold mb-2">
-                    Sistema de Gestão de Equipamentos
-                  </h2>
-                  <p className="text-gray-600 mb-6">
-                    Gerencie seus equipamentos, análises e movimentações de
-                    forma eficiente
-                  </p>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-4">
-                  <Card>
-                    <CardContent className="p-6">
-                      <h3 className="font-semibold mb-2">Dashboard</h3>
-                      <p className="text-sm text-gray-600 mb-4">
-                        Visualize métricas e acompanhe o status dos equipamentos
-                      </p>
-                      <Button asChild className="w-full">
-                        <Link href="/dashboard">Acessar Dashboard</Link>
-                      </Button>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardContent className="p-6">
-                      <h3 className="font-semibold mb-2">Equipamentos</h3>
-                      <p className="text-sm text-gray-600 mb-4">
-                        Gerencie seus equipamentos e movimentações
-                      </p>
-                      <Button asChild className="w-full">
-                        <Link href="/equipamentos">Ver Equipamentos</Link>
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-            </CardContent>
           </div>
         </div>
       </div>
