@@ -2,16 +2,10 @@
 
 import { useAuth } from "@/lib/auth-context";
 import { LoginForm } from "@/components/login-form";
-import { Header } from "@/components/header";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Sidebar } from "@/components/sidebar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, Wrench, Settings } from "lucide-react";
+import { Users, Wrench, Settings, Package } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -87,47 +81,57 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <Header />
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-slate-800 mb-4">
-            Bem-vindo, {user?.name}!
-          </h1>
-        </div>
+    <div className="flex h-screen">
+      <Sidebar />
+      <div className="flex-1 overflow-auto bg-slate-50">
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto">
+            <CardHeader className="text-center">
+              <CardTitle className="text-3xl font-bold mb-4">
+                Bem-vindo ao Sistema de Engenharia
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-6">
+                <div className="text-center">
+                  <Package className="h-16 w-16 mx-auto mb-4 text-blue-600" />
+                  <h2 className="text-xl font-semibold mb-2">
+                    Sistema de Gestão de Equipamentos
+                  </h2>
+                  <p className="text-gray-600 mb-6">
+                    Gerencie seus equipamentos, análises e movimentações de
+                    forma eficiente
+                  </p>
+                </div>
 
-        <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {departamentos.map((dept) => {
-            const Icon = dept.icon;
-            return (
-              <Card
-                key={dept.id}
-                className="hover:shadow-lg transition-all duration-300 hover:scale-105"
-              >
-                <CardHeader className="text-center">
-                  <div
-                    className={`w-16 h-16 ${dept.color} rounded-full flex items-center justify-center mx-auto mb-4`}
-                  >
-                    <Icon className="w-8 h-8 text-white" />
-                  </div>
-                  <CardTitle className="text-lg">{dept.nome}</CardTitle>
-                  <CardDescription className="text-base">
-                    Responsáveis:{" "}
-                    <span className="font-medium">
-                      {dept.responsaveis.join(", ")}
-                    </span>
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button asChild className="w-full" size="lg">
-                    <Link href={`/dashboard?setor=${dept.id}`}>
-                      Acessar Dashboard
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            );
-          })}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <Card>
+                    <CardContent className="p-6">
+                      <h3 className="font-semibold mb-2">Dashboard</h3>
+                      <p className="text-sm text-gray-600 mb-4">
+                        Visualize métricas e acompanhe o status dos equipamentos
+                      </p>
+                      <Button asChild className="w-full">
+                        <Link href="/dashboard">Acessar Dashboard</Link>
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  <Card>
+                    <CardContent className="p-6">
+                      <h3 className="font-semibold mb-2">Equipamentos</h3>
+                      <p className="text-sm text-gray-600 mb-4">
+                        Gerencie seus equipamentos e movimentações
+                      </p>
+                      <Button asChild className="w-full">
+                        <Link href="/equipamentos">Ver Equipamentos</Link>
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </CardContent>
+          </div>
         </div>
       </div>
     </div>

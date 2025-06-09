@@ -21,7 +21,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { Header } from "@/components/header";
+import { Sidebar } from "@/components/sidebar";
 
 const DEPARTAMENTOS = {
   "bombas-pistoes": {
@@ -103,52 +103,25 @@ function getPrazoStats<T>(
 }
 
 export default function DashboardPage() {
-  const searchParams = useSearchParams();
-  const setor = searchParams.get("setor") as keyof typeof DEPARTAMENTOS;
   const { aguardandoAprovacaoData, devolucaoData, movimentacaoData } =
     useData();
   const { user } = useAuth();
   const [filtroAtivo, setFiltroAtivo] = useState<FilterType>("todos");
   const router = useRouter();
 
-  const departamento = DEPARTAMENTOS[setor];
+  // Função para obter dados de todos os departamentos
+  const getDepartamentoData = () => {
+    return {
+      nome: "Todos os Setores",
+      responsaveis: Object.values(DEPARTAMENTOS).flatMap(
+        (dept) => dept.responsaveis
+      ),
+    };
+  };
 
-  // Verificar se o usuário tem acesso a este departamento
-  useEffect(() => {
-    if (user?.role === "engineer" || user?.role === "consultant") {
-      const engenheiroDepartamento: Record<string, string> = {
-        paloma: "bombas-pistoes",
-        giovanni: "bombas-pistoes",
-        lucas: "bombas-escavadeira",
-        marcelo: "blocos-valvulas",
-        consultor1: "bombas-pistoes",
-        consultor2: "bombas-escavadeira",
-      };
+  const departamento = getDepartamentoData();
 
-      const departamentoAutorizado =
-        user.department || engenheiroDepartamento[user.username];
-
-      // Se o usuário está tentando acessar um departamento não autorizado
-      if (departamentoAutorizado && departamentoAutorizado !== setor) {
-        router.push(`/dashboard?setor=${departamentoAutorizado}`);
-      }
-    }
-  }, [setor, user, router]);
-
-  if (!departamento) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Setor não encontrado</h1>
-          <Button asChild>
-            <Link href="/">Voltar ao início</Link>
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
-  // Filtrar dados para o setor atual
+  // Filtrar dados para todos os setores
   const aguardandoAprovacaoSetor = aguardandoAprovacaoData.filter((item) =>
     departamento.responsaveis
       .map((r) => r.toLowerCase())
@@ -368,423 +341,435 @@ export default function DashboardPage() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <Header />
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-800 mb-2">
-            {departamento.nome}
-          </h1>
-          <p className="text-slate-600">
-            Responsáveis: {departamento.responsaveis.join(", ")}
-          </p>
-        </div>
+    <div className="flex h-screen">
+      <Sidebar />
+      <div className="flex-1 overflow-auto bg-slate-50">
+        <div className="container mx-auto px-4 py-8">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-slate-800 mb-2">
+              {departamento.nome}
+            </h1>
+            <p className="text-slate-600">
+              Responsáveis: {departamento.responsaveis.join(", ")}
+            </p>
+          </div>
 
-        {/* Métricas principais */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-6 mb-8">
-          <Card
-            className={`cursor-pointer transition-all hover:shadow-lg ${
-              filtroAtivo === "todos" ? "ring-2 ring-blue-500 bg-blue-50" : ""
-            }`}
-            onClick={() => setFiltroAtivo("todos")}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Itens</CardTitle>
-              <BarChart3 className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{totalItens}</div>
-            </CardContent>
-          </Card>
+          {/* Métricas principais */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-6 mb-8">
+            <Card
+              className={`cursor-pointer transition-all hover:shadow-lg ${
+                filtroAtivo === "todos" ? "ring-2 ring-blue-500 bg-blue-50" : ""
+              }`}
+              onClick={() => setFiltroAtivo("todos")}
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Total Itens
+                </CardTitle>
+                <BarChart3 className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{totalItens}</div>
+              </CardContent>
+            </Card>
 
-          <Card
-            className={`cursor-pointer transition-all hover:shadow-lg ${
-              filtroAtivo === "followups"
-                ? "ring-2 ring-blue-500 bg-blue-50"
-                : ""
-            }`}
-            onClick={() => setFiltroAtivo("followups")}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Aguardando Aprovação
-              </CardTitle>
-              <Wrench className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent className="relative">
-              <div className="text-2xl font-bold">
-                {totalAguardandoAprovacao}
-              </div>
-              <div className="absolute bottom-2 right-3 flex gap-1 items-end">
-                <span className="text-xs text-red-400 font-semibold">
-                  {statsAguardando.percAtrasados}%
-                </span>
-                <span className="text-xs text-green-400 font-semibold">
-                  {statsAguardando.percNoPrazo}%
-                </span>
-              </div>
-            </CardContent>
-          </Card>
+            <Card
+              className={`cursor-pointer transition-all hover:shadow-lg ${
+                filtroAtivo === "followups"
+                  ? "ring-2 ring-blue-500 bg-blue-50"
+                  : ""
+              }`}
+              onClick={() => setFiltroAtivo("followups")}
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Aguardando Aprovação
+                </CardTitle>
+                <Wrench className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent className="relative">
+                <div className="text-2xl font-bold">
+                  {totalAguardandoAprovacao}
+                </div>
+                <div className="absolute bottom-2 right-3 flex gap-1 items-end">
+                  <span className="text-xs text-red-400 font-semibold">
+                    {statsAguardando.percAtrasados}%
+                  </span>
+                  <span className="text-xs text-green-400 font-semibold">
+                    {statsAguardando.percNoPrazo}%
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
 
-          <Card
-            className={`cursor-pointer transition-all hover:shadow-lg ${
-              filtroAtivo === "analises"
-                ? "ring-2 ring-blue-500 bg-blue-50"
-                : ""
-            }`}
-            onClick={() => setFiltroAtivo("analises")}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Análises</CardTitle>
-              <Package className="h-4 w-4 text-blue-600" />
-            </CardHeader>
-            <CardContent className="relative">
-              <div className="text-2xl font-bold">{analises.length}</div>
-              <div className="absolute bottom-2 right-3 flex gap-1 items-end">
-                <span className="text-xs text-red-400 font-semibold">
-                  {statsAnalises.percAtrasados}%
-                </span>
-                <span className="text-xs text-green-400 font-semibold">
-                  {statsAnalises.percNoPrazo}%
-                </span>
-              </div>
-            </CardContent>
-          </Card>
+            <Card
+              className={`cursor-pointer transition-all hover:shadow-lg ${
+                filtroAtivo === "analises"
+                  ? "ring-2 ring-blue-500 bg-blue-50"
+                  : ""
+              }`}
+              onClick={() => setFiltroAtivo("analises")}
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Análises</CardTitle>
+                <Package className="h-4 w-4 text-blue-600" />
+              </CardHeader>
+              <CardContent className="relative">
+                <div className="text-2xl font-bold">{analises.length}</div>
+                <div className="absolute bottom-2 right-3 flex gap-1 items-end">
+                  <span className="text-xs text-red-400 font-semibold">
+                    {statsAnalises.percAtrasados}%
+                  </span>
+                  <span className="text-xs text-green-400 font-semibold">
+                    {statsAnalises.percNoPrazo}%
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
 
-          <Card
-            className={`cursor-pointer transition-all hover:shadow-lg ${
-              filtroAtivo === "orcamentos"
-                ? "ring-2 ring-blue-500 bg-blue-50"
-                : ""
-            }`}
-            onClick={() => setFiltroAtivo("orcamentos")}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Orçamentos</CardTitle>
-              <Package className="h-4 w-4 text-green-600" />
-            </CardHeader>
-            <CardContent className="relative">
-              <div className="text-2xl font-bold">{orcamentos.length}</div>
-              <div className="absolute bottom-2 right-3 flex gap-1 items-end">
-                <span className="text-xs text-red-400 font-semibold">
-                  {statsOrcamentos.percAtrasados}%
-                </span>
-                <span className="text-xs text-green-400 font-semibold">
-                  {statsOrcamentos.percNoPrazo}%
-                </span>
-              </div>
-            </CardContent>
-          </Card>
+            <Card
+              className={`cursor-pointer transition-all hover:shadow-lg ${
+                filtroAtivo === "orcamentos"
+                  ? "ring-2 ring-blue-500 bg-blue-50"
+                  : ""
+              }`}
+              onClick={() => setFiltroAtivo("orcamentos")}
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Orçamentos
+                </CardTitle>
+                <Package className="h-4 w-4 text-green-600" />
+              </CardHeader>
+              <CardContent className="relative">
+                <div className="text-2xl font-bold">{orcamentos.length}</div>
+                <div className="absolute bottom-2 right-3 flex gap-1 items-end">
+                  <span className="text-xs text-red-400 font-semibold">
+                    {statsOrcamentos.percAtrasados}%
+                  </span>
+                  <span className="text-xs text-green-400 font-semibold">
+                    {statsOrcamentos.percNoPrazo}%
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
 
-          <Card
-            className={`cursor-pointer transition-all hover:shadow-lg ${
-              filtroAtivo === "execucao"
-                ? "ring-2 ring-blue-500 bg-blue-50"
-                : ""
-            }`}
-            onClick={() => setFiltroAtivo("execucao")}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Em Execução</CardTitle>
-              <Package className="h-4 w-4 text-orange-600" />
-            </CardHeader>
-            <CardContent className="relative">
-              <div className="text-2xl font-bold">{execucao.length}</div>
-              <div className="absolute bottom-2 right-3 flex gap-1 items-end">
-                <span className="text-xs text-red-400 font-semibold">
-                  {statsExecucao.percAtrasados}%
-                </span>
-                <span className="text-xs text-green-400 font-semibold">
-                  {statsExecucao.percNoPrazo}%
-                </span>
-              </div>
-            </CardContent>
-          </Card>
+            <Card
+              className={`cursor-pointer transition-all hover:shadow-lg ${
+                filtroAtivo === "execucao"
+                  ? "ring-2 ring-blue-500 bg-blue-50"
+                  : ""
+              }`}
+              onClick={() => setFiltroAtivo("execucao")}
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Em Execução
+                </CardTitle>
+                <Package className="h-4 w-4 text-orange-600" />
+              </CardHeader>
+              <CardContent className="relative">
+                <div className="text-2xl font-bold">{execucao.length}</div>
+                <div className="absolute bottom-2 right-3 flex gap-1 items-end">
+                  <span className="text-xs text-red-400 font-semibold">
+                    {statsExecucao.percAtrasados}%
+                  </span>
+                  <span className="text-xs text-green-400 font-semibold">
+                    {statsExecucao.percNoPrazo}%
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
 
-          <Card
-            className={`cursor-pointer transition-all hover:shadow-lg ${
-              filtroAtivo === "devolucoes"
-                ? "ring-2 ring-blue-500 bg-blue-50"
-                : ""
-            }`}
-            onClick={() => setFiltroAtivo("devolucoes")}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Devoluções</CardTitle>
-              <Package className="h-4 w-4 text-red-600" />
-            </CardHeader>
-            <CardContent className="relative">
-              <div className="text-2xl font-bold">{totalDevolucoes}</div>
-              <div className="absolute bottom-2 right-3 flex gap-1 items-end">
-                <span className="text-xs text-red-400 font-semibold">
-                  {statsDevolucoes.percAtrasados}%
-                </span>
-                <span className="text-xs text-green-400 font-semibold">
-                  {statsDevolucoes.percNoPrazo}%
-                </span>
-              </div>
-            </CardContent>
-          </Card>
+            <Card
+              className={`cursor-pointer transition-all hover:shadow-lg ${
+                filtroAtivo === "devolucoes"
+                  ? "ring-2 ring-blue-500 bg-blue-50"
+                  : ""
+              }`}
+              onClick={() => setFiltroAtivo("devolucoes")}
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Devoluções
+                </CardTitle>
+                <Package className="h-4 w-4 text-red-600" />
+              </CardHeader>
+              <CardContent className="relative">
+                <div className="text-2xl font-bold">{totalDevolucoes}</div>
+                <div className="absolute bottom-2 right-3 flex gap-1 items-end">
+                  <span className="text-xs text-red-400 font-semibold">
+                    {statsDevolucoes.percAtrasados}%
+                  </span>
+                  <span className="text-xs text-green-400 font-semibold">
+                    {statsDevolucoes.percNoPrazo}%
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
 
-          <Card
-            className={`cursor-pointer transition-all hover:shadow-lg ${
-              filtroAtivo === "movimentacoes"
-                ? "ring-2 ring-blue-500 bg-blue-50"
-                : ""
-            }`}
-            onClick={() => setFiltroAtivo("movimentacoes")}
-          >
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Movimentações
-              </CardTitle>
-              <Package className="h-4 w-4 text-purple-600" />
-            </CardHeader>
-            <CardContent className="relative">
-              <div className="text-2xl font-bold">{totalMovimentacoes}</div>
-              <div className="absolute bottom-2 right-3 flex gap-1 items-end">
-                <span className="text-xs text-red-400 font-semibold">
-                  {statsMovimentacoes.percAtrasados}%
-                </span>
-                <span className="text-xs text-green-400 font-semibold">
-                  {statsMovimentacoes.percNoPrazo}%
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+            <Card
+              className={`cursor-pointer transition-all hover:shadow-lg ${
+                filtroAtivo === "movimentacoes"
+                  ? "ring-2 ring-blue-500 bg-blue-50"
+                  : ""
+              }`}
+              onClick={() => setFiltroAtivo("movimentacoes")}
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Movimentações
+                </CardTitle>
+                <Package className="h-4 w-4 text-purple-600" />
+              </CardHeader>
+              <CardContent className="relative">
+                <div className="text-2xl font-bold">{totalMovimentacoes}</div>
+                <div className="absolute bottom-2 right-3 flex gap-1 items-end">
+                  <span className="text-xs text-red-400 font-semibold">
+                    {statsMovimentacoes.percAtrasados}%
+                  </span>
+                  <span className="text-xs text-green-400 font-semibold">
+                    {statsMovimentacoes.percNoPrazo}%
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
-        {/* Indicador de filtro ativo */}
-        {filtroAtivo !== "todos" && (
-          <div className="mb-6">
-            <div className="flex items-center gap-2 p-3 bg-blue-100 border border-blue-200 rounded-lg">
-              <Badge variant="default" className="flex items-center gap-1">
-                {getTituloFiltro()}
-                <button
+          {/* Indicador de filtro ativo */}
+          {filtroAtivo !== "todos" && (
+            <div className="mb-6">
+              <div className="flex items-center gap-2 p-3 bg-blue-100 border border-blue-200 rounded-lg">
+                <Badge variant="default" className="flex items-center gap-1">
+                  {getTituloFiltro()}
+                  <button
+                    onClick={() => setFiltroAtivo("todos")}
+                    className="ml-1 hover:bg-blue-700 rounded-full p-0.5"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </Badge>
+                <span className="text-sm text-blue-700">
+                  Mostrando {totalFiltrado}{" "}
+                  {totalFiltrado === 1 ? "item" : "itens"}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setFiltroAtivo("todos")}
-                  className="ml-1 hover:bg-blue-700 rounded-full p-0.5"
+                  className="ml-auto text-blue-700 hover:text-blue-900"
                 >
-                  <X className="h-3 w-3" />
-                </button>
-              </Badge>
-              <span className="text-sm text-blue-700">
-                Mostrando {totalFiltrado}{" "}
-                {totalFiltrado === 1 ? "item" : "itens"}
-              </span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setFiltroAtivo("todos")}
-                className="ml-auto text-blue-700 hover:text-blue-900"
-              >
-                <ArrowLeft className="h-4 w-4 mr-1" />
-                Ver todos
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Gráficos - só mostrar quando não há filtro específico */}
-        {filtroAtivo === "todos" && totalItens > 0 && (
-          <div className="grid md:grid-cols-2 gap-6 mb-8">
-            <Card>
-              <CardHeader>
-                <CardTitle>Itens por Responsável</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={dadosPorResponsavel}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="nome" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar
-                      dataKey="aguardandoAprovacao"
-                      fill="#f59e0b"
-                      name="Aguardando Aprovação"
-                    />
-                    <Bar
-                      dataKey="devolucoes"
-                      fill="#10b981"
-                      name="Devoluções"
-                    />
-                    <Bar
-                      dataKey="movimentacoes"
-                      fill="#ef4444"
-                      name="Movimentações"
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Distribuição por Tipo</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <PieChart>
-                    <Pie
-                      data={dadosPorTipo}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, percent }) =>
-                        `${name} ${(percent * 100).toFixed(0)}%`
-                      }
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {dadosPorTipo.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={COLORS[index % COLORS.length]}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Lista de projetos do setor */}
-        {totalFiltrado > 0 ? (
-          <Card>
-            <CardHeader>
-              <CardTitle>{getTituloFiltro()} do Departamento</CardTitle>
-              <p className="text-sm text-slate-600">
-                {totalFiltrado}{" "}
-                {totalFiltrado === 1 ? "item encontrado" : "itens encontrados"}
-              </p>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {dadosFiltrados?.aguardandoAprovacao?.map((item, index) => (
-                  <div
-                    key={`fu-${index}`}
-                    className="border rounded-lg p-4 bg-white"
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <h4 className="font-semibold text-lg">
-                          {item.orcamento}
-                        </h4>
-                        <p className="text-sm text-slate-600">
-                          Valor: {item.valor}
-                        </p>
-                      </div>
-                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {item.status}
-                      </span>
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <p>
-                          <strong>Data:</strong> {item.data}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-
-                {/* Devoluções */}
-                {dadosFiltrados.devolucoes.map((item, index) => (
-                  <div
-                    key={`dev-${index}`}
-                    className="border rounded-lg p-4 bg-white"
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <h4 className="font-semibold text-lg">
-                          {item.equipamento}
-                        </h4>
-                        <p className="text-sm text-slate-600">
-                          ID: {item.id} | Tipo: Devolução
-                        </p>
-                      </div>
-                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                        {item.status}
-                      </span>
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <p>
-                          <strong>Parceiro:</strong> {item.parceiro}
-                        </p>
-                        <p>
-                          <strong>Responsável:</strong> {item.engenheiro}
-                        </p>
-                      </div>
-                      <div>
-                        <p>
-                          <strong>Data Entrada:</strong> {item.dataEntrada}
-                        </p>
-                        <p>
-                          <strong>Motivo:</strong> {item.motivoDevolucao}
-                        </p>
-                        {item.observacoes && (
-                          <p>
-                            <strong>Observações:</strong> {item.observacoes}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-
-                {/* Movimentações */}
-                {dadosFiltrados.movimentacoes.map((item, index) => (
-                  <div
-                    key={`mov-${index}`}
-                    className="border rounded-lg p-4 bg-white"
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <h4 className="font-semibold text-lg">
-                          {item.orcamento}
-                        </h4>
-                        <p className="text-sm text-slate-600">
-                          ID: {item.id} | Tipo: Movimentação Interna
-                        </p>
-                      </div>
-                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                        {item.status}
-                      </span>
-                    </div>
-                    <div className="grid md:grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <p>
-                          <strong>Parceiro:</strong> {item.parceiro}
-                        </p>
-                        <p>
-                          <strong>Responsável:</strong> {item.engenheiro}
-                        </p>
-                      </div>
-                      <div>
-                        <p>
-                          <strong>Tipo:</strong> {item.tipoMovimentacao}
-                        </p>
-                        <p>
-                          <strong>Data:</strong> {item.dataMovimentacao}
-                        </p>
-                        {item.observacoes && (
-                          <p>
-                            <strong>Observações:</strong> {item.observacoes}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                  <ArrowLeft className="h-4 w-4 mr-1" />
+                  Ver todos
+                </Button>
               </div>
-            </CardContent>
-          </Card>
-        ) : null}
+            </div>
+          )}
+
+          {/* Gráficos - só mostrar quando não há filtro específico */}
+          {filtroAtivo === "todos" && totalItens > 0 && (
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Itens por Responsável</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={dadosPorResponsavel}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="nome" />
+                      <YAxis />
+                      <Tooltip />
+                      <Bar
+                        dataKey="aguardandoAprovacao"
+                        fill="#f59e0b"
+                        name="Aguardando Aprovação"
+                      />
+                      <Bar
+                        dataKey="devolucoes"
+                        fill="#10b981"
+                        name="Devoluções"
+                      />
+                      <Bar
+                        dataKey="movimentacoes"
+                        fill="#ef4444"
+                        name="Movimentações"
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Distribuição por Tipo</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={dadosPorTipo}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) =>
+                          `${name} ${(percent * 100).toFixed(0)}%`
+                        }
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {dadosPorTipo.map((entry, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={COLORS[index % COLORS.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Lista de projetos do setor */}
+          {totalFiltrado > 0 ? (
+            <Card>
+              <CardHeader>
+                <CardTitle>{getTituloFiltro()} do Departamento</CardTitle>
+                <p className="text-sm text-slate-600">
+                  {totalFiltrado}{" "}
+                  {totalFiltrado === 1
+                    ? "item encontrado"
+                    : "itens encontrados"}
+                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {dadosFiltrados?.aguardandoAprovacao?.map((item, index) => (
+                    <div
+                      key={`fu-${index}`}
+                      className="border rounded-lg p-4 bg-white"
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h4 className="font-semibold text-lg">
+                            {item.orcamento}
+                          </h4>
+                          <p className="text-sm text-slate-600">
+                            Valor: {item.valor}
+                          </p>
+                        </div>
+                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          {item.status}
+                        </span>
+                      </div>
+                      <div className="grid md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p>
+                            <strong>Data:</strong> {item.data}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Devoluções */}
+                  {dadosFiltrados.devolucoes.map((item, index) => (
+                    <div
+                      key={`dev-${index}`}
+                      className="border rounded-lg p-4 bg-white"
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h4 className="font-semibold text-lg">
+                            {item.equipamento}
+                          </h4>
+                          <p className="text-sm text-slate-600">
+                            ID: {item.id} | Tipo: Devolução
+                          </p>
+                        </div>
+                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                          {item.status}
+                        </span>
+                      </div>
+                      <div className="grid md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p>
+                            <strong>Parceiro:</strong> {item.parceiro}
+                          </p>
+                          <p>
+                            <strong>Responsável:</strong> {item.engenheiro}
+                          </p>
+                        </div>
+                        <div>
+                          <p>
+                            <strong>Data Entrada:</strong> {item.dataEntrada}
+                          </p>
+                          <p>
+                            <strong>Motivo:</strong> {item.motivoDevolucao}
+                          </p>
+                          {item.observacoes && (
+                            <p>
+                              <strong>Observações:</strong> {item.observacoes}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Movimentações */}
+                  {dadosFiltrados.movimentacoes.map((item, index) => (
+                    <div
+                      key={`mov-${index}`}
+                      className="border rounded-lg p-4 bg-white"
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h4 className="font-semibold text-lg">
+                            {item.orcamento}
+                          </h4>
+                          <p className="text-sm text-slate-600">
+                            ID: {item.id} | Tipo: Movimentação Interna
+                          </p>
+                        </div>
+                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                          {item.status}
+                        </span>
+                      </div>
+                      <div className="grid md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p>
+                            <strong>Parceiro:</strong> {item.parceiro}
+                          </p>
+                          <p>
+                            <strong>Responsável:</strong> {item.engenheiro}
+                          </p>
+                        </div>
+                        <div>
+                          <p>
+                            <strong>Tipo:</strong> {item.tipoMovimentacao}
+                          </p>
+                          <p>
+                            <strong>Data:</strong> {item.dataMovimentacao}
+                          </p>
+                          {item.observacoes && (
+                            <p>
+                              <strong>Observações:</strong> {item.observacoes}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          ) : null}
+        </div>
       </div>
     </div>
   );

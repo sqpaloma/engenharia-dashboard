@@ -74,7 +74,7 @@ import {
 import { InfoIcon } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import Link from "next/link";
-import { Header } from "@/components/header";
+import { Sidebar } from "@/components/sidebar";
 
 type EngenheiroOrcamentos = {
   nome: string;
@@ -512,224 +512,663 @@ export default function AdminPage() {
   const projetosPorEngenheiro = [];
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <Header />
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-800 mb-2">
-              Área Administrativa
-            </h1>
-            <p className="text-slate-600">
-              Gestão completa dos dados operacionais
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <Button asChild variant="outline">
-              <Link href="/">
-                <Home className="w-4 h-4 mr-2" />
-                Voltar ao início
-              </Link>
-            </Button>
-            {(data.length > 0 ||
-              aguardandoAprovacaoData.length > 0 ||
-              devolucaoData.length > 0 ||
-              movimentacaoData.length > 0) && (
-              <Button
-                onClick={handleClearAllData}
-                variant="destructive"
-                size="sm"
-              >
-                <AlertTriangle className="w-4 h-4 mr-2" />
-                Limpar Todos os Dados
+    <div className="flex h-screen">
+      <Sidebar />
+      <div className="flex-1 overflow-auto bg-slate-50">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex justify-between items-center mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-slate-800 mb-2">
+                Área Administrativa
+              </h1>
+              <p className="text-slate-600">
+                Gestão completa dos dados operacionais
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button asChild variant="outline">
+                <Link href="/">
+                  <Home className="w-4 h-4 mr-2" />
+                  Voltar ao início
+                </Link>
               </Button>
-            )}
-            <Button onClick={logout} variant="outline">
-              <LogOut className="w-4 h-4 mr-2" />
-              Sair
-            </Button>
+              {(data.length > 0 ||
+                aguardandoAprovacaoData.length > 0 ||
+                devolucaoData.length > 0 ||
+                movimentacaoData.length > 0) && (
+                <Button
+                  onClick={handleClearAllData}
+                  variant="destructive"
+                  size="sm"
+                >
+                  <AlertTriangle className="w-4 h-4 mr-2" />
+                  Limpar Todos os Dados
+                </Button>
+              )}
+              <Button onClick={logout} variant="outline">
+                <LogOut className="w-4 h-4 mr-2" />
+                Sair
+              </Button>
+            </div>
           </div>
-        </div>
 
-        <Tabs defaultValue="dados-administrativos" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger
-              value="dados-administrativos"
-              className="flex items-center gap-2"
-            >
-              <BarChart className="w-4 h-4" />
-              Dados Administrativos
-            </TabsTrigger>
-            <TabsTrigger
-              value="dados-engenheiros"
-              className="flex items-center gap-2"
-            >
-              <Users className="w-4 h-4" />
-              Dados dos Engenheiros
-            </TabsTrigger>
-          </TabsList>
+          <Tabs defaultValue="dados-administrativos" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger
+                value="dados-administrativos"
+                className="flex items-center gap-2"
+              >
+                <BarChart className="w-4 h-4" />
+                Dados Administrativos
+              </TabsTrigger>
+              <TabsTrigger
+                value="dados-engenheiros"
+                className="flex items-center gap-2"
+              >
+                <Users className="w-4 h-4" />
+                Dados dos Engenheiros
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="dados-administrativos" className="space-y-6">
-            {/* Upload de dados administrativos */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Upload className="w-5 h-5" />
-                    <CardTitle>Upload de Dados Administrativos</CardTitle>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="flex items-center gap-1 text-blue-600"
-                    onClick={() => setIsAdminInfoOpen(true)}
-                  >
-                    <InfoIcon className="w-4 h-4" />
-                    <span>+ Informações</span>
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="admin-file">Selecionar arquivo</Label>
-                    <Input
-                      id="admin-file"
-                      type="file"
-                      accept=".xlsx,.xls"
-                      onChange={handleFileUpload}
-                      disabled={isUploading}
-                      className="cursor-pointer"
-                    />
-                  </div>
-
-                  {isUploading && (
-                    <div className="flex items-center gap-2 text-blue-600">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                      <span className="text-sm">Processando arquivo...</span>
+            <TabsContent value="dados-administrativos" className="space-y-6">
+              {/* Upload de dados administrativos */}
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Upload className="w-5 h-5" />
+                      <CardTitle>Upload de Dados Administrativos</CardTitle>
                     </div>
-                  )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="flex items-center gap-1 text-blue-600"
+                      onClick={() => setIsAdminInfoOpen(true)}
+                    >
+                      <InfoIcon className="w-4 h-4" />
+                      <span>+ Informações</span>
+                    </Button>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="admin-file">Selecionar arquivo</Label>
+                      <Input
+                        id="admin-file"
+                        type="file"
+                        accept=".xlsx,.xls"
+                        onChange={handleFileUpload}
+                        disabled={isUploading}
+                        className="cursor-pointer"
+                      />
+                    </div>
 
-                  {uploadError && (
-                    <div className="bg-red-50 border border-red-200 rounded-md p-3 text-sm text-red-800">
-                      <div className="flex items-start gap-2">
-                        <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="font-medium">
-                            Erro ao processar arquivo:
-                          </p>
-                          <p>{uploadError}</p>
+                    {isUploading && (
+                      <div className="flex items-center gap-2 text-blue-600">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                        <span className="text-sm">Processando arquivo...</span>
+                      </div>
+                    )}
+
+                    {uploadError && (
+                      <div className="bg-red-50 border border-red-200 rounded-md p-3 text-sm text-red-800">
+                        <div className="flex items-start gap-2">
+                          <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium">
+                              Erro ao processar arquivo:
+                            </p>
+                            <p>{uploadError}</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {data.length > 0 && (
-                    <div className="flex justify-end">
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={handleClearAdminData}
-                        className="flex items-center gap-2"
-                      >
-                        <AlertTriangle className="w-4 h-4" />
-                        Limpar Dados Administrativos
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Resto do conteúdo administrativo */}
-            {data.length > 0 && (
-              <>
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Filter className="w-5 h-5" />
-                      Filtros
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex gap-4">
-                      <div className="space-y-2">
-                        <Label>Filtrar por Engenheiro</Label>
-                        <Select
-                          value={filtroEngenheiro}
-                          onValueChange={setFiltroEngenheiro}
+                    {data.length > 0 && (
+                      <div className="flex justify-end">
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={handleClearAdminData}
+                          className="flex items-center gap-2"
                         >
-                          <SelectTrigger className="w-48">
+                          <AlertTriangle className="w-4 h-4" />
+                          Limpar Dados Administrativos
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Resto do conteúdo administrativo */}
+              {data.length > 0 && (
+                <>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Filter className="w-5 h-5" />
+                        Filtros
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex gap-4">
+                        <div className="space-y-2">
+                          <Label>Filtrar por Engenheiro</Label>
+                          <Select
+                            value={filtroEngenheiro}
+                            onValueChange={setFiltroEngenheiro}
+                          >
+                            <SelectTrigger className="w-48">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="todos">
+                                Todos os engenheiros
+                              </SelectItem>
+                              {engenheiros.map((eng) => (
+                                <SelectItem key={eng} value={eng}>
+                                  {eng}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <Card>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
+                          Total de Registros
+                        </CardTitle>
+                        <BarChart className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">
+                          {dadosFiltrados.length}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {filtroEngenheiro === "todos"
+                            ? "Todos os itens processados"
+                            : `Itens de ${filtroEngenheiro}`}
+                        </p>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
+                          Total Serviços
+                        </CardTitle>
+                        <Wrench className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">
+                          {
+                            dadosFiltrados.filter((item) =>
+                              isServico(item.descricao)
+                            ).length
+                          }
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
+                          Total Peças
+                        </CardTitle>
+                        <Package className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">
+                          {
+                            dadosFiltrados.filter(
+                              (item) => !isServico(item.descricao)
+                            ).length
+                          }
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">
+                          Valor Total Faturado
+                        </CardTitle>
+                        <DollarSign className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">
+                          {formatCurrency(
+                            dadosFiltrados
+                              .filter(
+                                (item) =>
+                                  isServico(item.descricao) ||
+                                  item.descricao
+                                    ?.toLowerCase()
+                                    .includes("venda normal")
+                              )
+                              .reduce((sum, item) => sum + (item.valor || 0), 0)
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {`De ${formatCurrency(
+                            dadosFiltrados.reduce(
+                              (sum, item) => sum + (item.valor || 0),
+                              0
+                            )
+                          )} em orçamentos`}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  <div className="grid lg:grid-cols-2 gap-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Desempenho por Engenheiro</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <ResponsiveContainer width="100%" height={300}>
+                          <RechartsBarChart data={dadosPorEngenheiro}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="nome" />
+                            <YAxis />
+                            <Tooltip />
+                            <Bar
+                              dataKey="orcamentos"
+                              fill="#3b82f6"
+                              name="Orçamentos"
+                            />
+                            <Bar
+                              dataKey="faturamento"
+                              fill="#10b981"
+                              name="Faturamento (R$)"
+                            />
+                          </RechartsBarChart>
+                        </ResponsiveContainer>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader className="flex flex-row items-center justify-between">
+                        <div>
+                          <CardTitle>Top 5 Engenheiros</CardTitle>
+                          <CardDescription>
+                            {filtroOrcamentos === "orcamentos"
+                              ? "Por quantidade de orçamentos"
+                              : "Por faturamento (Venda de Serviços + Venda Normal)"}
+                          </CardDescription>
+                        </div>
+                        <Select
+                          value={filtroOrcamentos}
+                          onValueChange={(value) =>
+                            setFiltroOrcamentos(
+                              value as "orcamentos" | "faturamento"
+                            )
+                          }
+                        >
+                          <SelectTrigger className="w-40">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="todos">
-                              Todos os engenheiros
+                            <SelectItem value="orcamentos">
+                              Orçamentos
                             </SelectItem>
-                            {engenheiros.map((eng) => (
-                              <SelectItem key={eng} value={eng}>
-                                {eng}
-                              </SelectItem>
-                            ))}
+                            <SelectItem value="faturamento">
+                              Faturamento
+                            </SelectItem>
                           </SelectContent>
                         </Select>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          {topEngenheiros.map((eng: Engenheiro, index) => (
+                            <div
+                              key={eng.nome}
+                              className="flex items-center justify-between p-3 bg-slate-50 rounded-lg"
+                            >
+                              <div className="flex items-center gap-3">
+                                <div
+                                  className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold ${
+                                    index === 0
+                                      ? "bg-yellow-500"
+                                      : index === 1
+                                      ? "bg-gray-400"
+                                      : index === 2
+                                      ? "bg-amber-600"
+                                      : "bg-slate-400"
+                                  }`}
+                                >
+                                  {index + 1}
+                                </div>
+                                <div>
+                                  <p className="font-medium">{eng.nome}</p>
+                                  {filtroOrcamentos === "faturamento" && (
+                                    <p className="text-xs text-slate-600">
+                                      Serviços:{" "}
+                                      {formatCurrency(
+                                        "vendasServicos" in eng
+                                          ? eng.vendasServicos
+                                          : 0
+                                      )}{" "}
+                                      | Normal:{" "}
+                                      {formatCurrency(
+                                        "vendasNormais" in eng
+                                          ? eng.vendasNormais
+                                          : 0
+                                      )}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                {filtroOrcamentos === "orcamentos" ? (
+                                  <>
+                                    <p className="font-bold">
+                                      {"totalOrcamentos" in eng
+                                        ? eng.totalOrcamentos
+                                        : 0}{" "}
+                                      orçamentos
+                                    </p>
+                                    <p className="text-sm text-slate-600">
+                                      {formatCurrency(
+                                        "valor" in eng ? eng.valor : 0
+                                      )}
+                                    </p>
+                                  </>
+                                ) : (
+                                  <>
+                                    <p className="font-bold">
+                                      {formatCurrency(
+                                        "totalFaturamento" in eng
+                                          ? eng.totalFaturamento
+                                          : 0
+                                      )}
+                                    </p>
+                                    <p className="text-sm text-slate-600">
+                                      {"totalItens" in eng ? eng.totalItens : 0}
+                                    </p>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Dados Operacionais</CardTitle>
+                      <CardDescription>
+                        {dadosFiltrados.length} registros encontrados
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="overflow-x-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Orçamento</TableHead>
+                              <TableHead>OS</TableHead>
+                              <TableHead>Nome Parceiro</TableHead>
+                              <TableHead>Responsável</TableHead>
+                              <TableHead>Valor</TableHead>
+                              <TableHead>Descrição</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {dadosFiltrados.map((item, index) => (
+                              <TableRow key={index}>
+                                <TableCell>{item.orcamento}</TableCell>
+                                <TableCell>{item.os}</TableCell>
+                                <TableCell>{item.nomeParceiro}</TableCell>
+                                <TableCell>{item.responsavel}</TableCell>
+                                <TableCell>
+                                  {formatCurrency(item.valor)}
+                                </TableCell>
+                                <TableCell>{item.descricao}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
                       </div>
+                    </CardContent>
+                  </Card>
+                </>
+              )}
+            </TabsContent>
+
+            <TabsContent value="dados-engenheiros" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Upload className="w-5 h-5" />
+                      <CardTitle>Upload de Gerenciamento</CardTitle>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="followup-file">Selecionar arquivo</Label>
+                      <Input
+                        id="followup-file"
+                        type="file"
+                        accept=".xlsx,.xls"
+                        onChange={handleAguardandoAprovacaoFileUpload}
+                        disabled={isUploadingAguardandoAprovacao}
+                        className="cursor-pointer"
+                      />
+                    </div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {isUploadingAguardandoAprovacao && (
+                      <div className="flex items-center gap-2 text-blue-600">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                        <span className="text-sm">
+                          Processando arquivo de aguardando aprovação...
+                        </span>
+                      </div>
+                    )}
+
+                    {aguardandoAprovacaoUploadError && (
+                      <div className="bg-red-50 border border-red-200 rounded-md p-3 text-sm text-red-800">
+                        <div className="flex items-start gap-2">
+                          <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium">
+                              Erro ao processar arquivo:
+                            </p>
+                            <p>{aguardandoAprovacaoUploadError}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {aguardandoAprovacaoData.length > 0 && (
+                      <div className="flex justify-end">
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={handleClearAguardandoAprovacaoData}
+                          className="flex items-center gap-2"
+                        >
+                          <AlertTriangle className="w-4 h-4" />
+                          Limpar Aguardando Aprovação
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Upload de Devoluções */}
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Upload className="w-5 h-5" />
+                      <CardTitle>Upload de Devoluções Pendentes</CardTitle>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="devolucao-file">Selecionar arquivo</Label>
+                      <Input
+                        id="devolucao-file"
+                        type="file"
+                        accept=".xlsx,.xls"
+                        onChange={handleDevolucaoFileUpload}
+                        disabled={isUploadingDevolucao}
+                        className="cursor-pointer"
+                      />
+                    </div>
+
+                    {isUploadingDevolucao && (
+                      <div className="flex items-center gap-2 text-blue-600">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                        <span className="text-sm">
+                          Processando arquivo de devoluções...
+                        </span>
+                      </div>
+                    )}
+
+                    {devolucaoUploadError && (
+                      <div className="bg-red-50 border border-red-200 rounded-md p-3 text-sm text-red-800">
+                        <div className="flex items-start gap-2">
+                          <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium">
+                              Erro ao processar arquivo:
+                            </p>
+                            <p>{devolucaoUploadError}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {devolucaoData.length > 0 && (
+                      <div className="flex justify-end">
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={handleClearDevolucaoData}
+                          className="flex items-center gap-2"
+                        >
+                          <AlertTriangle className="w-4 h-4" />
+                          Limpar Devoluções
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Upload de Movimentações Internas */}
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Upload className="w-5 h-5" />
+                      <CardTitle>Upload de Movimentações Internas</CardTitle>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="movimentacao-file">
+                        Selecionar arquivo
+                      </Label>
+                      <Input
+                        id="movimentacao-file"
+                        type="file"
+                        accept=".xlsx,.xls"
+                        onChange={handleMovimentacaoFileUpload}
+                        disabled={isUploadingMovimentacao}
+                        className="cursor-pointer"
+                      />
+                    </div>
+
+                    {isUploadingMovimentacao && (
+                      <div className="flex items-center gap-2 text-blue-600">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                        <span className="text-sm">
+                          Processando arquivo de movimentações...
+                        </span>
+                      </div>
+                    )}
+
+                    {movimentacaoUploadError && (
+                      <div className="bg-red-50 border border-red-200 rounded-md p-3 text-sm text-red-800">
+                        <div className="flex items-start gap-2">
+                          <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <p className="font-medium">
+                              Erro ao processar arquivo:
+                            </p>
+                            <p>{movimentacaoUploadError}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {movimentacaoData.length > 0 && (
+                      <div className="flex justify-end">
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={handleClearMovimentacaoData}
+                          className="flex items-center gap-2"
+                        >
+                          <AlertTriangle className="w-4 h-4" />
+                          Limpar Movimentações
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Visualizações dos dados */}
+              {(aguardandoAprovacaoData.length > 0 ||
+                devolucaoData.length > 0 ||
+                movimentacaoData.length > 0) && (
+                <div className="grid md:grid-cols-3 gap-6">
                   <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className="text-sm font-medium">
-                        Total de Registros
+                        Aguardando Aprovação
                       </CardTitle>
-                      <BarChart className="h-4 w-4 text-muted-foreground" />
+                      <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">
-                        {dadosFiltrados.length}
+                        {aguardandoAprovacaoData.length}
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        {filtroEngenheiro === "todos"
-                          ? "Todos os itens processados"
-                          : `Itens de ${filtroEngenheiro}`}
-                      </p>
                     </CardContent>
                   </Card>
 
                   <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className="text-sm font-medium">
-                        Total Serviços
-                      </CardTitle>
-                      <Wrench className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">
-                        {
-                          dadosFiltrados.filter((item) =>
-                            isServico(item.descricao)
-                          ).length
-                        }
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">
-                        Total Peças
+                        Devoluções
                       </CardTitle>
                       <Package className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">
-                        {
-                          dadosFiltrados.filter(
-                            (item) => !isServico(item.descricao)
-                          ).length
-                        }
+                        {devolucaoData.length}
                       </div>
                     </CardContent>
                   </Card>
@@ -737,175 +1176,26 @@ export default function AdminPage() {
                   <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className="text-sm font-medium">
-                        Valor Total Faturado
+                        Movimentações
                       </CardTitle>
-                      <DollarSign className="h-4 w-4 text-muted-foreground" />
+                      <Wrench className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold">
-                        {formatCurrency(
-                          dadosFiltrados
-                            .filter(
-                              (item) =>
-                                isServico(item.descricao) ||
-                                item.descricao
-                                  ?.toLowerCase()
-                                  .includes("venda normal")
-                            )
-                            .reduce((sum, item) => sum + (item.valor || 0), 0)
-                        )}
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        {`De ${formatCurrency(
-                          dadosFiltrados.reduce(
-                            (sum, item) => sum + (item.valor || 0),
-                            0
-                          )
-                        )} em orçamentos`}
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                <div className="grid lg:grid-cols-2 gap-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Desempenho por Engenheiro</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <ResponsiveContainer width="100%" height={300}>
-                        <RechartsBarChart data={dadosPorEngenheiro}>
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="nome" />
-                          <YAxis />
-                          <Tooltip />
-                          <Bar
-                            dataKey="orcamentos"
-                            fill="#3b82f6"
-                            name="Orçamentos"
-                          />
-                          <Bar
-                            dataKey="faturamento"
-                            fill="#10b981"
-                            name="Faturamento (R$)"
-                          />
-                        </RechartsBarChart>
-                      </ResponsiveContainer>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between">
-                      <div>
-                        <CardTitle>Top 5 Engenheiros</CardTitle>
-                        <CardDescription>
-                          {filtroOrcamentos === "orcamentos"
-                            ? "Por quantidade de orçamentos"
-                            : "Por faturamento (Venda de Serviços + Venda Normal)"}
-                        </CardDescription>
-                      </div>
-                      <Select
-                        value={filtroOrcamentos}
-                        onValueChange={(value) =>
-                          setFiltroOrcamentos(
-                            value as "orcamentos" | "faturamento"
-                          )
-                        }
-                      >
-                        <SelectTrigger className="w-40">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="orcamentos">Orçamentos</SelectItem>
-                          <SelectItem value="faturamento">
-                            Faturamento
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        {topEngenheiros.map((eng: Engenheiro, index) => (
-                          <div
-                            key={eng.nome}
-                            className="flex items-center justify-between p-3 bg-slate-50 rounded-lg"
-                          >
-                            <div className="flex items-center gap-3">
-                              <div
-                                className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold ${
-                                  index === 0
-                                    ? "bg-yellow-500"
-                                    : index === 1
-                                    ? "bg-gray-400"
-                                    : index === 2
-                                    ? "bg-amber-600"
-                                    : "bg-slate-400"
-                                }`}
-                              >
-                                {index + 1}
-                              </div>
-                              <div>
-                                <p className="font-medium">{eng.nome}</p>
-                                {filtroOrcamentos === "faturamento" && (
-                                  <p className="text-xs text-slate-600">
-                                    Serviços:{" "}
-                                    {formatCurrency(
-                                      "vendasServicos" in eng
-                                        ? eng.vendasServicos
-                                        : 0
-                                    )}{" "}
-                                    | Normal:{" "}
-                                    {formatCurrency(
-                                      "vendasNormais" in eng
-                                        ? eng.vendasNormais
-                                        : 0
-                                    )}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              {filtroOrcamentos === "orcamentos" ? (
-                                <>
-                                  <p className="font-bold">
-                                    {"totalOrcamentos" in eng
-                                      ? eng.totalOrcamentos
-                                      : 0}{" "}
-                                    orçamentos
-                                  </p>
-                                  <p className="text-sm text-slate-600">
-                                    {formatCurrency(
-                                      "valor" in eng ? eng.valor : 0
-                                    )}
-                                  </p>
-                                </>
-                              ) : (
-                                <>
-                                  <p className="font-bold">
-                                    {formatCurrency(
-                                      "totalFaturamento" in eng
-                                        ? eng.totalFaturamento
-                                        : 0
-                                    )}
-                                  </p>
-                                  <p className="text-sm text-slate-600">
-                                    {"totalItens" in eng ? eng.totalItens : 0}
-                                  </p>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                        ))}
+                        {movimentacaoData.length}
                       </div>
                     </CardContent>
                   </Card>
                 </div>
+              )}
 
+              {/* Tabelas de dados */}
+              {aguardandoAprovacaoData.length > 0 && (
                 <Card>
                   <CardHeader>
-                    <CardTitle>Dados Operacionais</CardTitle>
+                    <CardTitle>Aguardando Aprovação</CardTitle>
                     <CardDescription>
-                      {dadosFiltrados.length} registros encontrados
+                      {aguardandoAprovacaoData.length} itens encontrados
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -914,24 +1204,26 @@ export default function AdminPage() {
                         <TableHeader>
                           <TableRow>
                             <TableHead>Orçamento</TableHead>
-                            <TableHead>OS</TableHead>
-                            <TableHead>Nome Parceiro</TableHead>
-                            <TableHead>Responsável</TableHead>
                             <TableHead>Valor</TableHead>
-                            <TableHead>Descrição</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Data</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {dadosFiltrados.map((item, index) => (
+                          {aguardandoAprovacaoData.map((item, index) => (
                             <TableRow key={index}>
-                              <TableCell>{item.orcamento}</TableCell>
-                              <TableCell>{item.os}</TableCell>
-                              <TableCell>{item.nomeParceiro}</TableCell>
-                              <TableCell>{item.responsavel}</TableCell>
-                              <TableCell>
-                                {formatCurrency(item.valor)}
+                              <TableCell className="font-mono text-sm">
+                                {item.orcamento}
                               </TableCell>
-                              <TableCell>{item.descricao}</TableCell>
+                              <TableCell className="font-mono text-sm">
+                                {item.valor}
+                              </TableCell>
+                              <TableCell className="font-mono text-sm">
+                                {item.status}
+                              </TableCell>
+                              <TableCell className="font-mono text-sm">
+                                {item.data}
+                              </TableCell>
                             </TableRow>
                           ))}
                         </TableBody>
@@ -939,554 +1231,270 @@ export default function AdminPage() {
                     </div>
                   </CardContent>
                 </Card>
-              </>
-            )}
-          </TabsContent>
+              )}
 
-          <TabsContent value="dados-engenheiros" className="space-y-6">
-            
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Upload className="w-5 h-5" />
-                    <CardTitle>Upload de Gerenciamento</CardTitle>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="followup-file">Selecionar arquivo</Label>
-                    <Input
-                      id="followup-file"
-                      type="file"
-                      accept=".xlsx,.xls"
-                      onChange={handleAguardandoAprovacaoFileUpload}
-                      disabled={isUploadingAguardandoAprovacao}
-                      className="cursor-pointer"
-                    />
-                  </div>
-
-                  {isUploadingAguardandoAprovacao && (
-                    <div className="flex items-center gap-2 text-blue-600">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                      <span className="text-sm">
-                        Processando arquivo de aguardando aprovação...
-                      </span>
-                    </div>
-                  )}
-
-                  {aguardandoAprovacaoUploadError && (
-                    <div className="bg-red-50 border border-red-200 rounded-md p-3 text-sm text-red-800">
-                      <div className="flex items-start gap-2">
-                        <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="font-medium">
-                            Erro ao processar arquivo:
-                          </p>
-                          <p>{aguardandoAprovacaoUploadError}</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {aguardandoAprovacaoData.length > 0 && (
-                    <div className="flex justify-end">
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={handleClearAguardandoAprovacaoData}
-                        className="flex items-center gap-2"
-                      >
-                        <AlertTriangle className="w-4 h-4" />
-                        Limpar Aguardando Aprovação
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Upload de Devoluções */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Upload className="w-5 h-5" />
-                    <CardTitle>Upload de Devoluções Pendentes</CardTitle>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="devolucao-file">Selecionar arquivo</Label>
-                    <Input
-                      id="devolucao-file"
-                      type="file"
-                      accept=".xlsx,.xls"
-                      onChange={handleDevolucaoFileUpload}
-                      disabled={isUploadingDevolucao}
-                      className="cursor-pointer"
-                    />
-                  </div>
-
-                  {isUploadingDevolucao && (
-                    <div className="flex items-center gap-2 text-blue-600">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                      <span className="text-sm">
-                        Processando arquivo de devoluções...
-                      </span>
-                    </div>
-                  )}
-
-                  {devolucaoUploadError && (
-                    <div className="bg-red-50 border border-red-200 rounded-md p-3 text-sm text-red-800">
-                      <div className="flex items-start gap-2">
-                        <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="font-medium">
-                            Erro ao processar arquivo:
-                          </p>
-                          <p>{devolucaoUploadError}</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {devolucaoData.length > 0 && (
-                    <div className="flex justify-end">
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={handleClearDevolucaoData}
-                        className="flex items-center gap-2"
-                      >
-                        <AlertTriangle className="w-4 h-4" />
-                        Limpar Devoluções
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Upload de Movimentações Internas */}
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Upload className="w-5 h-5" />
-                    <CardTitle>Upload de Movimentações Internas</CardTitle>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="movimentacao-file">
-                      Selecionar arquivo
-                    </Label>
-                    <Input
-                      id="movimentacao-file"
-                      type="file"
-                      accept=".xlsx,.xls"
-                      onChange={handleMovimentacaoFileUpload}
-                      disabled={isUploadingMovimentacao}
-                      className="cursor-pointer"
-                    />
-                  </div>
-
-                  {isUploadingMovimentacao && (
-                    <div className="flex items-center gap-2 text-blue-600">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-                      <span className="text-sm">
-                        Processando arquivo de movimentações...
-                      </span>
-                    </div>
-                  )}
-
-                  {movimentacaoUploadError && (
-                    <div className="bg-red-50 border border-red-200 rounded-md p-3 text-sm text-red-800">
-                      <div className="flex items-start gap-2">
-                        <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="font-medium">
-                            Erro ao processar arquivo:
-                          </p>
-                          <p>{movimentacaoUploadError}</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {movimentacaoData.length > 0 && (
-                    <div className="flex justify-end">
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={handleClearMovimentacaoData}
-                        className="flex items-center gap-2"
-                      >
-                        <AlertTriangle className="w-4 h-4" />
-                        Limpar Movimentações
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Visualizações dos dados */}
-            {(aguardandoAprovacaoData.length > 0 ||
-              devolucaoData.length > 0 ||
-              movimentacaoData.length > 0) && (
-              <div className="grid md:grid-cols-3 gap-6">
+              {devolucaoData.length > 0 && (
                 <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Aguardando Aprovação
-                    </CardTitle>
-                    <Users className="h-4 w-4 text-muted-foreground" />
+                  <CardHeader>
+                    <CardTitle>Devoluções Pendentes</CardTitle>
+                    <CardDescription>
+                      {devolucaoData.length} itens encontrados
+                    </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">
-                      {aguardandoAprovacaoData.length}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Devoluções
-                    </CardTitle>
-                    <Package className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">
-                      {devolucaoData.length}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Movimentações
-                    </CardTitle>
-                    <Wrench className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">
-                      {movimentacaoData.length}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
-
-            {/* Tabelas de dados */}
-            {aguardandoAprovacaoData.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Aguardando Aprovação</CardTitle>
-                  <CardDescription>
-                    {aguardandoAprovacaoData.length} itens encontrados
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Orçamento</TableHead>
-                          <TableHead>Valor</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead>Data</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {aguardandoAprovacaoData.map((item, index) => (
-                          <TableRow key={index}>
-                            <TableCell className="font-mono text-sm">
-                              {item.orcamento}
-                            </TableCell>
-                            <TableCell className="font-mono text-sm">
-                              {item.valor}
-                            </TableCell>
-                            <TableCell className="font-mono text-sm">
-                              {item.status}
-                            </TableCell>
-                            <TableCell className="font-mono text-sm">
-                              {item.data}
-                            </TableCell>
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>ID</TableHead>
+                            <TableHead>Parceiro</TableHead>
+                            <TableHead>Equipamento</TableHead>
+                            <TableHead>Engenheiro</TableHead>
+                            <TableHead>Data Entrada</TableHead>
+                            <TableHead>Motivo</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Observações</TableHead>
                           </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {devolucaoData.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Devoluções Pendentes</CardTitle>
-                  <CardDescription>
-                    {devolucaoData.length} itens encontrados
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>ID</TableHead>
-                          <TableHead>Parceiro</TableHead>
-                          <TableHead>Equipamento</TableHead>
-                          <TableHead>Engenheiro</TableHead>
-                          <TableHead>Data Entrada</TableHead>
-                          <TableHead>Motivo</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead>Observações</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {devolucaoData.map((item, index) => (
-                          <TableRow key={index}>
-                            <TableCell className="font-mono text-sm">
-                              {item.id}
-                            </TableCell>
-                            <TableCell>{item.parceiro}</TableCell>
-                            <TableCell>{item.equipamento}</TableCell>
-                            <TableCell>{item.engenheiro}</TableCell>
-                            <TableCell>{item.dataEntrada}</TableCell>
-                            <TableCell className="max-w-xs truncate">
-                              {item.motivoDevolucao}
-                            </TableCell>
-                            <TableCell>
-                              <Badge variant="secondary">{item.status}</Badge>
-                            </TableCell>
-                            <TableCell className="max-w-xs truncate">
-                              {item.observacoes}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {movimentacaoData.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Movimentações Internas</CardTitle>
-                  <CardDescription>
-                    {movimentacaoData.length} itens encontrados
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="overflow-x-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>ID</TableHead>
-                          <TableHead>Orçamento</TableHead>
-                          <TableHead>Parceiro</TableHead>
-                          <TableHead>Engenheiro</TableHead>
-                          <TableHead>Tipo Movimentação</TableHead>
-                          <TableHead>Data</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead>Observações</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {movimentacaoData.map((item, index) => (
-                          <TableRow key={index}>
-                            <TableCell className="font-mono text-sm">
-                              {item.id}
-                            </TableCell>
-                            <TableCell>{item.orcamento}</TableCell>
-                            <TableCell>{item.parceiro}</TableCell>
-                            <TableCell>{item.engenheiro}</TableCell>
-                            <TableCell>{item.tipoMovimentacao}</TableCell>
-                            <TableCell>{item.dataMovimentacao}</TableCell>
-                            <TableCell>
-                              <Badge variant="secondary">{item.status}</Badge>
-                            </TableCell>
-                            <TableCell className="max-w-xs truncate">
-                              {item.observacoes}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {aguardandoAprovacaoData.length === 0 &&
-              devolucaoData.length === 0 &&
-              movimentacaoData.length === 0 && (
-                <Card>
-                  <CardContent className="text-center py-12">
-                    <div className="space-y-4">
-                      <div className="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mx-auto">
-                        <Users className="w-8 h-8 text-slate-400" />
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-semibold text-slate-700 mb-2">
-                          Nenhum dado carregado
-                        </h3>
-                        <p className="text-slate-500 mb-4">
-                          Faça upload das planilhas de aguardando aprovação,
-                          devoluções e movimentações para começar.
-                        </p>
-                      </div>
+                        </TableHeader>
+                        <TableBody>
+                          {devolucaoData.map((item, index) => (
+                            <TableRow key={index}>
+                              <TableCell className="font-mono text-sm">
+                                {item.id}
+                              </TableCell>
+                              <TableCell>{item.parceiro}</TableCell>
+                              <TableCell>{item.equipamento}</TableCell>
+                              <TableCell>{item.engenheiro}</TableCell>
+                              <TableCell>{item.dataEntrada}</TableCell>
+                              <TableCell className="max-w-xs truncate">
+                                {item.motivoDevolucao}
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="secondary">{item.status}</Badge>
+                              </TableCell>
+                              <TableCell className="max-w-xs truncate">
+                                {item.observacoes}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
                     </div>
                   </CardContent>
                 </Card>
               )}
-          </TabsContent>
-        </Tabs>
 
-        {/* Dialog para informações sobre dados administrativos */}
-        <Dialog open={isAdminInfoOpen} onOpenChange={setIsAdminInfoOpen}>
-          <DialogContent className="max-w-3xl">
-            <DialogHeader>
-              <DialogTitle className="text-xl flex items-center gap-2">
-                <FileSpreadsheet className="w-5 h-5" />
-                Formato de Dados Administrativos
-              </DialogTitle>
-              <DialogDescription>
-                Informações detalhadas sobre o formato esperado para upload de
-                dados administrativos
-              </DialogDescription>
-            </DialogHeader>
+              {movimentacaoData.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Movimentações Internas</CardTitle>
+                    <CardDescription>
+                      {movimentacaoData.length} itens encontrados
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="overflow-x-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>ID</TableHead>
+                            <TableHead>Orçamento</TableHead>
+                            <TableHead>Parceiro</TableHead>
+                            <TableHead>Engenheiro</TableHead>
+                            <TableHead>Tipo Movimentação</TableHead>
+                            <TableHead>Data</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead>Observações</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {movimentacaoData.map((item, index) => (
+                            <TableRow key={index}>
+                              <TableCell className="font-mono text-sm">
+                                {item.id}
+                              </TableCell>
+                              <TableCell>{item.orcamento}</TableCell>
+                              <TableCell>{item.parceiro}</TableCell>
+                              <TableCell>{item.engenheiro}</TableCell>
+                              <TableCell>{item.tipoMovimentacao}</TableCell>
+                              <TableCell>{item.dataMovimentacao}</TableCell>
+                              <TableCell>
+                                <Badge variant="secondary">{item.status}</Badge>
+                              </TableCell>
+                              <TableCell className="max-w-xs truncate">
+                                {item.observacoes}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
-            <div className="space-y-4">
-              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                <h3 className="font-medium text-blue-800 mb-2">
-                  Estrutura da Planilha
-                </h3>
-                <p className="text-blue-700 mb-2">
-                  A planilha deve conter uma linha de cabeçalho seguida pelas
-                  linhas de dados. O sistema tentará identificar automaticamente
-                  as colunas com base nos nomes dos cabeçalhos.
-                </p>
-              </div>
+              {aguardandoAprovacaoData.length === 0 &&
+                devolucaoData.length === 0 &&
+                movimentacaoData.length === 0 && (
+                  <Card>
+                    <CardContent className="text-center py-12">
+                      <div className="space-y-4">
+                        <div className="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mx-auto">
+                          <Users className="w-8 h-8 text-slate-400" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-slate-700 mb-2">
+                            Nenhum dado carregado
+                          </h3>
+                          <p className="text-slate-500 mb-4">
+                            Faça upload das planilhas de aguardando aprovação,
+                            devoluções e movimentações para começar.
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+            </TabsContent>
+          </Tabs>
 
-              <div>
-                <h3 className="font-medium mb-2">Colunas Esperadas</h3>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-3">
-                    <div className="bg-slate-50 p-3 rounded-lg">
-                      <p className="font-semibold">Orçamento</p>
-                      <p className="text-sm text-slate-600">
-                        Número ou código do orçamento
-                      </p>
-                      <p className="text-xs text-slate-500 mt-1">
-                        Exemplos: ORÇ-001, 2023-0123
-                      </p>
+          {/* Dialog para informações sobre dados administrativos */}
+          <Dialog open={isAdminInfoOpen} onOpenChange={setIsAdminInfoOpen}>
+            <DialogContent className="max-w-3xl">
+              <DialogHeader>
+                <DialogTitle className="text-xl flex items-center gap-2">
+                  <FileSpreadsheet className="w-5 h-5" />
+                  Formato de Dados Administrativos
+                </DialogTitle>
+                <DialogDescription>
+                  Informações detalhadas sobre o formato esperado para upload de
+                  dados administrativos
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4">
+                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                  <h3 className="font-medium text-blue-800 mb-2">
+                    Estrutura da Planilha
+                  </h3>
+                  <p className="text-blue-700 mb-2">
+                    A planilha deve conter uma linha de cabeçalho seguida pelas
+                    linhas de dados. O sistema tentará identificar
+                    automaticamente as colunas com base nos nomes dos
+                    cabeçalhos.
+                  </p>
+                </div>
+
+                <div>
+                  <h3 className="font-medium mb-2">Colunas Esperadas</h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-3">
+                      <div className="bg-slate-50 p-3 rounded-lg">
+                        <p className="font-semibold">Orçamento</p>
+                        <p className="text-sm text-slate-600">
+                          Número ou código do orçamento
+                        </p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          Exemplos: ORÇ-001, 2023-0123
+                        </p>
+                      </div>
+
+                      <div className="bg-slate-50 p-3 rounded-lg">
+                        <p className="font-semibold">OS</p>
+                        <p className="text-sm text-slate-600">
+                          Número da ordem de serviço
+                        </p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          Exemplos: OS-123, 456789
+                        </p>
+                      </div>
+
+                      <div className="bg-slate-50 p-3 rounded-lg">
+                        <p className="font-semibold">Nome Parceiro</p>
+                        <p className="text-sm text-slate-600">
+                          Nome do parceiro
+                        </p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          Exemplos: Parceiro A, Empresa XYZ
+                        </p>
+                      </div>
                     </div>
 
-                    <div className="bg-slate-50 p-3 rounded-lg">
-                      <p className="font-semibold">OS</p>
-                      <p className="text-sm text-slate-600">
-                        Número da ordem de serviço
-                      </p>
-                      <p className="text-xs text-slate-500 mt-1">
-                        Exemplos: OS-123, 456789
-                      </p>
-                    </div>
+                    <div className="space-y-3">
+                      <div className="bg-slate-50 p-3 rounded-lg">
+                        <p className="font-semibold">Responsável</p>
+                        <p className="text-sm text-slate-600">
+                          Nome do engenheiro responsável
+                        </p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          Exemplos: Paloma, Giovanni, Lucas, Marcelo
+                        </p>
+                      </div>
 
-                    <div className="bg-slate-50 p-3 rounded-lg">
-                      <p className="font-semibold">Nome Parceiro</p>
-                      <p className="text-sm text-slate-600">Nome do parceiro</p>
-                      <p className="text-xs text-slate-500 mt-1">
-                        Exemplos: Parceiro A, Empresa XYZ
-                      </p>
-                    </div>
-                  </div>
+                      <div className="bg-slate-50 p-3 rounded-lg">
+                        <p className="font-semibold">Valor</p>
+                        <p className="text-sm text-slate-600">
+                          Valor monetário (em reais)
+                        </p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          Exemplos: 1500, 2200.50, R$ 3.500,00
+                        </p>
+                      </div>
 
-                  <div className="space-y-3">
-                    <div className="bg-slate-50 p-3 rounded-lg">
-                      <p className="font-semibold">Responsável</p>
-                      <p className="text-sm text-slate-600">
-                        Nome do engenheiro responsável
-                      </p>
-                      <p className="text-xs text-slate-500 mt-1">
-                        Exemplos: Paloma, Giovanni, Lucas, Marcelo
-                      </p>
-                    </div>
-
-                    <div className="bg-slate-50 p-3 rounded-lg">
-                      <p className="font-semibold">Valor</p>
-                      <p className="text-sm text-slate-600">
-                        Valor monetário (em reais)
-                      </p>
-                      <p className="text-xs text-slate-500 mt-1">
-                        Exemplos: 1500, 2200.50, R$ 3.500,00
-                      </p>
-                    </div>
-
-                    <div className="bg-slate-50 p-3 rounded-lg">
-                      <p className="font-semibold">Descrição</p>
-                      <p className="text-sm text-slate-600">
-                        Tipo de operação ou descrição
-                      </p>
-                      <p className="text-xs text-slate-500 mt-1">
-                        Exemplos: Venda de Serviços, Venda Normal
-                      </p>
+                      <div className="bg-slate-50 p-3 rounded-lg">
+                        <p className="font-semibold">Descrição</p>
+                        <p className="text-sm text-slate-600">
+                          Tipo de operação ou descrição
+                        </p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          Exemplos: Venda de Serviços, Venda Normal
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
+
+                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                  <h3 className="font-medium text-yellow-800 mb-2">
+                    Observações Importantes
+                  </h3>
+                  <ul className="list-disc pl-5 space-y-1 text-yellow-700">
+                    <li>
+                      O sistema tentará identificar as colunas mesmo que os
+                      nomes não sejam exatamente iguais
+                    </li>
+                    <li>
+                      Valores monetários podem estar em diferentes formatos (com
+                      ou sem símbolo R$, com ponto ou vírgula)
+                    </li>
+                    <li>
+                      Para identificar serviços, o sistema busca palavras como
+                      "serviço" ou "venda de serviços" na descrição
+                    </li>
+                    <li>
+                      Cada linha representa um item individual, podendo haver
+                      múltiplos itens para o mesmo orçamento
+                    </li>
+                  </ul>
+                </div>
               </div>
 
-              <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                <h3 className="font-medium text-yellow-800 mb-2">
-                  Observações Importantes
-                </h3>
-                <ul className="list-disc pl-5 space-y-1 text-yellow-700">
-                  <li>
-                    O sistema tentará identificar as colunas mesmo que os nomes
-                    não sejam exatamente iguais
-                  </li>
-                  <li>
-                    Valores monetários podem estar em diferentes formatos (com
-                    ou sem símbolo R$, com ponto ou vírgula)
-                  </li>
-                  <li>
-                    Para identificar serviços, o sistema busca palavras como
-                    "serviço" ou "venda de serviços" na descrição
-                  </li>
-                  <li>
-                    Cada linha representa um item individual, podendo haver
-                    múltiplos itens para o mesmo orçamento
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={handleExampleDownload}
-                className="flex items-center gap-2"
-              >
-                <FileSpreadsheet className="w-4 h-4" />
-                Baixar Exemplo
-              </Button>
-              <Button onClick={() => setIsAdminInfoOpen(false)}>Entendi</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  onClick={handleExampleDownload}
+                  className="flex items-center gap-2"
+                >
+                  <FileSpreadsheet className="w-4 h-4" />
+                  Baixar Exemplo
+                </Button>
+                <Button onClick={() => setIsAdminInfoOpen(false)}>
+                  Entendi
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
     </div>
   );
