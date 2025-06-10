@@ -426,6 +426,13 @@ export default function DashboardPage() {
                 <BarChart3 className="w-4 h-4" />
                 Dashboard
               </TabsTrigger>
+              <TabsTrigger
+                value="administrativa"
+                className="flex items-center gap-2"
+              >
+                <Package className="w-4 h-4" />
+                Administrativa
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="dashboard">
@@ -959,6 +966,78 @@ export default function DashboardPage() {
                   </Card>
                 </div>
               ) : null}
+            </TabsContent>
+
+            <TabsContent value="administrativa">
+              <div className="grid gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Painel Administrativo</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-lg">
+                              Departamentos
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-2">
+                              {Object.entries(DEPARTAMENTOS).map(
+                                ([key, dept]) => (
+                                  <div
+                                    key={key}
+                                    className="p-3 bg-slate-50 rounded-lg"
+                                  >
+                                    <h3 className="font-semibold">
+                                      {dept.nome}
+                                    </h3>
+                                    <p className="text-sm text-slate-600">
+                                      Responsáveis:{" "}
+                                      {dept.responsaveis.join(", ")}
+                                    </p>
+                                  </div>
+                                )
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="text-lg">
+                              Estatísticas Gerais
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="p-3 bg-slate-50 rounded-lg">
+                                  <p className="text-sm text-slate-600">
+                                    Total de Itens
+                                  </p>
+                                  <p className="text-2xl font-bold">
+                                    {totalItens}
+                                  </p>
+                                </div>
+                                <div className="p-3 bg-slate-50 rounded-lg">
+                                  <p className="text-sm text-slate-600">
+                                    Total de Responsáveis
+                                  </p>
+                                  <p className="text-2xl font-bold">
+                                    {departamento.responsaveis.length}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </TabsContent>
           </Tabs>
         </div>
