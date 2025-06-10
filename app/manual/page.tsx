@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sidebar } from "@/components/sidebar";
 import Link from "next/link";
-import { ArrowLeft, Book, FileText, HelpCircle } from "lucide-react";
+import { ArrowLeft, Book, HelpCircle } from "lucide-react";
 import { Suspense } from "react";
 
 function ManualContent() {

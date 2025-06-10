@@ -15,15 +15,12 @@ import {
   Users,
   Bell,
   Search,
-  Settings,
   Smile,
   Paperclip,
   MoreVertical,
   Edit3,
   Trash2,
   X,
-  Home,
-  Menu,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -33,7 +30,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Link from "next/link";
 
 export function ChatPage() {
   const [message, setMessage] = useState("");

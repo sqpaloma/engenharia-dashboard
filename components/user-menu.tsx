@@ -10,15 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/lib/auth-context";
-import {
-  User,
-  LogOut,
-  Settings,
-  Shield,
-  Bell,
-  MessageCircle,
-  Calendar,
-} from "lucide-react";
+import { User, LogOut, Settings, Shield, Bell, Calendar } from "lucide-react";
 import Link from "next/link";
 
 export function UserMenu() {

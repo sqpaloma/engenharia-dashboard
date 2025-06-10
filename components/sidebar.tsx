@@ -1,15 +1,11 @@
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
-  BarChart3,
   Package,
-  Wrench,
   Home,
-  Users,
   Settings,
-  LayoutDashboard,
   MessageSquare,
   Calendar,
   Bell,
@@ -32,14 +28,12 @@ const DEPARTAMENTOS = {
 
 export function Sidebar() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const currentSetor = searchParams.get("setor");
 
   return (
     <div className="flex h-screen w-64 flex-col border-r bg-white">
       <div className="flex h-14 items-center border-b px-4">
         <Link href="/" className="flex items-center gap-2 font-semibold">
-          <span className="text-lg">Engenharia</span>
+          <span className="text-lg">Consultoria</span>
         </Link>
         <div className="ml-auto flex items-center gap-4">
           <Button variant="ghost" size="icon" className="relative">
@@ -60,18 +54,9 @@ export function Sidebar() {
             )}
           >
             <Home className="h-4 w-4" />
-            Início
-          </Link>
-          <Link
-            href="/dashboard"
-            className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900",
-              pathname === "/dashboard" && "bg-gray-100 text-gray-900"
-            )}
-          >
-            <LayoutDashboard className="h-4 w-4" />
             Dashboard
           </Link>
+
           <Link
             href="/chat"
             className={cn(
@@ -92,16 +77,6 @@ export function Sidebar() {
             <Calendar className="h-4 w-4" />
             Calendário
           </Link>
-          <Link
-            href="/admin"
-            className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900",
-              pathname === "/admin" && "bg-gray-100 text-gray-900"
-            )}
-          >
-            <Settings className="h-4 w-4" />
-            Área Administrativa
-          </Link>
         </nav>
         <div className="mt-4 px-3">
           <h3 className="mb-2 px-4 text-lg font-semibold tracking-tight">
@@ -109,11 +84,11 @@ export function Sidebar() {
           </h3>
           <div className="space-y-1">
             <Link
-              href="/dashboard"
+              href="/upload"
               className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:text-gray-900 bg-gray-100 text-gray-900"
             >
               <Package className="h-4 w-4" />
-              Todos os Setores
+              Upload de Dados
             </Link>
           </div>
         </div>
