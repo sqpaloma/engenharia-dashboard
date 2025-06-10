@@ -274,7 +274,7 @@ export default function UploadPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Upload className="w-5 h-5" />
-                    <CardTitle>Upload de Dados</CardTitle>
+                    <CardTitle>Upload Administrativo</CardTitle>
                   </div>
                   <Button
                     variant="outline"
@@ -328,7 +328,7 @@ export default function UploadPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Upload className="w-5 h-5" />
-                    <CardTitle>Upload de Dados Operacionais</CardTitle>
+                    <CardTitle>Upload Operacionais</CardTitle>
                   </div>
                   <Button
                     variant="outline"

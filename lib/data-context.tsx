@@ -10,6 +10,9 @@ export interface DataItem {
   responsavel: string;
   valor: number;
   descricao: string;
+  observacoes?: string;
+  status?: string;
+  data?: string;
 }
 
 export interface AguardandoAprovacaoItem {
