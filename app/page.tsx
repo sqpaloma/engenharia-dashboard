@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { MetricsCards } from "./components/dashboard/metrics-cards";
 import { Charts } from "./components/dashboard/charts";
 import { ItemsList } from "./components/dashboard/items-list";
+import type { FilterType } from "@/types";
 
 type DataItem = {
   id?: string;
@@ -52,15 +53,6 @@ const DEPARTAMENTOS = {
     responsaveis: ["Marcelo"],
   },
 };
-
-type FilterType =
-  | "todos"
-  | "followups"
-  | "analises"
-  | "orcamentos"
-  | "execucao"
-  | "devolucoes"
-  | "movimentacoes";
 
 // Função utilitária para converter datas em vários formatos para Date
 function parsePrazo(prazoStr: string | undefined): Date | null {
@@ -230,14 +222,18 @@ export default function DashboardPage() {
   // Função para obter dados filtrados
   const getDadosFiltrados = () => {
     switch (filtroAtivo) {
-      case "followups":
+      case "aguardandoAprovacao":
         return {
           aguardandoAprovacao: aguardandoAprovacaoSetor,
           devolucoes: [],
           movimentacoes: [],
         };
       case "analises":
-        return { followUps: analises, devolucoes: [], movimentacoes: [] };
+        return {
+          aguardandoAprovacao: analises,
+          devolucoes: [],
+          movimentacoes: [],
+        };
       case "orcamentos":
         return {
           aguardandoAprovacao: orcamentos,
@@ -292,7 +288,7 @@ export default function DashboardPage() {
   // Função para obter o título do filtro
   const getTituloFiltro = () => {
     switch (filtroAtivo) {
-      case "followups":
+      case "aguardandoAprovacao":
         return "Aguardando Aprovação";
       case "analises":
         return "Análises";
@@ -425,8 +421,12 @@ export default function DashboardPage() {
 
             <TabsContent value="dashboard">
               <MetricsCards
-                filtroAtivo={filtroAtivo}
-                setFiltroAtivo={setFiltroAtivo}
+                filtroAtivo={filtroAtivo as FilterType}
+                setFiltroAtivo={
+                  setFiltroAtivo as React.Dispatch<
+                    React.SetStateAction<FilterType>
+                  >
+                }
                 totalItens={totalItens}
                 totalAguardandoAprovacao={totalAguardandoAprovacao}
                 totalAnalises={totalAnalises}

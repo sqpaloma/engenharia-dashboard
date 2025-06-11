@@ -2,6 +2,7 @@
 
 import type React from "react";
 import { createContext, useContext, useState, useEffect } from "react";
+import type { ReactNode } from "react";
 
 export interface DataItem {
   orcamento: string;
@@ -16,6 +17,12 @@ export interface DataItem {
 }
 
 export interface AguardandoAprovacaoItem {
+  observacoes: ReactNode;
+  prioridade: string;
+  prazo: ReactNode;
+  descricao: ReactNode;
+  tipo: ReactNode;
+  cliente: ReactNode;
   id: string;
   orcamento: string;
   parceiro: string;
@@ -26,6 +33,8 @@ export interface AguardandoAprovacaoItem {
 }
 
 export type DevolucaoData = {
+  equipamento: ReactNode;
+  cliente: ReactNode;
   id: string;
   parceiro: string;
   engenheiro: string;
@@ -36,6 +45,7 @@ export type DevolucaoData = {
 };
 
 export interface MovimentacaoInternaItem {
+  cliente: ReactNode;
   id: string;
   orcamento: string;
   parceiro: string;
