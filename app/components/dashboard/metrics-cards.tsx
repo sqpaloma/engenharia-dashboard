@@ -1,15 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart3, Package, Wrench } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
-
-type FilterType =
-  | "todos"
-  | "followups"
-  | "analises"
-  | "orcamentos"
-  | "execucao"
-  | "devolucoes"
-  | "movimentacoes";
+import type { FilterType } from "@/types";
 
 interface MetricsCardsProps {
   filtroAtivo: FilterType;
@@ -82,10 +74,12 @@ export function MetricsCards({
       </Card>
 
       <Card
-        className={`cursor-pointer transition-all hover:shadow-lg ${
-          filtroAtivo === "followups" ? "ring-2 ring-blue-500 bg-blue-50" : ""
+        className={`cursor-pointer transition-colors ${
+          filtroAtivo === "aguardandoAprovacao"
+            ? "bg-blue-50 border-blue-200"
+            : "hover:bg-slate-50"
         }`}
-        onClick={() => setFiltroAtivo("followups")}
+        onClick={() => setFiltroAtivo("aguardandoAprovacao")}
       >
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">

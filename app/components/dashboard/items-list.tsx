@@ -4,23 +4,23 @@ import { useState } from "react";
 
 interface DataItem {
   id?: string;
-  nomeParceiro?: string;
-  responsavel?: string;
-  status?: string;
-  data?: string;
-  orcamento?: string;
+  nomeParceiro?: React.ReactNode;
+  responsavel?: React.ReactNode;
+  status?: React.ReactNode;
+  data?: React.ReactNode;
+  orcamento?: React.ReactNode;
   valor?: number;
-  motivo?: string;
-  observacoes?: string;
-  tipo?: string;
-  os?: string;
-  descricao?: string;
-  engenheiro?: string;
-  parceiro?: string;
-  dataEntrada?: string;
-  motivoDevolucao?: string;
-  tipoMovimentacao?: string;
-  dataMovimentacao?: string;
+  motivo?: React.ReactNode;
+  observacoes?: React.ReactNode;
+  tipo?: React.ReactNode;
+  os?: React.ReactNode;
+  descricao?: React.ReactNode;
+  engenheiro?: React.ReactNode;
+  parceiro?: React.ReactNode;
+  dataEntrada?: React.ReactNode;
+  motivoDevolucao?: React.ReactNode;
+  tipoMovimentacao?: React.ReactNode;
+  dataMovimentacao?: React.ReactNode;
 }
 
 interface ItemsListProps {
