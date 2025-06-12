@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Sidebar } from "@/components/sidebar";
+
 import Link from "next/link";
 import { ArrowLeft, Book, HelpCircle } from "lucide-react";
 import { Suspense } from "react";
@@ -10,7 +10,6 @@ import { Suspense } from "react";
 function ManualContent() {
   return (
     <div className="flex h-screen">
-      <Sidebar />
       <div className="flex-1 overflow-auto bg-slate-50">
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-4xl mx-auto">

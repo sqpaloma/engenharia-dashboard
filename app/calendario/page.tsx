@@ -21,7 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Sidebar } from "@/components/sidebar";
+
 import { format } from "date-fns";
 
 moment.locale("pt-br");
@@ -120,7 +120,6 @@ function CalendarioContent() {
 
   return (
     <div className="flex h-screen">
-      <Sidebar />
       <div className="flex-1 overflow-auto bg-slate-50">
         <div className="container mx-auto px-4 py-8">
           <div className="flex justify-between items-center mb-8">

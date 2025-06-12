@@ -9,7 +9,6 @@ import { Upload, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { processExcelFile } from "@/lib/excel-utils";
 import { useData } from "@/lib/data-context";
-import { Sidebar } from "@/components/sidebar";
 
 type DataItem = {
   id?: string;
@@ -131,6 +130,12 @@ export default function UploadPage() {
         data: item.data || "",
         orcamento: item.orcamento || "",
         valor: item.valor || 0,
+        observacoes: item.observacoes || "",
+        prioridade: "Média",
+        prazo: item.data || "",
+        descricao: item.descricao || "",
+        tipo: item.tipo || "",
+        cliente: item.nomeParceiro || "",
       }));
       setAguardandoAprovacaoData(convertedData);
       toast({
@@ -173,6 +178,8 @@ export default function UploadPage() {
         motivoDevolucao: item.motivo || "",
         observacoes: item.observacoes || "",
         status: item.status || "",
+        equipamento: item.descricao || "",
+        cliente: item.nomeParceiro || "",
       }));
       setDevolucaoData(convertedData);
       toast({
@@ -216,6 +223,7 @@ export default function UploadPage() {
         observacoes: item.observacoes || "",
         status: item.status || "",
         orcamento: item.orcamento || "",
+        cliente: item.nomeParceiro || "",
       }));
       setMovimentacaoData(convertedData);
       toast({
@@ -265,7 +273,6 @@ export default function UploadPage() {
 
   return (
     <div className="flex h-screen">
-      <Sidebar />
       <div className="flex-1 overflow-auto bg-slate-50">
         <div className="container mx-auto px-4 py-8">
           <div className="grid md:grid-cols-2 gap-6">
@@ -328,7 +335,7 @@ export default function UploadPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Upload className="w-5 h-5" />
-                    <CardTitle>Upload Operacionais</CardTitle>
+                    <CardTitle>UploadOperacionais</CardTitle>
                   </div>
                   <Button
                     variant="outline"
