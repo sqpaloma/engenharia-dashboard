@@ -5,7 +5,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { DataProvider } from "@/lib/data-context";
 import { AuthProvider } from "@/lib/auth-context";
-import { Sidebar } from "@/components/sidebar";
+import { ConditionalLayout } from "@/components/conditional-layout";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,10 +25,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <AuthProvider>
           <DataProvider>
-            <div className="flex min-h-screen">
-              <Sidebar />
-              <main className="flex-1">{children}</main>
-            </div>
+            <ConditionalLayout>{children}</ConditionalLayout>
             <Toaster />
           </DataProvider>
         </AuthProvider>
