@@ -52,6 +52,10 @@ function CalendarioContent() {
 
   const handleSelectSlot = useCallback(
     (slotInfo: { start: Date; end: Date }) => {
+      if (moment(slotInfo.start).isBefore(moment().startOf("day"))) {
+        alert("Não é possível adicionar tarefas em datas passadas.");
+        return;
+      }
       setSelectedSlot(slotInfo);
       setNewTask({
         title: "",
@@ -89,6 +93,11 @@ function CalendarioContent() {
       `${newTask.date} ${newTask.startTime}`
     ).toDate();
     const endDateTime = moment(`${newTask.date} ${newTask.endTime}`).toDate();
+
+    if (moment(startDateTime).isBefore(moment().startOf("day"))) {
+      alert("Não é possível adicionar tarefas em datas passadas.");
+      return;
+    }
 
     const task: Task = {
       id: Date.now().toString(),
@@ -229,6 +238,7 @@ function CalendarioContent() {
                       id="date"
                       type="date"
                       value={newTask.date}
+                      min={moment().format("YYYY-MM-DD")}
                       onChange={(e) =>
                         setNewTask({ ...newTask, date: e.target.value })
                       }
