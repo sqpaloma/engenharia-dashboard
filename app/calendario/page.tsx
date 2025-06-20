@@ -110,6 +110,18 @@ function CalendarioContent() {
     setSelectedSlot(null);
   };
 
+  const handleAddTaskButton = () => {
+    setSelectedSlot(null);
+    setNewTask({
+      title: "",
+      description: "",
+      date: format(new Date(), "yyyy-MM-dd"),
+      startTime: format(new Date(), "HH:mm"),
+      endTime: format(new Date(new Date().getTime() + 60 * 60 * 1000), "HH:mm"), // 1 hour later
+    });
+    setIsModalOpen(true);
+  };
+
   const { defaultDate, scrollToTime } = useMemo(
     () => ({
       defaultDate: new Date(),
@@ -131,6 +143,26 @@ function CalendarioContent() {
                 Gerencie suas tarefas e compromissos
               </p>
             </div>
+            <Button
+              onClick={handleAddTaskButton}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              <svg
+                className="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              Adicionar Tarefa
+            </Button>
           </div>
 
           <div className="h-[600px]">

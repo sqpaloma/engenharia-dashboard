@@ -189,27 +189,6 @@ export function DashboardPage() {
   return (
     <div className="container mx-auto p-6">
       <div className="mb-6 flex justify-between items-center">
-        <Select
-          value={selectedDepartment}
-          onValueChange={setSelectedDepartment}
-        >
-          <SelectTrigger className="w-[300px]">
-            <SelectValue placeholder="Selecione o departamento" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todos os departamentos</SelectItem>
-            <SelectItem value="bombas-pistoes">
-              Bombas e motores de pistões e engrenagem
-            </SelectItem>
-            <SelectItem value="bombas-escavadeira">
-              Bombas, motores e comandos de escavadeira
-            </SelectItem>
-            <SelectItem value="blocos-valvulas">
-              Blocos, válvulas, orbitrol e pedal de freio
-            </SelectItem>
-          </SelectContent>
-        </Select>
-
         {(aguardandoAprovacaoData.length > 0 ||
           devolucaoData.length > 0 ||
           movimentacaoData.length > 0) && (
