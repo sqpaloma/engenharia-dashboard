@@ -155,7 +155,7 @@ export function Sidebar() {
               <div className="space-y-1">
                 <Link
                   href="/upload"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:text-gray-900 bg-gray-100 text-gray-900"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:text-gray-900 text-gray-900"
                 >
                   <Package className="h-4 w-4" />
                   Upload de Dados

@@ -10,6 +10,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { MetricsCards } from "./dashboard/metrics-cards";
 import { Charts } from "./dashboard/charts";
 import { ItemsList } from "./dashboard/items-list";
@@ -18,11 +21,35 @@ import type { FilterType } from "@/types";
 const AdministrativeTab = lazy(() => import("./administrative-tab"));
 
 export function DashboardPage() {
-  const { aguardandoAprovacaoData, devolucaoData, movimentacaoData } =
-    useData();
+  const {
+    aguardandoAprovacaoData,
+    devolucaoData,
+    movimentacaoData,
+    setAguardandoAprovacaoData,
+    setDevolucaoData,
+    setMovimentacaoData,
+  } = useData();
   const [selectedDepartment, setSelectedDepartment] = useState<string>("all");
   const [engenheiroFiltro, setEngenheiroFiltro] = useState<string>("todos");
   const [filtroAtivo, setFiltroAtivo] = useState<FilterType>("todos");
+  const { toast } = useToast();
+
+  const handleClearAllData = () => {
+    if (
+      confirm(
+        "Tem certeza que deseja limpar TODOS os dados (aguardando aprovação, devoluções e movimentações)? Esta ação não pode ser desfeita."
+      )
+    ) {
+      setAguardandoAprovacaoData([]);
+      setDevolucaoData([]);
+      setMovimentacaoData([]);
+      toast({
+        title: "Todos os dados limpos!",
+        description: "Todos os dados foram removidos do sistema.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const filteredData = useMemo(() => {
     if (selectedDepartment === "all") {
@@ -161,7 +188,7 @@ export function DashboardPage() {
 
   return (
     <div className="container mx-auto p-6">
-      <div className="mb-6">
+      <div className="mb-6 flex justify-between items-center">
         <Select
           value={selectedDepartment}
           onValueChange={setSelectedDepartment}
@@ -182,6 +209,15 @@ export function DashboardPage() {
             </SelectItem>
           </SelectContent>
         </Select>
+
+        {(aguardandoAprovacaoData.length > 0 ||
+          devolucaoData.length > 0 ||
+          movimentacaoData.length > 0) && (
+          <Button onClick={handleClearAllData} variant="destructive" size="sm">
+            <AlertTriangle className="w-4 h-4 mr-2" />
+            Limpar Todos os Dados
+          </Button>
+        )}
       </div>
 
       <Tabs defaultValue="dashboard" className="w-full">
