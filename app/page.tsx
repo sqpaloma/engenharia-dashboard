@@ -1,8 +1,6 @@
 "use client";
 import { lazy } from "react";
 
-import { useAuth } from "@/lib/auth-context";
-import { LoginForm } from "@/components/login-form";
 import { DashboardPage } from "./components/dashboard-page";
 
 type DataItem = {
@@ -96,11 +94,5 @@ function getPrazoStats<T>(
 const AdministrativeTab = lazy(() => import("./components/administrative-tab"));
 
 export default function Home() {
-  const { isAuthenticated } = useAuth();
-
-  if (!isAuthenticated) {
-    return <LoginForm />;
-  }
-
   return <DashboardPage />;
 }

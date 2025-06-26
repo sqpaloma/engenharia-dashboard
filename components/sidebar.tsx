@@ -13,12 +13,10 @@ import {
   Bell,
   ChevronLeft,
   ChevronRight,
-  LogOut,
   Users,
   Book,
 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useAuth } from "@/lib/auth-context";
 
 const DEPARTAMENTOS = {
   "bombas-pistoes": {
@@ -39,7 +37,6 @@ export function Sidebar() {
   const pathname = usePathname();
   const [isExpanded, setIsExpanded] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
-  const { logout } = useAuth();
 
   useEffect(() => {
     const checkMobile = () => {
@@ -176,30 +173,17 @@ export function Sidebar() {
           )}
         </div>
         <div className="mt-auto p-4">
-          <div className="flex items-center gap-2">
-            <Link
-              href="/configuracoes"
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 flex-1",
-                pathname === "/configuracoes" && "bg-gray-100 text-gray-900",
-                !isExpanded && "justify-center"
-              )}
-            >
-              <Settings className="h-4 w-4" />
-              {isExpanded && "Configurações"}
-            </Link>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={logout}
-              className={cn(
-                "text-gray-500 hover:text-gray-900",
-                !isExpanded && "w-full"
-              )}
-            >
-              <LogOut className="h-4 w-4" />
-            </Button>
-          </div>
+          <Link
+            href="/configuracoes"
+            className={cn(
+              "flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900",
+              pathname === "/configuracoes" && "bg-gray-100 text-gray-900",
+              !isExpanded && "justify-center"
+            )}
+          >
+            <Settings className="h-4 w-4" />
+            {isExpanded && "Configurações"}
+          </Link>
         </div>
       </div>
     </div>

@@ -36,13 +36,15 @@ import { useToast } from "@/hooks/use-toast";
 import { useData } from "@/lib/data-context";
 import {
   Upload,
-  LogOut,
-  Filter,
-  AlertTriangle,
-  FileSpreadsheet,
-  Users,
   BarChart,
+  Filter,
+  Wrench,
+  Package,
+  DollarSign,
+  Users,
+  AlertTriangle,
   Home,
+  FileSpreadsheet,
 } from "lucide-react";
 import {
   processExcelFile,
@@ -58,7 +60,6 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { DollarSign, Wrench, Package } from "lucide-react";
 import { isServico, formatCurrency } from "@/lib/utils";
 
 // Adicionar os imports necessários para o Dialog no topo do arquivo
@@ -71,13 +72,11 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { InfoIcon } from "lucide-react";
-import { useAuth } from "@/lib/auth-context";
 import Link from "next/link";
 
 const COLORS = ["#3b82f6", "#10b981", "#ef4444", "#f59e0b", "#8884d8"];
 
 export default function AdminPage() {
-  const { user, logout } = useAuth();
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [filtroEngenheiro, setFiltroEngenheiro] = useState("todos");
@@ -114,26 +113,6 @@ export default function AdminPage() {
   const [movimentacaoUploadError, setMovimentacaoUploadError] = useState<
     string | null
   >(null);
-
-  if (!user || user.role !== "admin") {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>Acesso Negado</CardTitle>
-            <CardDescription>
-              Você precisa ser um administrador para acessar esta área
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Button asChild className="w-full">
-              <a href="/">Voltar ao início</a>
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -521,10 +500,6 @@ export default function AdminPage() {
                 Limpar Todos os Dados
               </Button>
             )}
-            <Button onClick={logout} variant="outline">
-              <LogOut className="w-4 h-4 mr-2" />
-              Sair
-            </Button>
           </div>
         </div>
 
